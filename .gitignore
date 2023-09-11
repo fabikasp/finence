@@ -1,0 +1,8 @@
+# VS Code
+.vscode/
+
+# Client
+client/node_modules/
+client/dist/
+client/.cache/
+client/package-lock.json

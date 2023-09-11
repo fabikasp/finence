@@ -1,8 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 
 if (rootElement != null) {
-    ReactDOM.createRoot(rootElement).render(<div>TEST</div>);
+  ReactDOM.createRoot(rootElement).render(<div>TEST</div>);
 }

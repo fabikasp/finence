@@ -4,7 +4,9 @@
   "description": "Website zum Tracken und Auswerten von Finanzen.",
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html",
+    "prettier": "prettier --config .prettierrc 'src/**/*.{ts,tsx}' --write",
+    "lint": "eslint ./src --fix"
   },
   "repository": {
     "type": "git",
@@ -13,7 +15,12 @@
   "author": "Fabian Kasparek",
   "license": "GNU General Public License v3.0",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "eslint": "^8.49.0",
+    "eslint-plugin-react": "^7.33.2",
     "parcel-bundler": "^1.12.5",
+    "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
   "dependencies": {
