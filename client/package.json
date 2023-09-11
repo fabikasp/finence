@@ -1,0 +1,25 @@
+{
+  "name": "finence",
+  "version": "1.0.0",
+  "description": "Website zum Tracken und Auswerten von Finanzen.",
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabikasp/finence.git"
+  },
+  "author": "Fabian Kasparek",
+  "license": "GNU General Public License v3.0",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
