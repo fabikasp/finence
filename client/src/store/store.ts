@@ -1,10 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import firebaseReducer from './firebaseSlice';
 
 const store = configureStore({
-  reducer: {
-    firebase: firebaseReducer
-  }
+  reducer: {}
 });
 
 export type RootState = ReturnType<typeof store.getState>;
