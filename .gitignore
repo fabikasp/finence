@@ -6,4 +6,3 @@ client/node_modules/
 client/dist/
 client/.cache/
 client/package-lock.json
-client/src/config/firebase.ts
