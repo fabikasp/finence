@@ -6,3 +6,8 @@ client/node_modules/
 client/dist/
 client/.cache/
 client/package-lock.json
+
+# Server
+__pycache__/
+server/src/migrations/
+server/.env
