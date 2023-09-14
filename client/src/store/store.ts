@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
+import sideBarReducer from './sideBarSlice';
 
 const sagaMiddleware = createSagaMiddleware();
 const store = configureStore({
-  reducer: {},
+  reducer: {
+    sideBar: sideBarReducer
+  },
   middleware(getDefaultMiddleware) {
     return [...getDefaultMiddleware(), sagaMiddleware];
   }
