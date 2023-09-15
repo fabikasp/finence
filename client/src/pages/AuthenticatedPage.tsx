@@ -1,12 +1,12 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from './AppBar';
-import SideBar, { SideBarHeader } from './SideBar';
+import AppBar from '../components/AppBar';
+import SideBar, { SideBarHeader } from '../components/SideBar';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
-export default function Frame(props: React.PropsWithChildren): React.ReactElement {
+export default function AuthenticatedPage(props: React.PropsWithChildren): React.ReactElement {
   const sideBarOpen = useSelector((state: RootState) => state.sideBar.open);
 
   return (

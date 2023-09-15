@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-type SideBar = {
+interface SideBar {
   open: boolean;
-};
+}
 
 const initialState: SideBar = {
   open: false

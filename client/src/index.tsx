@@ -3,21 +3,27 @@ import ReactDOM from 'react-dom/client';
 import store from './store/store';
 import { Provider } from 'react-redux';
 import { assertNonNullable } from './utils/assert';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Frame from './components/Frame';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
+import AuthenticatedPage from './pages/AuthenticatedPage';
+import { ThemeProvider } from '@mui/material';
+import { theme } from './theme/theme';
 
 const rootElement = document.getElementById('root');
 assertNonNullable(rootElement);
 
 ReactDOM.createRoot(rootElement).render(
   <Provider store={store}>
-    <BrowserRouter>
-      <Frame>
-        <Routes>
-          <Route index element={<div>TEST123</div>} />
-          <Route path="test" element={<div>TEST456</div>} />
-        </Routes>
-      </Frame>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <AuthenticatedPage>
+          <Routes>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<div>Dashboard</div>} />
+            <Route path="finanzen" element={<div>Finanzen</div>} />
+            <Route path="konto" element={<div>Konto</div>} />
+          </Routes>
+        </AuthenticatedPage>
+      </BrowserRouter>
+    </ThemeProvider>
   </Provider>
 );

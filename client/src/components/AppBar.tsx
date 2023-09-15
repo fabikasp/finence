@@ -2,10 +2,11 @@ import React from 'react';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import { SIDEBAR_WIDTH } from '../utils/const';
-import { IconButton, Toolbar, Typography } from '@mui/material';
+import { Box, IconButton, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useDispatch } from 'react-redux';
 import { toggle } from '../store/sideBarSlice';
+import Logo from '../images/logo.png';
 
 interface AppBarProps extends MuiAppBarProps {
   sideBarOpen: boolean;
@@ -44,7 +45,10 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div">
+        <IconButton>
+          <Box component="img" src={Logo} width={30} />
+        </IconButton>
+        <Typography variant="h5" noWrap component="div">
           Finence
         </Typography>
       </Toolbar>

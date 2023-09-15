@@ -1,15 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import Drawer, { DrawerProps } from '@mui/material/Drawer';
 import { SIDEBAR_WIDTH } from '../utils/const';
-import { IconButton, List, ListItem, ListItemButton } from '@mui/material';
+import { IconButton, List, ListItem, ListItemButton, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux';
 import { toggle } from '../store/sideBarSlice';
 
@@ -57,38 +60,60 @@ const SideBarWrapper = styled(Drawer)(({ theme, open }) => ({
   })
 }));
 
+interface SideBarItem {
+  title: string;
+  icon: React.ReactElement;
+  onClick: () => void;
+}
+
 export default function SideBar(props: DrawerProps): React.ReactElement {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const closeAndNavigate = (route: string): void => {
+    dispatch(toggle());
+    navigate(route);
+  };
+
+  const sideBarItems: SideBarItem[] = [
+    { title: 'Dashboard', icon: <LeaderboardIcon color="secondary" />, onClick: () => closeAndNavigate('/dashboard') },
+    { title: 'Finanzen', icon: <AccountBalanceIcon color="secondary" />, onClick: () => closeAndNavigate('/finanzen') },
+    { title: 'Konto', icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate('/konto') },
+    { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => alert('WIP') }
+  ];
 
   return (
     <SideBarWrapper variant="permanent" open={props.open}>
       <SideBarHeader>
         <IconButton onClick={() => dispatch(toggle())}>
-          {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          {theme.direction === 'rtl' ? <ChevronRightIcon color="secondary" /> : <ChevronLeftIcon color="secondary" />}
         </IconButton>
       </SideBarHeader>
       <List>
-        {['Dashboard', 'Finanzen', 'Konto', 'Logout'].map((text, index) => (
-          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: props.open ? 'initial' : 'center',
-                px: 2.5
-              }}
-            >
-              <ListItemIcon
+        {sideBarItems.map((item, index) => (
+          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+            <Tooltip title={props.open ? '' : item.title}>
+              <ListItemButton
                 sx={{
-                  minWidth: 0,
-                  mr: props.open ? 3 : 'auto',
-                  justifyContent: 'center'
+                  minHeight: 48,
+                  justifyContent: props.open ? 'initial' : 'center',
+                  px: 2.5
                 }}
+                onClick={item.onClick}
               >
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: props.open ? 1 : 0 }} />
-            </ListItemButton>
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: props.open ? 3 : 'auto',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.title} sx={{ opacity: props.open ? 1 : 0 }} />
+              </ListItemButton>
+            </Tooltip>
           </ListItem>
         ))}
       </List>
