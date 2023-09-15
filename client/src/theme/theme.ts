@@ -16,7 +16,10 @@ export const theme = createTheme({
     }
   },
   typography: {
-    fontFamily: 'Helvetica'
+    fontFamily: 'Helvetica',
+    h5: {
+      fontFamily: 'LeckerliOne'
+    }
   },
   components: {
     MuiDrawer: {

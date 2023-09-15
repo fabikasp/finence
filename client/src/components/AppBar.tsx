@@ -48,7 +48,7 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
         <IconButton>
           <Box component="img" src={Logo} width={30} />
         </IconButton>
-        <Typography variant="h5" noWrap component="div">
+        <Typography variant="h5" sx={{ marginLeft: 1 }}>
           Finence
         </Typography>
       </Toolbar>
