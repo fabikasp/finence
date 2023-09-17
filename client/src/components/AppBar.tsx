@@ -1,5 +1,5 @@
 import React from 'react';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import MuiAppBar, { AppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import { SIDEBAR_WIDTH } from '../utils/const';
 import { Box, IconButton, Toolbar, Typography } from '@mui/material';
@@ -7,12 +7,16 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useDispatch } from 'react-redux';
 import { toggle } from '../store/sideBarSlice';
 import Logo from '../images/logo.png';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
-interface AppBarProps extends MuiAppBarProps {
+interface AppBarWrapperProps extends AppBarProps {
   sideBarOpen: boolean;
 }
 
-const AppBarWrapper = styled(MuiAppBar)<AppBarProps>(({ theme, sideBarOpen }) => ({
+const AppBarWrapper = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'sideBarOpen'
+})<AppBarWrapperProps>(({ theme, sideBarOpen }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
@@ -28,11 +32,12 @@ const AppBarWrapper = styled(MuiAppBar)<AppBarProps>(({ theme, sideBarOpen }) =>
   })
 }));
 
-export default function AppBar(props: AppBarProps): React.ReactElement {
+export default function AppBar(): React.ReactNode {
   const dispatch = useDispatch();
+  const sideBarOpen = useSelector((state: RootState) => state.sideBar.open);
 
   return (
-    <AppBarWrapper position="fixed" sideBarOpen={props.sideBarOpen}>
+    <AppBarWrapper position="fixed" sideBarOpen={sideBarOpen}>
       <Toolbar variant="dense">
         <IconButton
           color="inherit"
@@ -40,15 +45,13 @@ export default function AppBar(props: AppBarProps): React.ReactElement {
           edge="start"
           sx={{
             marginRight: 5,
-            ...(props.sideBarOpen && { display: 'none' })
+            ...(sideBarOpen && { display: 'none' })
           }}
         >
           <MenuIcon />
         </IconButton>
-        <IconButton>
-          <Box component="img" src={Logo} width={30} />
-        </IconButton>
-        <Typography variant="h5" sx={{ marginLeft: 1 }}>
+        <Box component="img" src={Logo} width={30} />
+        <Typography variant="h5" sx={{ marginLeft: 2 }}>
           Finence
         </Typography>
       </Toolbar>

@@ -17,6 +17,9 @@ export const theme = createTheme({
   },
   typography: {
     fontFamily: 'Helvetica',
+    h1: {
+      fontFamily: 'LeckerliOne'
+    },
     h5: {
       fontFamily: 'LeckerliOne'
     }
@@ -27,7 +30,28 @@ export const theme = createTheme({
         paper: {
           backgroundColor: '#101820',
           borderColor: '#89ABE3',
-          borderWidth: 2
+          borderWidth: '2px'
+        }
+      }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#232F3B'
+        }
+      }
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& label': {
+            color: '#FCF6F5'
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#FCF6F5'
+            }
+          }
         }
       }
     }

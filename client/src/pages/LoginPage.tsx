@@ -1,94 +1,128 @@
-import React, { useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Button, Card, CssBaseline, IconButton, InputAdornment, TextField } from '@mui/material';
+import MorphedHeadline from '../components/MorphedHeadline';
 import { styled } from '@mui/material/styles';
-import { assertNonNullable } from '../utils/assert';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import KeyIcon from '@mui/icons-material/Key';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
-const TIME_TO_MORPH_IN_SEC = 0.2;
-const MORPH_TIME_IN_SEC = 3.2;
+const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+const MAX_EMAIL_LENGTH = 320;
+const MAX_PASSWORD_LENGTH = 128;
 
-const Container = styled('div')(() => ({
-  position: 'absolute',
-  margin: 'auto',
-  width: '100vw',
-  height: '80pt',
-  top: 0,
-  bottom: 0,
-  filter: 'url(#threshold) blur(0.6px)'
+const StyledTextField = styled(TextField)(() => ({
+  margin: 20,
+  width: '95%'
 }));
 
-const StyledTypography = styled(Typography)(() => ({
-  position: 'absolute',
-  width: '100%',
-  display: 'inline-block',
-  fontSize: '70pt',
-  textAlign: 'center',
-  userSelect: 'none'
+const StyledButton = styled(Button)(() => ({
+  margin: '0px 20px 20px 20px',
+  width: '25%'
 }));
 
-export default function LoginPage(): React.ReactElement {
-  useEffect(() => {
-    const sourceText = document.getElementById('sourceText');
-    const targetText = document.getElementById('targetText');
+interface Errors {
+  email: string;
+  password: string;
+}
 
-    let startTime = new Date();
-    let timeToMorph = TIME_TO_MORPH_IN_SEC;
-    let morph = 0;
+export default function LoginPage(): React.ReactNode {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [secretMode, setSecretMode] = useState(true);
+  const [errors, setErrors] = useState<Errors>({
+    email: '',
+    password: ''
+  });
 
-    const animate = () => {
-      const animationHandle = requestAnimationFrame(animate);
+  const validateEmail = (email: string): string => {
+    if (email === '') {
+      return 'Die E-Mail-Adresse darf nicht leer sein.';
+    }
 
-      const currentTime = new Date();
-      const timeDifference = (currentTime.getTime() - startTime.getTime()) / 1000;
+    if (email.length > MAX_EMAIL_LENGTH) {
+      return `Die E-Mail-Adresse darf maximal ${MAX_EMAIL_LENGTH} Zeichen enthalten.`;
+    }
 
-      startTime = currentTime;
-      timeToMorph -= timeDifference;
+    return !EMAIL_REGEX.test(email) ? 'Die E-Mail-Adresse ist nicht gültig.' : '';
+  };
 
-      try {
-        if (timeToMorph <= 0) {
-          morph -= timeToMorph;
-          timeToMorph = 0;
+  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+    setErrors((state) => {
+      return { ...state, email: validateEmail(event.target.value) };
+    });
+  };
 
-          let quotient = Math.min(morph / MORPH_TIME_IN_SEC, 1);
+  const validatePassword = (password: string): string => {
+    if (password === '') {
+      return 'Das Passwort darf nicht leer sein.';
+    }
 
-          assertNonNullable(targetText);
-          targetText.style.filter = `blur(${Math.min(8 / quotient - 8, 100)}px)`;
-          targetText.style.opacity = `${Math.pow(quotient, 0.4) * 100}%`;
+    return password.length > MAX_PASSWORD_LENGTH
+      ? `Das Passwort darf maximal ${MAX_PASSWORD_LENGTH} Zeichen enthalten.`
+      : '';
+  };
 
-          assertNonNullable(sourceText);
-          quotient = 1 - quotient;
-          sourceText.style.filter = `blur(${Math.min(8 / quotient - 8, 100)}px)`;
-          sourceText.style.opacity = `${Math.pow(quotient, 0.4) * 100}%`;
-
-          targetText.textContent = 'Finence';
-        }
-      } catch (e) {
-        cancelAnimationFrame(animationHandle);
-      }
-    };
-
-    animate();
-  }, []);
+  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+    setErrors((state) => {
+      return { ...state, password: validatePassword(event.target.value) };
+    });
+  };
 
   return (
-    <>
-      <Container>
-        <StyledTypography id="sourceText" variant="h5">
-          Fine Finance
-        </StyledTypography>
-        <StyledTypography id="targetText" variant="h5" />
-      </Container>
-      <Box component="svg" id="filters">
-        <Box component="defs">
-          <Box component="filter" id="threshold">
-            <Box
-              component="feColorMatrix"
-              in="SourceGraphic"
-              type="matrix"
-              values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 255 -140"
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <MorphedHeadline />
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Card sx={{ width: '50%' }}>
+            <StyledTextField
+              label="E-Mail-Adresse"
+              value={email}
+              onChange={onEmailChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountCircleIcon color="secondary" />
+                  </InputAdornment>
+                )
+              }}
+              error={errors.email !== ''}
+              helperText={errors.email}
             />
-          </Box>
+            <StyledTextField
+              type={secretMode ? 'password' : 'text'}
+              label="Passwort"
+              value={password}
+              onChange={onPasswordChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <KeyIcon color="secondary" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setSecretMode((state) => !state)}>
+                      {secretMode ? <VisibilityOffIcon color="secondary" /> : <VisibilityIcon color="secondary" />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              error={errors.password !== ''}
+              helperText={errors.password}
+            />
+            <StyledButton variant="text" sx={{ float: 'left' }}>
+              Konto erstellen
+            </StyledButton>
+            <StyledButton variant="contained" sx={{ float: 'right' }}>
+              Login
+            </StyledButton>
+          </Card>
         </Box>
       </Box>
-    </>
+    </Box>
   );
 }
