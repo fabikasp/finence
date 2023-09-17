@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
-import { SIDEBAR_WIDTH } from '../utils/const';
+import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, SIDEBAR_WIDTH } from '../utils/const';
 import { Drawer, IconButton, List, ListItem, ListItemButton, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -73,18 +73,26 @@ export default function SideBar(): React.ReactNode {
   const navigate = useNavigate();
   const open = useSelector((state: RootState) => state.sideBar.open);
 
-  const closeAndNavigate = (route: string): void => {
+  const closeAndNavigate = (routeName: string): void => {
     if (open) {
       dispatch(toggle());
     }
 
-    navigate(route);
+    navigate(`/${routeName}`);
   };
 
   const sideBarItems: SideBarItem[] = [
-    { title: 'Dashboard', icon: <LeaderboardIcon color="secondary" />, onClick: () => closeAndNavigate('/dashboard') },
-    { title: 'Finanzen', icon: <AccountBalanceIcon color="secondary" />, onClick: () => closeAndNavigate('/finanzen') },
-    { title: 'Konto', icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate('/konto') },
+    {
+      title: 'Dashboard',
+      icon: <LeaderboardIcon color="secondary" />,
+      onClick: () => closeAndNavigate(DASHBOARD_ROUTE)
+    },
+    {
+      title: 'Finanzen',
+      icon: <AccountBalanceIcon color="secondary" />,
+      onClick: () => closeAndNavigate(FINANCES_ROUTE)
+    },
+    { title: 'Konto', icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate(ACCOUNT_ROUTE) },
     { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => alert('WIP') }
   ];
 
@@ -98,7 +106,7 @@ export default function SideBar(): React.ReactNode {
       <List>
         {sideBarItems.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-            <Tooltip title={open ? '' : item.title}>
+            <Tooltip placement="top" arrow title={open ? '' : item.title}>
               <ListItemButton
                 sx={{
                   minHeight: 48,

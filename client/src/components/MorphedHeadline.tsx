@@ -10,12 +10,30 @@ const MorphContainer = styled('div')(() => ({
   filter: 'url(#threshold) blur(0.6px)'
 }));
 
-const StyledTypography = styled(Typography)(() => ({
+const StyledTypography = styled(Typography)(({ theme }) => ({
   position: 'absolute',
   width: '100%',
   display: 'inline-block',
   textAlign: 'center',
-  userSelect: 'none'
+  userSelect: 'none',
+  fontFamily: 'LeckerliOne',
+  fontSize: theme.typography.h3.fontSize,
+  [theme.breakpoints.up('md')]: {
+    fontSize: theme.typography.h2.fontSize
+  },
+  [theme.breakpoints.up('lg')]: {
+    fontSize: theme.typography.h1.fontSize
+  }
+}));
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  marginBottom: 100,
+  [theme.breakpoints.up('md')]: {
+    marginBottom: 120
+  },
+  [theme.breakpoints.up('lg')]: {
+    marginBottom: 150
+  }
 }));
 
 export default function MorphedHeadline(): React.ReactNode {
@@ -65,12 +83,11 @@ export default function MorphedHeadline(): React.ReactNode {
   return (
     <>
       <MorphContainer>
-        <StyledTypography id="sourceText" variant="h1">
-          Fine Finance
-        </StyledTypography>
-        <StyledTypography id="targetText" variant="h1" />
+        <StyledTypography id="sourceText">Fine Finance</StyledTypography>
+        <StyledTypography id="targetText" />
       </MorphContainer>
-      <Box component="svg" id="filters">
+      <StyledBox />
+      <Box component="svg" display="none">
         <Box component="defs">
           <Box component="filter" id="threshold">
             <Box

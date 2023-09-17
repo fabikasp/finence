@@ -6,19 +6,29 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { validateEmail, validatePassword } from '../utils/validators';
 
-const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-const MAX_EMAIL_LENGTH = 320;
-const MAX_PASSWORD_LENGTH = 128;
-
-const StyledTextField = styled(TextField)(() => ({
-  margin: 20,
-  width: '95%'
+const StyledCard = styled(Card)(({ theme }) => ({
+  padding: 20,
+  [theme.breakpoints.up('md')]: {
+    width: '75%'
+  },
+  [theme.breakpoints.up('lg')]: {
+    width: '50%'
+  }
 }));
 
-const StyledButton = styled(Button)(() => ({
-  margin: '0px 20px 20px 20px',
-  width: '25%'
+const StyledTextField = styled(TextField)(() => ({
+  marginBottom: 20
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    width: '25%'
+  },
+  [theme.breakpoints.up('lg')]: {
+    width: '25%'
+  }
 }));
 
 interface Errors {
@@ -35,40 +45,30 @@ export default function LoginPage(): React.ReactNode {
     password: ''
   });
 
-  const validateEmail = (email: string): string => {
-    if (email === '') {
-      return 'Die E-Mail-Adresse darf nicht leer sein.';
-    }
-
-    if (email.length > MAX_EMAIL_LENGTH) {
-      return `Die E-Mail-Adresse darf maximal ${MAX_EMAIL_LENGTH} Zeichen enthalten.`;
-    }
-
-    return !EMAIL_REGEX.test(email) ? 'Die E-Mail-Adresse ist nicht gültig.' : '';
-  };
-
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
-    setErrors((state) => {
-      return { ...state, email: validateEmail(event.target.value) };
-    });
-  };
-
-  const validatePassword = (password: string): string => {
-    if (password === '') {
-      return 'Das Passwort darf nicht leer sein.';
-    }
-
-    return password.length > MAX_PASSWORD_LENGTH
-      ? `Das Passwort darf maximal ${MAX_PASSWORD_LENGTH} Zeichen enthalten.`
-      : '';
+    setErrors((state) => ({ ...state, email: validateEmail(event.target.value) }));
   };
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
-    setErrors((state) => {
-      return { ...state, password: validatePassword(event.target.value) };
-    });
+    setErrors((state) => ({ ...state, password: validatePassword(event.target.value) }));
+  };
+
+  const onLogin = () => {
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setErrors({
+        email: emailError,
+        password: passwordError
+      });
+
+      return;
+    }
+
+    alert('WIP');
   };
 
   return (
@@ -77,8 +77,9 @@ export default function LoginPage(): React.ReactNode {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <MorphedHeadline />
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Card sx={{ width: '50%' }}>
+          <StyledCard>
             <StyledTextField
+              fullWidth
               label="E-Mail-Adresse"
               value={email}
               onChange={onEmailChange}
@@ -93,6 +94,7 @@ export default function LoginPage(): React.ReactNode {
               helperText={errors.email}
             />
             <StyledTextField
+              fullWidth
               type={secretMode ? 'password' : 'text'}
               label="Passwort"
               value={password}
@@ -115,12 +117,12 @@ export default function LoginPage(): React.ReactNode {
               helperText={errors.password}
             />
             <StyledButton variant="text" sx={{ float: 'left' }}>
-              Konto erstellen
+              Registrieren
             </StyledButton>
-            <StyledButton variant="contained" sx={{ float: 'right' }}>
+            <StyledButton variant="contained" onClick={onLogin} sx={{ float: 'right' }}>
               Login
             </StyledButton>
-          </Card>
+          </StyledCard>
         </Box>
       </Box>
     </Box>

@@ -17,9 +17,6 @@ export const theme = createTheme({
   },
   typography: {
     fontFamily: 'Helvetica',
-    h1: {
-      fontFamily: 'LeckerliOne'
-    },
     h5: {
       fontFamily: 'LeckerliOne'
     }

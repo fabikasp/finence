@@ -2,7 +2,7 @@ import React from 'react';
 import MuiAppBar, { AppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import { SIDEBAR_WIDTH } from '../utils/const';
-import { Box, IconButton, Toolbar, Typography } from '@mui/material';
+import { Box, IconButton, IconButtonProps, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useDispatch } from 'react-redux';
 import { toggle } from '../store/sideBarSlice';
@@ -32,6 +32,17 @@ const AppBarWrapper = styled(MuiAppBar, {
   })
 }));
 
+interface StyledIconButtonProps extends IconButtonProps {
+  sideBarOpen: boolean;
+}
+
+const StyledIconButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'sideBarOpen'
+})<StyledIconButtonProps>(({ sideBarOpen }) => ({
+  marginRight: 20,
+  ...(sideBarOpen && { display: 'none' })
+}));
+
 export default function AppBar(): React.ReactNode {
   const dispatch = useDispatch();
   const sideBarOpen = useSelector((state: RootState) => state.sideBar.open);
@@ -39,17 +50,9 @@ export default function AppBar(): React.ReactNode {
   return (
     <AppBarWrapper position="fixed" sideBarOpen={sideBarOpen}>
       <Toolbar variant="dense">
-        <IconButton
-          color="inherit"
-          onClick={() => dispatch(toggle())}
-          edge="start"
-          sx={{
-            marginRight: 5,
-            ...(sideBarOpen && { display: 'none' })
-          }}
-        >
+        <StyledIconButton sideBarOpen={sideBarOpen} color="inherit" onClick={() => dispatch(toggle())} edge="start">
           <MenuIcon />
-        </IconButton>
+        </StyledIconButton>
         <Box component="img" src={Logo} width={30} />
         <Typography variant="h5" sx={{ marginLeft: 2 }}>
           Finence
