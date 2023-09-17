@@ -6,10 +6,6 @@ import { assertNonNullable } from '../utils/assert';
 const TIME_TO_MORPH_IN_SEC = 0.2;
 const MORPH_TIME_IN_SEC = 3.2;
 
-const MorphContainer = styled('div')(() => ({
-  filter: 'url(#threshold) blur(0.6px)'
-}));
-
 const StyledTypography = styled(Typography)(({ theme }) => ({
   position: 'absolute',
   width: '100%',
@@ -82,10 +78,10 @@ export default function MorphedHeadline(): React.ReactNode {
 
   return (
     <>
-      <MorphContainer>
+      <Box sx={{ filter: 'url(#threshold) blur(0.6px)' }}>
         <StyledTypography id="sourceText">Fine Finance</StyledTypography>
         <StyledTypography id="targetText" />
-      </MorphContainer>
+      </Box>
       <StyledBox />
       <Box component="svg" display="none">
         <Box component="defs">

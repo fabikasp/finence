@@ -4,27 +4,11 @@ import store from './store/store';
 import { Provider } from 'react-redux';
 import { assertNonNullable } from './utils/assert';
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
-import AuthenticatedPage from './pages/AuthenticatedPage';
 import { ThemeProvider } from '@mui/material';
 import { theme } from './theme/theme';
-import LoginPage from './pages/LoginPage';
+import LoginForm from './components/LoginForm';
+import Page from './pages/Page';
 import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, LOGIN_ROUTE } from './utils/const';
-
-interface ProtectedComponentProps {
-  child: React.ReactNode;
-}
-
-const ProtectedComponent = (props: ProtectedComponentProps): React.ReactNode => {
-  // TODO: Tutorial für Auth ansehen, ggf. Sicherheit hier verschärfen
-
-  const loggedIn = true;
-
-  if (!loggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <AuthenticatedPage>{props.child}</AuthenticatedPage>;
-};
 
 const rootElement = document.getElementById('root');
 assertNonNullable(rootElement);
@@ -35,10 +19,10 @@ ReactDOM.createRoot(rootElement).render(
       <BrowserRouter>
         <Routes>
           <Route index element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />
-          <Route path={DASHBOARD_ROUTE} element={<ProtectedComponent child={<div>Dashboard</div>} />} />
-          <Route path={FINANCES_ROUTE} element={<ProtectedComponent child={<div>Finanzen</div>} />} />
-          <Route path={ACCOUNT_ROUTE} element={<ProtectedComponent child={<div>Konto</div>} />} />
-          <Route path={LOGIN_ROUTE} element={<LoginPage />} />
+          <Route path={DASHBOARD_ROUTE} element={<Page child={<div>Dashboard</div>} protected />} />
+          <Route path={FINANCES_ROUTE} element={<Page child={<div>Finanzen</div>} protected />} />
+          <Route path={ACCOUNT_ROUTE} element={<Page child={<div>Konto</div>} protected />} />
+          <Route path={LOGIN_ROUTE} element={<Page child={<LoginForm />} />} />
           <Route path="*" element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />
         </Routes>
       </BrowserRouter>

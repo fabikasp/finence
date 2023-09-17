@@ -106,7 +106,7 @@ export default function SideBar(): React.ReactNode {
       <List>
         {sideBarItems.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-            <Tooltip placement="top" arrow title={open ? '' : item.title}>
+            <Tooltip placement="right" arrow title={open ? '' : item.title}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
