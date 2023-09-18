@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -7,7 +6,6 @@ import KeyIcon from '@mui/icons-material/Key';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { validateEmail, validatePassword } from '../utils/validators';
-import { REGISTRATION_ROUTE } from '../utils/const';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -27,9 +25,7 @@ interface Errors {
   readonly password: string;
 }
 
-export default function LoginForm(): React.ReactNode {
-  const navigate = useNavigate();
-
+export default function RegistrationForm(): React.ReactNode {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secretMode, setSecretMode] = useState(true);
@@ -104,8 +100,8 @@ export default function LoginForm(): React.ReactNode {
         error={errors.password !== ''}
         helperText={errors.password}
       />
-      <StyledButton variant="text" onClick={() => navigate(`/${REGISTRATION_ROUTE}`)} sx={{ float: 'left' }}>
-        Registrieren
+      <StyledButton variant="text" sx={{ float: 'left' }}>
+        FOOOOOOOO
       </StyledButton>
       <StyledButton variant="contained" onClick={onLogin} sx={{ float: 'right' }}>
         Login

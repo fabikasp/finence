@@ -62,9 +62,9 @@ const SideBarWrapper = styled(Drawer)(({ theme, open }) => ({
 }));
 
 interface SideBarItem {
-  title: string;
-  icon: React.ReactElement;
-  onClick: () => void;
+  readonly title: string;
+  readonly icon: React.ReactElement;
+  readonly onClick: () => void;
 }
 
 export default function SideBar(): React.ReactNode {

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 interface SideBar {
-  open: boolean;
+  readonly open: boolean;
 }
 
 const initialState: SideBar = {
@@ -12,7 +12,7 @@ const sideBarSlice = createSlice({
   name: 'sideBar',
   initialState: initialState,
   reducers: {
-    toggle: (state) => {
+    toggle: (state: SideBar) => {
       return { open: !state.open };
     }
   }

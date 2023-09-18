@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
 interface AppBarWrapperProps extends AppBarProps {
-  sideBarOpen: boolean;
+  readonly sideBarOpen: boolean;
 }
 
 const AppBarWrapper = styled(MuiAppBar, {
@@ -33,7 +33,7 @@ const AppBarWrapper = styled(MuiAppBar, {
 }));
 
 interface StyledIconButtonProps extends IconButtonProps {
-  sideBarOpen: boolean;
+  readonly sideBarOpen: boolean;
 }
 
 const StyledIconButton = styled(IconButton, {

@@ -4,8 +4,8 @@ import AuthenticatedPage from './AuthenticatedPage';
 import UnauthenticatedPage from './UnauthenticatedPage';
 
 interface PageProps {
-  child: React.ReactNode;
-  protected?: boolean;
+  readonly child: React.ReactNode;
+  readonly protected?: boolean;
 }
 
 export default function Page(props: PageProps): React.ReactNode {
