@@ -6,3 +6,4 @@ load_dotenv()
 
 class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
+    CORS_HEADERS = "Content-Type"

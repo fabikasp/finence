@@ -10,6 +10,9 @@ import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
 import Page from './pages/Page';
 import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE } from './utils/const';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const rootElement = document.getElementById('root');
 assertNonNullable(rootElement);

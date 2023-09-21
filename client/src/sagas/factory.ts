@@ -10,7 +10,7 @@ export function fetchSagaFactory(
     try {
       const response = yield* call(axios.request<AxiosResponse>, {
         ...request,
-        baseURL: ''
+        baseURL: process.env.SERVER_BASE_URL
       });
 
       if (response.status !== 200) {

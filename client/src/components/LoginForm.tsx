@@ -8,6 +8,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { validateEmail, validatePassword } from '../utils/validators';
 import { REGISTRATION_ROUTE } from '../utils/const';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { useDispatch } from 'react-redux';
+import { setErrors } from '../store/loginSlice';
+import { login } from '../store/actions';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -22,30 +27,23 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-interface Errors {
-  readonly email: string;
-  readonly password: string;
-}
-
 export default function LoginForm(): React.ReactNode {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const errors = useSelector((state: RootState) => state.login.errors);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secretMode, setSecretMode] = useState(true);
-  const [errors, setErrors] = useState<Errors>({
-    email: '',
-    password: ''
-  });
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
-    setErrors((state) => ({ ...state, email: validateEmail(event.target.value) }));
+    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
   };
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
-    setErrors((state) => ({ ...state, password: validatePassword(event.target.value) }));
+    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
   };
 
   const onLogin = () => {
@@ -53,15 +51,12 @@ export default function LoginForm(): React.ReactNode {
     const passwordError = validatePassword(password);
 
     if (emailError || passwordError) {
-      setErrors({
-        email: emailError,
-        password: passwordError
-      });
+      dispatch(setErrors({ email: emailError, password: passwordError }));
 
       return;
     }
 
-    alert('WIP');
+    dispatch(login({ email, password }));
   };
 
   return (
