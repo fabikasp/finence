@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import AuthenticatedPage from './AuthenticatedPage';
 import UnauthenticatedPage from './UnauthenticatedPage';
+import { LOGIN_ROUTE } from '../utils/const';
 
 interface PageProps {
   readonly child: React.ReactNode;
@@ -14,7 +15,7 @@ export default function Page(props: PageProps): React.ReactNode {
   const loggedIn = true;
 
   if (props.protected && !loggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={`/${LOGIN_ROUTE}`} replace />;
   }
 
   if (!props.protected) {

@@ -1,22 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
 import sideBarReducer from './sideBarSlice';
-import loginReducer from './loginSlice';
-import createSagaMiddleware from 'redux-saga';
-import rootSaga from '../sagas/rootSaga';
-
-const sagaMiddleware = createSagaMiddleware();
+import { userApi } from '../queries/userQueries';
 
 const store = configureStore({
   reducer: {
     sideBar: sideBarReducer,
-    login: loginReducer
+    [userApi.reducerPath]: userApi.reducer
   },
   middleware(getDefaultMiddleware) {
-    return [...getDefaultMiddleware(), sagaMiddleware];
+    return [...getDefaultMiddleware(), userApi.middleware];
   }
 });
-
-sagaMiddleware.run(rootSaga);
 
 export type RootState = ReturnType<typeof store.getState>;
 export default store;

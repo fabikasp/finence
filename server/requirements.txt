@@ -1,5 +1,6 @@
 flask
 flask-cors
+flask-jwt-extended
 psycopg2-binary
 flask-sqlalchemy
 Flask-Migrate
