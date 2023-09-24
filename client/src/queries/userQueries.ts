@@ -1,10 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Cookies } from 'react-cookie';
-import jwtDecode from 'jwt-decode';
-import { assertTrue } from '../utils/assert';
-import { isAccessToken } from '../utils/types';
-
-const COOKIE_NAME = 'Finence';
+import { ACCESS_TOKEN_KEY } from '../utils/const';
 
 interface LoginPayload {
   email: string;
@@ -25,12 +20,7 @@ export const userApi = createApi({
         body
       }),
       transformResponse: (response: LoginResponse) => {
-        const decodedToken = jwtDecode(response.accessToken);
-        assertTrue(isAccessToken(decodedToken));
-
-        const expires = new Date(decodedToken.exp * 1000);
-        const cookies = new Cookies();
-        cookies.set(COOKIE_NAME, response.accessToken, { path: '/', expires });
+        localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
 
         return response;
       }

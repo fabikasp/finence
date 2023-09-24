@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, SIDEBAR_WIDTH } from '../utils/const';
@@ -73,13 +73,16 @@ export default function SideBar(): React.ReactNode {
   const navigate = useNavigate();
   const open = useSelector((state: RootState) => state.sideBar.open);
 
-  const closeAndNavigate = (routeName: string): void => {
-    if (open) {
-      dispatch(toggle());
-    }
+  const closeAndNavigate = useCallback(
+    (routeName: string): void => {
+      if (open) {
+        dispatch(toggle());
+      }
 
-    navigate(`/${routeName}`);
-  };
+      navigate(`/${routeName}`);
+    },
+    [open, dispatch, navigate]
+  );
 
   const sideBarItems: SideBarItem[] = [
     {
