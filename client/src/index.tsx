@@ -12,6 +12,7 @@ import Page from './pages/Page';
 import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE } from './utils/const';
 import dotenv from 'dotenv';
 import SnackBar from './components/SnackBar';
+import GlobalNavigate from './components/GlobalNavigate';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ ReactDOM.createRoot(rootElement).render(
     <ThemeProvider theme={theme}>
       <SnackBar />
       <BrowserRouter>
+        <GlobalNavigate />
         <Routes>
           <Route index element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />
           <Route path={DASHBOARD_ROUTE} element={<Page child={<div>Dashboard</div>} protected />} />

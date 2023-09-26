@@ -1,8 +1,9 @@
 import { call, put, SagaGenerator } from 'typed-redux-saga';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ACCESS_TOKEN_KEY, USER_URL_PATH_PREFIX } from '../utils/const';
+import { ACCESS_TOKEN_KEY, LOGIN_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
 import { evokeDefault } from '../store/slices/snackBarSlice';
+import { globalNavigate } from '../components/GlobalNavigate';
 
 function isLoginUrl(url: string): boolean {
   return url === `${USER_URL_PATH_PREFIX}/login`;
@@ -33,11 +34,9 @@ export function fetchSagaFactory(
       assertTrue(error instanceof AxiosError);
 
       if (error.response?.status === 401 || error.response?.status === 403) {
-        if (isLoginUrl(request.url!)) {
-          return;
+        if (!isLoginUrl(request.url!)) {
+          yield* call(globalNavigate, `/${LOGIN_ROUTE}`);
         }
-
-        // TODO: Zu Login weiterleiten
       } else {
         yield* put(evokeDefault());
       }

@@ -1,12 +1,13 @@
 import { call, put, SagaGenerator } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
 import { AxiosResponse } from 'axios';
-import { ACCESS_TOKEN_KEY, USER_URL_PATH_PREFIX } from '../utils/const';
-import z from 'zod';
+import { ACCESS_TOKEN_KEY, DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { LoginPayload } from '../store/actions';
 import { setErrors, setProgressIndicator } from '../store/slices/loginSlice';
+import { globalNavigate } from '../components/GlobalNavigate';
+import z from 'zod';
 
 const USER_NOT_FOUND_ERROR = 'Das Finence-Konto wurde nicht gefunden.';
 
@@ -31,7 +32,7 @@ export function* loginSaga(action: PayloadAction<LoginPayload>): SagaGenerator<v
 
         localStorage.setItem(ACCESS_TOKEN_KEY, response.data.accessToken);
 
-        // TODO: Zu Dashboard weiterleiten
+        yield* call(globalNavigate, `/${DASHBOARD_ROUTE}`);
       },
       function* handleError() {
         yield* put(setErrors({ email: USER_NOT_FOUND_ERROR, password: USER_NOT_FOUND_ERROR }));
