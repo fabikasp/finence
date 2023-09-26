@@ -21,7 +21,7 @@ const snackBarSlice = createSlice({
       severity: action.payload.severity,
       message: action.payload.message
     }),
-    evokeDefault: (_: SnackBar) => ({
+    evokeDefault: () => ({
       open: true,
       severity: DEFAULT_SEVERITY,
       message: DEFAULT_MESSAGE

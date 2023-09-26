@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { ACCESS_TOKEN_KEY } from '../utils/const';
-import { headers } from './headers';
 
 const URL_PATH_PREFIX = '/users';
 
@@ -32,7 +31,6 @@ export const userApi = createApi({
       query: (body) => ({
         url: `${URL_PATH_PREFIX}/logout`,
         method: 'POST',
-        headers,
         body
       }),
       transformResponse: () => {

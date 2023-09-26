@@ -5,7 +5,7 @@ import { SIDEBAR_WIDTH } from '../utils/const';
 import { Box, IconButton, IconButtonProps, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useDispatch } from 'react-redux';
-import { toggle } from '../store/sideBarSlice';
+import { toggle } from '../store/slices/sideBarSlice';
 import Logo from '../images/logo.png';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';

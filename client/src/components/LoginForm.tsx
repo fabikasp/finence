@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Backdrop, Button, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -8,12 +8,10 @@ import KeyIcon from '@mui/icons-material/Key';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { validateEmail, validatePassword } from '../utils/validators';
-import { DASHBOARD_ROUTE, REGISTRATION_ROUTE } from '../utils/const';
-import { useLazyLoginQuery } from '../queries/userQueries';
-import { isApiError } from '../utils/types';
-import { evokeDefault } from '../store/snackBarSlice';
-
-const USER_NOT_FOUND_ERROR = 'Das Finence-Konto wurde nicht gefunden.';
+import { REGISTRATION_ROUTE } from '../utils/const';
+import { RootState } from '../store/store';
+import { setErrors } from '../store/slices/loginSlice';
+import { login } from '../store/actions';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -35,54 +33,37 @@ const StyledBackdrop = styled(Backdrop)(({ theme }) => ({
 export default function LoginForm(): React.ReactNode {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [triggerLogin, { error, isError, isFetching, isSuccess }] = useLazyLoginQuery();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secretMode, setSecretMode] = useState(true);
-  const [errors, setErrors] = useState({
-    email: '',
-    password: ''
-  });
 
-  useEffect(() => {
-    if (isError && isApiError(error)) {
-      if (error.status === 401) {
-        setErrors({ email: USER_NOT_FOUND_ERROR, password: USER_NOT_FOUND_ERROR });
-      } else {
-        dispatch(evokeDefault());
-      }
-    }
-  }, [isError]);
+  const { errors, showProgressIndicator } = useSelector((state: RootState) => state.login);
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
-    setErrors({ ...errors, email: validateEmail(event.target.value) });
+    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
   };
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
-    setErrors({ ...errors, password: validatePassword(event.target.value) });
+    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
   };
 
   const onLogin = () => {
-    setErrors({ email: '', password: '' });
+    dispatch(setErrors({ email: '', password: '' }));
 
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
 
     if (emailError || passwordError) {
-      setErrors({ email: emailError, password: passwordError });
+      dispatch(setErrors({ email: emailError, password: passwordError }));
 
       return;
     }
 
-    triggerLogin({ email, password });
+    dispatch(login({ email, password }));
   };
-
-  if (isSuccess) {
-    return <Navigate to={`/${DASHBOARD_ROUTE}`} replace />;
-  }
 
   return (
     <>
@@ -130,7 +111,7 @@ export default function LoginForm(): React.ReactNode {
       <StyledButton variant="contained" onClick={onLogin} sx={{ float: 'right' }}>
         Login
       </StyledButton>
-      <StyledBackdrop open={isFetching}>
+      <StyledBackdrop open={showProgressIndicator}>
         <CircularProgress color="primary" />
       </StyledBackdrop>
     </>

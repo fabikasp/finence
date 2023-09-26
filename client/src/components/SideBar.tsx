@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
-import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, LOGIN_ROUTE, SIDEBAR_WIDTH } from '../utils/const';
+import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, SIDEBAR_WIDTH } from '../utils/const';
 import { Drawer, IconButton, List, ListItem, ListItemButton, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -13,11 +13,9 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux';
-import { toggle } from '../store/sideBarSlice';
+import { toggle } from '../store/slices/sideBarSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { useLazyLogoutQuery } from '../queries/userQueries';
-import { evokeDefault } from '../store/snackBarSlice';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: SIDEBAR_WIDTH,
@@ -76,8 +74,6 @@ export default function SideBar(): React.ReactNode {
 
   const open = useSelector((state: RootState) => state.sideBar.open);
 
-  const [triggerLogout, { error, isError, isFetching, isSuccess }] = useLazyLogoutQuery();
-
   const closeAndNavigate = useCallback(
     (routeName: string): void => {
       if (open) {
@@ -101,15 +97,10 @@ export default function SideBar(): React.ReactNode {
       onClick: () => closeAndNavigate(FINANCES_ROUTE)
     },
     { title: 'Konto', icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate(ACCOUNT_ROUTE) },
-    { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => triggerLogout() }
+    { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => alert('WIP') }
   ];
 
-  if (isSuccess) {
-    return <Navigate to={`/${LOGIN_ROUTE}`} replace />;
-  }
-
   // TODO: Errorhandling ähnlich Login
-  // TODO: Bei 401 Responses automatisch zum Login weiterleiten
 
   return (
     <SideBarWrapper variant="permanent" open={open}>
