@@ -11,6 +11,7 @@ import RegistrationForm from './components/RegistrationForm';
 import Page from './pages/Page';
 import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE } from './utils/const';
 import dotenv from 'dotenv';
+import SnackBar from './components/SnackBar';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ assertNonNullable(rootElement);
 ReactDOM.createRoot(rootElement).render(
   <Provider store={store}>
     <ThemeProvider theme={theme}>
+      <SnackBar />
       <BrowserRouter>
         <Routes>
           <Route index element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />

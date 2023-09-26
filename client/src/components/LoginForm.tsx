@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import {
-  Alert,
-  Backdrop,
-  Button,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-  Slide,
-  SlideProps,
-  Snackbar,
-  TextField
-} from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { Backdrop, Button, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
@@ -21,6 +11,7 @@ import { validateEmail, validatePassword } from '../utils/validators';
 import { DASHBOARD_ROUTE, REGISTRATION_ROUTE } from '../utils/const';
 import { useLazyLoginQuery } from '../queries/userQueries';
 import { isApiError } from '../utils/types';
+import { evokeDefault } from '../store/snackBarSlice';
 
 const USER_NOT_FOUND_ERROR = 'Das Finence-Konto wurde nicht gefunden.';
 
@@ -41,12 +32,9 @@ const StyledBackdrop = styled(Backdrop)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1
 }));
 
-function SnackbarTransition(props: SlideProps) {
-  return <Slide {...props} direction="left" />;
-}
-
 export default function LoginForm(): React.ReactNode {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [triggerLogin, { error, isError, isFetching, isSuccess }] = useLazyLoginQuery();
 
   const [email, setEmail] = useState('');
@@ -56,14 +44,13 @@ export default function LoginForm(): React.ReactNode {
     email: '',
     password: ''
   });
-  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
 
   useEffect(() => {
     if (isError && isApiError(error)) {
       if (error.status === 401) {
         setErrors({ email: USER_NOT_FOUND_ERROR, password: USER_NOT_FOUND_ERROR });
       } else {
-        setErrorSnackbarOpen(true);
+        dispatch(evokeDefault());
       }
     }
   }, [isError]);
@@ -92,8 +79,6 @@ export default function LoginForm(): React.ReactNode {
 
     triggerLogin({ email, password });
   };
-
-  const onCloseSnackbar = () => setErrorSnackbarOpen(false);
 
   if (isSuccess) {
     return <Navigate to={`/${DASHBOARD_ROUTE}`} replace />;
@@ -148,17 +133,6 @@ export default function LoginForm(): React.ReactNode {
       <StyledBackdrop open={isFetching}>
         <CircularProgress color="primary" />
       </StyledBackdrop>
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={errorSnackbarOpen}
-        autoHideDuration={5000}
-        TransitionComponent={SnackbarTransition}
-        onClose={onCloseSnackbar}
-      >
-        <Alert severity="error" onClose={onCloseSnackbar}>
-          Es ist ein unbekannter Fehler aufgetreten.
-        </Alert>
-      </Snackbar>
     </>
   );
 }

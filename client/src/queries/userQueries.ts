@@ -1,5 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { ACCESS_TOKEN_KEY } from '../utils/const';
+import { headers } from './headers';
+
+const URL_PATH_PREFIX = '/users';
 
 interface LoginPayload {
   email: string;
@@ -15,7 +18,7 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     login: builder.query<LoginResponse, LoginPayload>({
       query: (body) => ({
-        url: '/users/login',
+        url: `${URL_PATH_PREFIX}/login`,
         method: 'POST',
         body
       }),
@@ -24,8 +27,20 @@ export const userApi = createApi({
 
         return response;
       }
+    }),
+    logout: builder.query<unknown, void>({
+      query: (body) => ({
+        url: `${URL_PATH_PREFIX}/logout`,
+        method: 'POST',
+        headers,
+        body
+      }),
+      transformResponse: () => {
+        // TODO: Logout Endpunkt sollte nicht 2x aufgerufen werden können
+        // localStorage.setItem(ACCESS_TOKEN_KEY, '');
+      }
     })
   })
 });
 
-export const { useLazyLoginQuery } = userApi;
+export const { useLazyLoginQuery, useLazyLogoutQuery } = userApi;

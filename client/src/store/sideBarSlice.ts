@@ -10,11 +10,9 @@ const initialState: SideBar = {
 
 const sideBarSlice = createSlice({
   name: 'sideBar',
-  initialState: initialState,
+  initialState,
   reducers: {
-    toggle: (state: SideBar) => {
-      return { open: !state.open };
-    }
+    toggle: (state: SideBar) => ({ open: !state.open })
   }
 });
 

@@ -10,8 +10,6 @@ interface PageProps {
 }
 
 export default function Page(props: PageProps): React.ReactNode {
-  // TODO: Tutorial für Auth ansehen, ggf. Sicherheit hier verschärfen
-
   const loggedIn = true;
 
   if (props.protected && !loggedIn) {
