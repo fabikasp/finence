@@ -20,7 +20,7 @@ const initialState: Login = {
 
 const loginSlice = createSlice({
   name: 'login',
-  initialState: initialState,
+  initialState,
   reducers: {
     setErrors: (state: Login, action: PayloadAction<LoginErrors>) => ({ ...state, errors: action.payload }),
     setProgressIndicator: (state: Login, action: PayloadAction<boolean>) => ({

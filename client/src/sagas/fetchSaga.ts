@@ -3,7 +3,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ACCESS_TOKEN_KEY, LOGIN_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
 import { evokeDefault } from '../store/slices/snackBarSlice';
-import { globalNavigate } from '../components/GlobalNavigate';
+import { navigate } from '../store/slices/navigatorSlice';
 
 function isLoginUrl(url: string): boolean {
   return url === `${USER_URL_PATH_PREFIX}/login`;
@@ -35,7 +35,7 @@ export function fetchSagaFactory(
 
       if (error.response?.status === 401 || error.response?.status === 403) {
         if (!isLoginUrl(request.url!)) {
-          yield* call(globalNavigate, `/${LOGIN_ROUTE}`);
+          yield* put(navigate(`/${LOGIN_ROUTE}`));
         }
       } else {
         yield* put(evokeDefault());
