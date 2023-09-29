@@ -1,7 +1,9 @@
 from flask import request
-from flask_jwt_extended import create_access_token, jwt_required
-from users import bp
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from flask_cors import cross_origin
+from users import bp
+from extensions import redis_jwt_blocklist
+from config import Config
 
 EMAIL_ENTRY = "email"
 PASSWORD_ENTRY = "password"
@@ -15,8 +17,7 @@ def login():
     password = request.json.get(PASSWORD_ENTRY, None)
 
     if email != "e@e.de" or password != "e":
-        # TODO: zu mappendes Error-Objekt anlegen
-        return {"message": "Wrong email or password"}, 401
+        return {"message": "Wrong email or password."}, 401
 
     access_token = create_access_token(identity=email)
 
@@ -27,5 +28,7 @@ def login():
 @jwt_required()
 @cross_origin()
 def logout():
-    # TODO: Redis
-    pass
+    jti = get_jwt()["jti"]
+    redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
+
+    return {"message": "Successfully logged out user."}
