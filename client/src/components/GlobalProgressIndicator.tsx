@@ -9,7 +9,7 @@ const StyledBackdrop = styled(Backdrop)(({ theme }) => ({
 }));
 
 export default function GlobalProgressIndicator(): React.ReactNode {
-  const open = useSelector((state: RootState) => state.globalProgressIndicator.open);
+  const { open } = useSelector((state: RootState) => state.globalProgressIndicator);
 
   return (
     <StyledBackdrop open={open}>

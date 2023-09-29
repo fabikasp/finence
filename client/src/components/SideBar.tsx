@@ -73,7 +73,7 @@ export default function SideBar(): React.ReactNode {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const open = useSelector((state: RootState) => state.sideBar.open);
+  const { open } = useSelector((state: RootState) => state.sideBar);
 
   const closeAndNavigate = useCallback(
     (routeName: string): void => {
@@ -100,8 +100,6 @@ export default function SideBar(): React.ReactNode {
     { title: 'Konto', icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate(ACCOUNT_ROUTE) },
     { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => dispatch(logout()) }
   ];
-
-  // TODO: Errorhandling ähnlich Login
 
   return (
     <SideBarWrapper variant="permanent" open={open}>

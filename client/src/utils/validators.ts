@@ -23,3 +23,15 @@ export function validatePassword(password: string): string {
     ? `Das Passwort darf maximal ${MAX_PASSWORD_LENGTH} Zeichen enthalten.`
     : '';
 }
+
+export function validateRepeatedPassword(repeatedPassword: string, password: string): string {
+  if (repeatedPassword === '') {
+    return 'Das Passwort darf nicht leer sein.';
+  }
+
+  if (password.length > MAX_PASSWORD_LENGTH) {
+    return `Das Passwort darf maximal ${MAX_PASSWORD_LENGTH} Zeichen enthalten.`;
+  }
+
+  return repeatedPassword !== password ? 'Die Passwörter müssen identisch sein.' : '';
+}

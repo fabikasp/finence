@@ -32,7 +32,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   }
 }));
 
-export default function MorphedHeadline(): React.ReactNode {
+export default function MorphingHeadline(): React.ReactNode {
   useEffect(() => {
     const sourceText = document.getElementById('sourceText');
     const targetText = document.getElementById('targetText');

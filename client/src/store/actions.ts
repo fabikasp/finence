@@ -1,10 +1,12 @@
 import { createAction } from '@reduxjs/toolkit';
 
-export interface LoginPayload {
+export interface UserPayload {
   email: string;
   password: string;
 }
 
-export const login = createAction<LoginPayload>('LOGIN');
+export const register = createAction<UserPayload>('REGISTER');
+
+export const login = createAction<UserPayload>('LOGIN');
 
 export const logout = createAction('LOGOUT');

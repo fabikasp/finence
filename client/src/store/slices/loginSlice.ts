@@ -20,7 +20,7 @@ const loginSlice = createSlice({
   name: 'login',
   initialState,
   reducers: {
-    setErrors: (state: Login, action: PayloadAction<LoginErrors>) => ({ ...state, errors: action.payload })
+    setErrors: (_: Login, action: PayloadAction<LoginErrors>) => ({ errors: action.payload })
   }
 });
 

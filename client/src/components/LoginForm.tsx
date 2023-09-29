@@ -35,6 +35,7 @@ export default function LoginForm(): React.ReactNode {
   const [secretMode, setSecretMode] = useState(true);
 
   const { errors } = useSelector((state: RootState) => state.login);
+  // TODO: Bei Rerenders Errors löschen (bei Registrierung auch)
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Card, CssBaseline } from '@mui/material';
-import MorphedHeadline from '../components/MorphedHeadline';
+import MorphingHeadline from '../components/MorphingHeadline';
 import { styled } from '@mui/material/styles';
 
 const FlexBox = styled(Box)(() => ({
@@ -22,7 +22,7 @@ export default function UnauthenticatedPage(props: React.PropsWithChildren): Rea
     <FlexBox>
       <CssBaseline />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <MorphedHeadline />
+        <MorphingHeadline />
         <FlexBox sx={{ justifyContent: 'center' }}>
           <StyledCard>{props.children}</StyledCard>
         </FlexBox>

@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { validateEmail, validatePassword } from '../utils/validators';
+import { validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
+import { LOGIN_ROUTE } from '../utils/const';
+import { RootState } from '../store/store';
+import { register } from '../store/actions';
+import { setErrors } from '../store/slices/registrationSlice';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -20,44 +26,47 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-interface Errors {
-  readonly email: string;
-  readonly password: string;
-}
-
 export default function RegistrationForm(): React.ReactNode {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [secretMode, setSecretMode] = useState(true);
-  const [errors, setErrors] = useState<Errors>({
-    email: '',
-    password: ''
-  });
+  const [repeatedPassword, setRepeatedPassword] = useState('');
+  const [secretPasswordMode, setSecretPasswordMode] = useState(true);
+  const [secretRepeatedPasswordMode, setSecretRepeatedPasswordMode] = useState(true);
+
+  const { errors } = useSelector((state: RootState) => state.registration);
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
-    setErrors((state) => ({ ...state, email: validateEmail(event.target.value) }));
+    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
   };
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
-    setErrors((state) => ({ ...state, password: validatePassword(event.target.value) }));
+    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
   };
 
-  const onLogin = () => {
+  const onRepeatedPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRepeatedPassword(event.target.value);
+    dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
+  };
+
+  const onRegister = () => {
+    dispatch(setErrors({ email: '', password: '', repeatedPassword: '' }));
+
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
+    const repeatedPasswordError = validateRepeatedPassword(repeatedPassword, password);
 
-    if (emailError || passwordError) {
-      setErrors({
-        email: emailError,
-        password: passwordError
-      });
+    if (emailError || passwordError || repeatedPasswordError) {
+      dispatch(setErrors({ email: emailError, password: passwordError, repeatedPassword: repeatedPasswordError }));
 
       return;
     }
 
-    alert('WIP');
+    dispatch(register({ email, password }));
   };
 
   return (
@@ -79,7 +88,7 @@ export default function RegistrationForm(): React.ReactNode {
       />
       <StyledTextField
         fullWidth
-        type={secretMode ? 'password' : 'text'}
+        type={secretPasswordMode ? 'password' : 'text'}
         label="Passwort"
         value={password}
         onChange={onPasswordChange}
@@ -91,8 +100,8 @@ export default function RegistrationForm(): React.ReactNode {
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setSecretMode((state) => !state)}>
-                {secretMode ? <VisibilityOffIcon color="secondary" /> : <VisibilityIcon color="secondary" />}
+              <IconButton onClick={() => setSecretPasswordMode((state) => !state)}>
+                {secretPasswordMode ? <VisibilityOffIcon color="secondary" /> : <VisibilityIcon color="secondary" />}
               </IconButton>
             </InputAdornment>
           )
@@ -100,11 +109,38 @@ export default function RegistrationForm(): React.ReactNode {
         error={errors.password !== ''}
         helperText={errors.password}
       />
-      <StyledButton variant="text" sx={{ float: 'left' }}>
-        FOOOOOOOO
-      </StyledButton>
-      <StyledButton variant="contained" onClick={onLogin} sx={{ float: 'right' }}>
+      <StyledTextField
+        fullWidth
+        type={secretRepeatedPasswordMode ? 'password' : 'text'}
+        label="Passwort wiederholen"
+        value={repeatedPassword}
+        onChange={onRepeatedPasswordChange}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <KeyIcon color="secondary" />
+            </InputAdornment>
+          ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={() => setSecretRepeatedPasswordMode((state) => !state)}>
+                {secretRepeatedPasswordMode ? (
+                  <VisibilityOffIcon color="secondary" />
+                ) : (
+                  <VisibilityIcon color="secondary" />
+                )}
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
+        error={errors.repeatedPassword !== ''}
+        helperText={errors.repeatedPassword}
+      />
+      <StyledButton variant="text" onClick={() => navigate(`/${LOGIN_ROUTE}`)} sx={{ float: 'left' }}>
         Login
+      </StyledButton>
+      <StyledButton variant="contained" onClick={onRegister} sx={{ float: 'right' }}>
+        Registrieren
       </StyledButton>
     </>
   );

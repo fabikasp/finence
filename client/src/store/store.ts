@@ -4,6 +4,7 @@ import navigatorReducer from './slices/navigatorSlice';
 import globalProgressIndicatorReducer from './slices/globalProgressIndicatorSlice';
 import sideBarReducer from './slices/sideBarSlice';
 import snackBarReducer from './slices/snackBarSlice';
+import registrationReducer from './slices/registrationSlice';
 import loginReducer from './slices/loginSlice';
 import rootSaga from '../sagas/rootSaga';
 
@@ -15,6 +16,7 @@ const store = configureStore({
     globalProgressIndicator: globalProgressIndicatorReducer,
     sideBar: sideBarReducer,
     snackBar: snackBarReducer,
+    registration: registrationReducer,
     login: loginReducer
   },
   middleware(getDefaultMiddleware) {

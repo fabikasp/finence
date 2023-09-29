@@ -4,7 +4,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { ACCESS_TOKEN_KEY, DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { LoginPayload } from '../store/actions';
+import { UserPayload } from '../store/actions';
 import { setErrors } from '../store/slices/loginSlice';
 import { navigate } from '../store/slices/navigatorSlice';
 import z from 'zod';
@@ -21,7 +21,7 @@ const isLoginResponseData = (object: unknown): object is LoginResponseData => {
   return loginResponseDataScheme.safeParse(object).success;
 };
 
-export function* loginSaga(action: PayloadAction<LoginPayload>): SagaGenerator<void> {
+export function* loginSaga(action: PayloadAction<UserPayload>): SagaGenerator<void> {
   yield* call(
     fetchSagaFactory(
       { url: `${USER_URL_PATH_PREFIX}/login`, method: 'POST', data: action.payload },
