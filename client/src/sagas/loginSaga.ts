@@ -1,11 +1,11 @@
 import { call, put, SagaGenerator } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { ACCESS_TOKEN_KEY, DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { LoginPayload } from '../store/actions';
-import { setErrors, setProgressIndicator } from '../store/slices/loginSlice';
+import { setErrors } from '../store/slices/loginSlice';
 import { navigate } from '../store/slices/navigatorSlice';
 import z from 'zod';
 
@@ -22,8 +22,6 @@ const isLoginResponseData = (object: unknown): object is LoginResponseData => {
 };
 
 export function* loginSaga(action: PayloadAction<LoginPayload>): SagaGenerator<void> {
-  yield* put(setProgressIndicator(true));
-
   yield* call(
     fetchSagaFactory(
       { url: `${USER_URL_PATH_PREFIX}/login`, method: 'POST', data: action.payload },
@@ -34,11 +32,12 @@ export function* loginSaga(action: PayloadAction<LoginPayload>): SagaGenerator<v
 
         yield* put(navigate(`/${DASHBOARD_ROUTE}`));
       },
-      function* handleError() {
-        yield* put(setErrors({ email: USER_NOT_FOUND_ERROR, password: USER_NOT_FOUND_ERROR }));
-      }
+      function* handleError(error: AxiosError) {
+        if (error.response?.status === 401) {
+          yield* put(setErrors({ email: USER_NOT_FOUND_ERROR, password: USER_NOT_FOUND_ERROR }));
+        }
+      },
+      true
     )
   );
-
-  yield* put(setProgressIndicator(false));
 }

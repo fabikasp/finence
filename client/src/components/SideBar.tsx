@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import { toggle } from '../store/slices/sideBarSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import { logout } from '../store/actions';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: SIDEBAR_WIDTH,
@@ -97,7 +98,7 @@ export default function SideBar(): React.ReactNode {
       onClick: () => closeAndNavigate(FINANCES_ROUTE)
     },
     { title: 'Konto', icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate(ACCOUNT_ROUTE) },
-    { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => alert('WIP') }
+    { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => dispatch(logout()) }
   ];
 
   // TODO: Errorhandling ähnlich Login

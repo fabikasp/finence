@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import navigatorReducer from './slices/navigatorSlice';
+import globalProgressIndicatorReducer from './slices/globalProgressIndicatorSlice';
 import sideBarReducer from './slices/sideBarSlice';
 import snackBarReducer from './slices/snackBarSlice';
 import loginReducer from './slices/loginSlice';
@@ -11,6 +12,7 @@ const sagaMiddleware = createSagaMiddleware();
 const store = configureStore({
   reducer: {
     navigator: navigatorReducer,
+    globalProgressIndicator: globalProgressIndicatorReducer,
     sideBar: sideBarReducer,
     snackBar: snackBarReducer,
     login: loginReducer

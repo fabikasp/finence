@@ -6,3 +6,5 @@ export interface LoginPayload {
 }
 
 export const login = createAction<LoginPayload>('LOGIN');
+
+export const logout = createAction('LOGOUT');

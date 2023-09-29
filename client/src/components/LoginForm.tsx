@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Backdrop, Button, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
@@ -26,10 +26,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-const StyledBackdrop = styled(Backdrop)(({ theme }) => ({
-  zIndex: theme.zIndex.drawer + 1
-}));
-
 export default function LoginForm(): React.ReactNode {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,7 +34,7 @@ export default function LoginForm(): React.ReactNode {
   const [password, setPassword] = useState('');
   const [secretMode, setSecretMode] = useState(true);
 
-  const { errors, showProgressIndicator } = useSelector((state: RootState) => state.login);
+  const { errors } = useSelector((state: RootState) => state.login);
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -111,9 +107,6 @@ export default function LoginForm(): React.ReactNode {
       <StyledButton variant="contained" onClick={onLogin} sx={{ float: 'right' }}>
         Login
       </StyledButton>
-      <StyledBackdrop open={showProgressIndicator}>
-        <CircularProgress color="primary" />
-      </StyledBackdrop>
     </>
   );
 }

@@ -4,6 +4,7 @@ import { ACCESS_TOKEN_KEY, LOGIN_ROUTE, USER_URL_PATH_PREFIX } from '../utils/co
 import { assertTrue } from '../utils/assert';
 import { evokeDefault } from '../store/slices/snackBarSlice';
 import { navigate } from '../store/slices/navigatorSlice';
+import { set } from '../store/slices/globalProgressIndicatorSlice';
 
 function isLoginUrl(url: string): boolean {
   return url === `${USER_URL_PATH_PREFIX}/login`;
@@ -12,16 +13,21 @@ function isLoginUrl(url: string): boolean {
 export function fetchSagaFactory(
   request: AxiosRequestConfig,
   successCallback: (response: AxiosResponse) => SagaGenerator<void>,
-  errorCallback: (error: AxiosError) => SagaGenerator<void>
+  errorCallback?: (error: AxiosError) => SagaGenerator<void>,
+  showGlobalProgressIndicator?: boolean
 ): () => SagaGenerator<void> {
   return function* fetchSaga() {
+    if (showGlobalProgressIndicator) {
+      yield* put(set(true));
+    }
+
     try {
       const response = yield* call(axios.request<AxiosResponse>, {
         ...request,
         baseURL: process.env.SERVER_BASE_URL,
         headers: {
           ...request.headers,
-          Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN_KEY)}`
+          Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN_KEY) ?? ''}`
         }
       });
 
@@ -41,7 +47,13 @@ export function fetchSagaFactory(
         yield* put(evokeDefault());
       }
 
-      yield* call(errorCallback, error);
+      if (errorCallback) {
+        yield* call(errorCallback, error);
+      }
+    } finally {
+      if (showGlobalProgressIndicator) {
+        yield* put(set(false));
+      }
     }
   };
 }

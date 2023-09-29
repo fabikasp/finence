@@ -13,6 +13,7 @@ import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, LOGIN_ROUTE, REGISTRATI
 import dotenv from 'dotenv';
 import SnackBar from './components/SnackBar';
 import Navigator from './components/Navigator';
+import GlobalProgressIndicator from './components/GlobalProgressIndicator';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ assertNonNullable(rootElement);
 ReactDOM.createRoot(rootElement).render(
   <Provider store={store}>
     <ThemeProvider theme={theme}>
+      <GlobalProgressIndicator />
       <SnackBar />
       <BrowserRouter>
         <Navigator />
