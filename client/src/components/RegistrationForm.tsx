@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
@@ -11,7 +11,7 @@ import { validateEmail, validatePassword, validateRepeatedPassword } from '../ut
 import { LOGIN_ROUTE } from '../utils/const';
 import { RootState } from '../store/store';
 import { register } from '../store/actions';
-import { setErrors } from '../store/slices/registrationSlice';
+import { setEmail, setErrors, setPassword, setRepeatedPassword } from '../store/slices/registrationSlice';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -30,26 +30,29 @@ export default function RegistrationForm(): React.ReactNode {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatedPassword, setRepeatedPassword] = useState('');
   const [secretPasswordMode, setSecretPasswordMode] = useState(true);
   const [secretRepeatedPasswordMode, setSecretRepeatedPasswordMode] = useState(true);
+  const { email, password, repeatedPassword, errors } = useSelector((state: RootState) => state.registration);
+  const { email: loginEmail, password: loginPassword } = useSelector((state: RootState) => state.login);
 
-  const { errors } = useSelector((state: RootState) => state.registration);
+  useEffect(() => {
+    dispatch(setEmail(loginEmail));
+    dispatch(setPassword(loginPassword));
+    dispatch(setErrors({ email: '', password: '', repeatedPassword: '' }));
+  }, []);
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+    dispatch(setEmail(event.target.value));
     dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
   };
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
+    dispatch(setPassword(event.target.value));
     dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
   };
 
   const onRepeatedPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRepeatedPassword(event.target.value);
+    dispatch(setRepeatedPassword(event.target.value));
     dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
   };
 

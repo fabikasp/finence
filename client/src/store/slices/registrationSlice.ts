@@ -7,10 +7,16 @@ interface RegistrationErrors {
 }
 
 interface Registration {
+  readonly email: string;
+  readonly password: string;
+  readonly repeatedPassword: string;
   readonly errors: RegistrationErrors;
 }
 
 const initialState: Registration = {
+  email: '',
+  password: '',
+  repeatedPassword: '',
   errors: {
     email: '',
     password: '',
@@ -22,9 +28,24 @@ const registrationSlice = createSlice({
   name: 'registration',
   initialState,
   reducers: {
-    setErrors: (_: Registration, action: PayloadAction<RegistrationErrors>) => ({ errors: action.payload })
+    setEmail: (state: Registration, action: PayloadAction<string>) => ({ ...state, email: action.payload }),
+    setPassword: (state: Registration, action: PayloadAction<string>) => ({ ...state, password: action.payload }),
+    setRepeatedPassword: (state: Registration, action: PayloadAction<string>) => ({
+      ...state,
+      repeatedPassword: action.payload
+    }),
+    setErrors: (state: Registration, action: PayloadAction<RegistrationErrors>) => ({
+      ...state,
+      errors: action.payload
+    }),
+    clear: () => ({
+      email: '',
+      password: '',
+      repeatedPassword: '',
+      errors: { email: '', password: '', repeatedPassword: '' }
+    })
   }
 });
 
-export const { setErrors } = registrationSlice.actions;
+export const { setEmail, setPassword, setRepeatedPassword, setErrors, clear } = registrationSlice.actions;
 export default registrationSlice.reducer;

@@ -1,5 +1,6 @@
 const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 const MAX_EMAIL_LENGTH = 320;
+const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
 export function validateEmail(email: string): string {
@@ -19,19 +20,15 @@ export function validatePassword(password: string): string {
     return 'Das Passwort darf nicht leer sein.';
   }
 
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return `Das Passwort muss mindestens ${MIN_PASSWORD_LENGTH} Zeichen enthalten.`;
+  }
+
   return password.length > MAX_PASSWORD_LENGTH
     ? `Das Passwort darf maximal ${MAX_PASSWORD_LENGTH} Zeichen enthalten.`
     : '';
 }
 
 export function validateRepeatedPassword(repeatedPassword: string, password: string): string {
-  if (repeatedPassword === '') {
-    return 'Das Passwort darf nicht leer sein.';
-  }
-
-  if (password.length > MAX_PASSWORD_LENGTH) {
-    return `Das Passwort darf maximal ${MAX_PASSWORD_LENGTH} Zeichen enthalten.`;
-  }
-
   return repeatedPassword !== password ? 'Die Passwörter müssen identisch sein.' : '';
 }

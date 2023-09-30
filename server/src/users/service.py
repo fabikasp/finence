@@ -14,7 +14,10 @@ class UserService:
 
         return user
 
-    def read(self, email: str, password: str):
+    def readByEmail(self, email: str):
+        return UserModel.query.filter_by(email=email).first()
+
+    def readByEmailAndPassword(self, email: str, password: str):
         user = UserModel.query.filter_by(email=email).first()
 
         if user is None:

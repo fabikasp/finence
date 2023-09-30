@@ -43,7 +43,7 @@ export function fetchSagaFactory(
         if (!isLoginUrl(request.url!)) {
           yield* put(navigate(`/${LOGIN_ROUTE}`));
         }
-      } else {
+      } else if (error.response?.status !== 409) {
         yield* put(evokeDefault());
       }
 

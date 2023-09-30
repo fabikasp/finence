@@ -5,7 +5,8 @@ import { ACCESS_TOKEN_KEY, DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../util
 import { assertTrue } from '../utils/assert';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { UserPayload } from '../store/actions';
-import { setErrors } from '../store/slices/loginSlice';
+import { clear as clearLogin, setErrors } from '../store/slices/loginSlice';
+import { clear as clearRegistration } from '../store/slices/registrationSlice';
 import { navigate } from '../store/slices/navigatorSlice';
 import z from 'zod';
 
@@ -30,6 +31,8 @@ export function* loginSaga(action: PayloadAction<UserPayload>): SagaGenerator<vo
 
         localStorage.setItem(ACCESS_TOKEN_KEY, response.data.accessToken);
 
+        yield* put(clearLogin());
+        yield* put(clearRegistration());
         yield* put(navigate(`/${DASHBOARD_ROUTE}`));
       },
       function* handleError(error: AxiosError) {

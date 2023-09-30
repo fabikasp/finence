@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
@@ -10,7 +10,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { validateEmail, validatePassword } from '../utils/validators';
 import { REGISTRATION_ROUTE } from '../utils/const';
 import { RootState } from '../store/store';
-import { setErrors } from '../store/slices/loginSlice';
+import { setEmail, setErrors, setPassword } from '../store/slices/loginSlice';
 import { login } from '../store/actions';
 
 const StyledTextField = styled(TextField)(() => ({
@@ -30,20 +30,25 @@ export default function LoginForm(): React.ReactNode {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [secretMode, setSecretMode] = useState(true);
+  const { email, password, errors } = useSelector((state: RootState) => state.login);
+  const { email: registrationEmail, password: registrationPassword } = useSelector(
+    (state: RootState) => state.registration
+  );
 
-  const { errors } = useSelector((state: RootState) => state.login);
-  // TODO: Bei Rerenders Errors löschen (bei Registrierung auch)
+  useEffect(() => {
+    dispatch(setEmail(registrationEmail));
+    dispatch(setPassword(registrationPassword));
+    dispatch(setErrors({ email: '', password: '' }));
+  }, []);
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+    dispatch(setEmail(event.target.value));
     dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
   };
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
+    dispatch(setPassword(event.target.value));
     dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
   };
 

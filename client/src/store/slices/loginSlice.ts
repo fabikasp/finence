@@ -6,10 +6,14 @@ interface LoginErrors {
 }
 
 interface Login {
+  readonly email: string;
+  readonly password: string;
   readonly errors: LoginErrors;
 }
 
 const initialState: Login = {
+  email: '',
+  password: '',
   errors: {
     email: '',
     password: ''
@@ -20,9 +24,12 @@ const loginSlice = createSlice({
   name: 'login',
   initialState,
   reducers: {
-    setErrors: (_: Login, action: PayloadAction<LoginErrors>) => ({ errors: action.payload })
+    setEmail: (state: Login, action: PayloadAction<string>) => ({ ...state, email: action.payload }),
+    setPassword: (state: Login, action: PayloadAction<string>) => ({ ...state, password: action.payload }),
+    setErrors: (state: Login, action: PayloadAction<LoginErrors>) => ({ ...state, errors: action.payload }),
+    clear: () => ({ email: '', password: '', errors: { email: '', password: '' } })
   }
 });
 
-export const { setErrors } = loginSlice.actions;
+export const { setEmail, setPassword, setErrors, clear } = loginSlice.actions;
 export default loginSlice.reducer;

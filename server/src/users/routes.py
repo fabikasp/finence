@@ -21,10 +21,11 @@ def register():
     if email is None or password is None:  # TODO: Validator aufrufen
         return {"message": "Email and password must be given."}, 400
 
-    # TODO: Gibt es schon Error
+    if user_service.readByEmail(email) is not None:
+        return {"message": "User already exists."}, 409
 
     user = user_service.create(email, password)
-    access_token = create_access_token(identity=user.email)
+    access_token = create_access_token(identity=user.id)
 
     return {"accessToken": access_token}
 
@@ -38,11 +39,11 @@ def login():
     if email is None or password is None:  # TODO: Validator aufrufen
         return {"message": "Email and password must be given."}, 400
 
-    user = user_service.read(email, password)
+    user = user_service.readByEmailAndPassword(email, password)
     if user is None:
         return {"message": "Wrong email or password."}, 401
 
-    access_token = create_access_token(identity=email)
+    access_token = create_access_token(identity=user.id)
 
     return {"accessToken": access_token}
 
