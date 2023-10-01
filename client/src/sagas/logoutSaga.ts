@@ -8,8 +8,6 @@ export function* logoutSaga(): SagaGenerator<void> {
     fetchSagaFactory(
       { url: `${USER_URL_PATH_PREFIX}/logout`, method: 'POST' },
       function* handleResponse() {
-        // localStorage.setItem(ACCESS_TOKEN_KEY, '');
-
         yield* put(navigate(`/${LOGIN_ROUTE}`));
       },
       function* handleError() {},

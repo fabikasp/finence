@@ -1,4 +1,5 @@
-const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+const EMAIL_REGEX =
+  /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
 const MAX_EMAIL_LENGTH = 320;
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
@@ -30,5 +31,9 @@ export function validatePassword(password: string): string {
 }
 
 export function validateRepeatedPassword(repeatedPassword: string, password: string): string {
+  if (repeatedPassword === '') {
+    return 'Das Passwort darf nicht leer sein.';
+  }
+
   return repeatedPassword !== password ? 'Die Passwörter müssen identisch sein.' : '';
 }

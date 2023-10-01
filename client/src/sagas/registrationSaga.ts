@@ -1,4 +1,4 @@
-import { call, put, SagaGenerator } from 'typed-redux-saga';
+import { call, put, select, SagaGenerator } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ACCESS_TOKEN_KEY, DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
@@ -9,6 +9,8 @@ import { UserPayload } from '../store/actions';
 import { evoke } from '../store/slices/snackBarSlice';
 import { clear as clearRegistration, setErrors } from '../store/slices/registrationSlice';
 import { clear as clearLogin } from '../store/slices/loginSlice';
+import { validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
+import { RootState } from '../store/store';
 import z from 'zod';
 
 const USER_ALREADY_EXISTS_ERROR = 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse.';
@@ -24,6 +26,20 @@ const isRegistrationResponseData = (object: unknown): object is RegistrationResp
 };
 
 export function* registrationSaga(action: PayloadAction<UserPayload>): SagaGenerator<void> {
+  yield* put(setErrors({ email: '', password: '', repeatedPassword: '' }));
+
+  const { email, password, repeatedPassword } = yield* select((state: RootState) => state.registration);
+
+  const emailError = validateEmail(email);
+  const passwordError = validatePassword(password);
+  const repeatedPasswordError = validateRepeatedPassword(repeatedPassword, password);
+
+  if (emailError || passwordError || repeatedPasswordError) {
+    yield* put(setErrors({ email: emailError, password: passwordError, repeatedPassword: repeatedPasswordError }));
+
+    return;
+  }
+
   yield* call(
     fetchSagaFactory(
       { url: `${USER_URL_PATH_PREFIX}/register`, method: 'POST', data: action.payload },

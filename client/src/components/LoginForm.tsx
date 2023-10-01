@@ -7,7 +7,6 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { validateEmail, validatePassword } from '../utils/validators';
 import { REGISTRATION_ROUTE } from '../utils/const';
 import { RootState } from '../store/store';
 import { setEmail, setErrors, setPassword } from '../store/slices/loginSlice';
@@ -42,30 +41,8 @@ export default function LoginForm(): React.ReactNode {
     dispatch(setErrors({ email: '', password: '' }));
   }, []);
 
-  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setEmail(event.target.value));
-    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
-  };
-
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setPassword(event.target.value));
-    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
-  };
-
-  const onLogin = () => {
-    dispatch(setErrors({ email: '', password: '' }));
-
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
-
-    if (emailError || passwordError) {
-      dispatch(setErrors({ email: emailError, password: passwordError }));
-
-      return;
-    }
-
-    dispatch(login({ email, password }));
-  };
+  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => dispatch(setEmail(event.target.value));
+  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => dispatch(setPassword(event.target.value));
 
   return (
     <>
@@ -110,7 +87,7 @@ export default function LoginForm(): React.ReactNode {
       <StyledButton variant="text" onClick={() => navigate(`/${REGISTRATION_ROUTE}`)} sx={{ float: 'left' }}>
         Registrieren
       </StyledButton>
-      <StyledButton variant="contained" onClick={onLogin} sx={{ float: 'right' }}>
+      <StyledButton variant="contained" onClick={() => dispatch(login({ email, password }))} sx={{ float: 'right' }}>
         Login
       </StyledButton>
     </>

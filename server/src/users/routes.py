@@ -4,11 +4,13 @@ from flask_cors import cross_origin
 from users import bp
 from extensions import redis_jwt_blocklist
 from config import Config
+from users.validator import UserValidator
 from users.service import UserService
 
 EMAIL_ENTRY = "email"
 PASSWORD_ENTRY = "password"
 
+user_validator = UserValidator()
 user_service = UserService()
 
 
@@ -18,14 +20,17 @@ def register():
     email = request.json.get(EMAIL_ENTRY, None)
     password = request.json.get(PASSWORD_ENTRY, None)
 
-    if email is None or password is None:  # TODO: Validator aufrufen
+    if email is None or password is None:
         return {"message": "Email and password must be given."}, 400
+
+    if not user_validator.validate(email, password):
+        return {"message": "Invalid data provided."}, 422
 
     if user_service.readByEmail(email) is not None:
         return {"message": "User already exists."}, 409
 
     user = user_service.create(email, password)
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=user.get_id())
 
     return {"accessToken": access_token}
 
@@ -36,14 +41,14 @@ def login():
     email = request.json.get(EMAIL_ENTRY, None)
     password = request.json.get(PASSWORD_ENTRY, None)
 
-    if email is None or password is None:  # TODO: Validator aufrufen
+    if email is None or password is None:
         return {"message": "Email and password must be given."}, 400
 
     user = user_service.readByEmailAndPassword(email, password)
     if user is None:
         return {"message": "Wrong email or password."}, 401
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=user.get_id())
 
     return {"accessToken": access_token}
 

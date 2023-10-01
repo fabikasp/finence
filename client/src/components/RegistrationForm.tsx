@@ -56,22 +56,6 @@ export default function RegistrationForm(): React.ReactNode {
     dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
   };
 
-  const onRegister = () => {
-    dispatch(setErrors({ email: '', password: '', repeatedPassword: '' }));
-
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
-    const repeatedPasswordError = validateRepeatedPassword(repeatedPassword, password);
-
-    if (emailError || passwordError || repeatedPasswordError) {
-      dispatch(setErrors({ email: emailError, password: passwordError, repeatedPassword: repeatedPasswordError }));
-
-      return;
-    }
-
-    dispatch(register({ email, password }));
-  };
-
   return (
     <>
       <StyledTextField
@@ -142,7 +126,7 @@ export default function RegistrationForm(): React.ReactNode {
       <StyledButton variant="text" onClick={() => navigate(`/${LOGIN_ROUTE}`)} sx={{ float: 'left' }}>
         Login
       </StyledButton>
-      <StyledButton variant="contained" onClick={onRegister} sx={{ float: 'right' }}>
+      <StyledButton variant="contained" onClick={() => dispatch(register({ email, password }))} sx={{ float: 'right' }}>
         Registrieren
       </StyledButton>
     </>

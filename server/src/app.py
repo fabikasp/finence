@@ -22,7 +22,7 @@ class FlaskApp:
 
         self.__app.register_blueprint(users_bp, url_prefix="/users")
 
-    def get_app(self):
+    def get_app(self) -> Flask:
         return self.__app
 
 

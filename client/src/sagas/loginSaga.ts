@@ -23,6 +23,8 @@ const isLoginResponseData = (object: unknown): object is LoginResponseData => {
 };
 
 export function* loginSaga(action: PayloadAction<UserPayload>): SagaGenerator<void> {
+  yield* put(setErrors({ email: '', password: '' }));
+
   yield* call(
     fetchSagaFactory(
       { url: `${USER_URL_PATH_PREFIX}/login`, method: 'POST', data: action.payload },

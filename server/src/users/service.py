@@ -4,7 +4,7 @@ from users.model import UserModel
 
 
 class UserService:
-    def create(self, email: str, password: str):
+    def create(self, email: str, password: str) -> UserModel:
         hashed_password = flask_bcrypt.generate_password_hash(password)
 
         user = UserModel(email, hashed_password.decode())
@@ -14,10 +14,10 @@ class UserService:
 
         return user
 
-    def readByEmail(self, email: str):
+    def readByEmail(self, email: str) -> UserModel:
         return UserModel.query.filter_by(email=email).first()
 
-    def readByEmailAndPassword(self, email: str, password: str):
+    def readByEmailAndPassword(self, email: str, password: str) -> UserModel:
         user = UserModel.query.filter_by(email=email).first()
 
         if user is None:
