@@ -27,3 +27,31 @@ class UserService:
             return None
 
         return user
+
+    def update(self, id: int, email: str = None, password: str = None) -> UserModel:
+        user = UserModel.query.filter_by(id=id).first()
+
+        if user is None:
+            return None
+
+        if email is not None:
+            user.set_email(email)
+
+        if password is not None:
+            hashed_password = flask_bcrypt.generate_password_hash(password)
+            user.set_password(hashed_password)
+
+        db.session.commit()
+
+        return user
+
+    def delete(self, id: int) -> UserModel:
+        user = UserModel.query.filter_by(id=id).first()
+
+        if user is None:
+            return None
+
+        db.session.delete(user)
+        db.session.commit()
+
+        return user

@@ -7,6 +7,7 @@ from config import Config
 from users.validator import UserValidator
 from users.service import UserService
 
+ID_ENTRY = "id"
 EMAIL_ENTRY = "email"
 PASSWORD_ENTRY = "password"
 
@@ -23,7 +24,9 @@ def register():
     if email is None or password is None:
         return {"message": "Email and password must be given."}, 400
 
-    if not user_validator.validate(email, password):
+    if not user_validator.validate_email(email) or not user_validator.validate_password(
+        password
+    ):
         return {"message": "Invalid data provided."}, 422
 
     if user_service.readByEmail(email) is not None:
@@ -32,7 +35,7 @@ def register():
     user = user_service.create(email, password)
     access_token = create_access_token(identity=user.get_id())
 
-    return {"accessToken": access_token}
+    return {"accessToken": access_token, "email": user.get_email()}
 
 
 @bp.route("/login", methods=["POST"])
@@ -44,7 +47,9 @@ def login():
     if email is None or password is None:
         return {"message": "Email and password must be given."}, 400
 
-    if not user_validator.validate(email, password, True):
+    if not user_validator.validate_email(
+        email, True
+    ) or not user_validator.validate_password(password, True):
         return {"message": "Invalid data provided."}, 422
 
     user = user_service.readByEmailAndPassword(email, password)
@@ -53,7 +58,7 @@ def login():
 
     access_token = create_access_token(identity=user.get_id())
 
-    return {"accessToken": access_token}
+    return {"accessToken": access_token, "email": user.get_email()}
 
 
 @bp.route("/logout", methods=["POST"])
@@ -64,3 +69,39 @@ def logout():
     redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 
     return {"message": "Successfully logged out user."}
+
+
+@bp.route(f"/update/<int:{ID_ENTRY}>", methods=["PUT"])
+@jwt_required()
+@cross_origin()
+def update(id: int):
+    email = request.json.get(EMAIL_ENTRY, None)
+    password = request.json.get(PASSWORD_ENTRY, None)
+
+    if email is None and password is None:
+        return {"message": "At least one of email and password must be given."}, 400
+
+    if email is not None and not user_validator.validate_email(email):
+        return {"message": "Invalid email provided."}, 422
+
+    if password is not None and not user_validator.validate_password(password):
+        return {"message": "Invalid password provided."}, 422
+
+    user = user_service.update(id, email, password)
+
+    if user is None:
+        return {"message": "User not found."}, 404
+
+    return {"email": user.get_email()}
+
+
+@bp.route(f"/delete/<int:{ID_ENTRY}>", methods=["DELETE"])
+@jwt_required()
+@cross_origin()
+def delete(id: int):
+    user = user_service.delete(id)
+
+    if user is None:
+        return {"message": "User not found."}, 404
+
+    return {"message": "Successfully deleted user."}

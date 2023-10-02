@@ -18,8 +18,14 @@ class UserModel(db.Model):
     def get_email(self) -> str:
         return self.email
 
+    def set_email(self, email: str):
+        self.email = email
+
     def get_password(self) -> str:
         return self.password
+
+    def set_password(self, password: str):
+        self.password = password
 
     def __repr__(self) -> str:
         return f'<User "{self.id}">'
