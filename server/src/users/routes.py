@@ -44,9 +44,12 @@ def login():
     if email is None or password is None:
         return {"message": "Email and password must be given."}, 400
 
+    if not user_validator.validate(email, password, True):
+        return {"message": "Invalid data provided."}, 422
+
     user = user_service.readByEmailAndPassword(email, password)
     if user is None:
-        return {"message": "Wrong email or password."}, 401
+        return {"message": "User not found."}, 404
 
     access_token = create_access_token(identity=user.get_id())
 

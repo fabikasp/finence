@@ -38,6 +38,7 @@ export default function RegistrationForm(): React.ReactNode {
   useEffect(() => {
     dispatch(setEmail(loginEmail));
     dispatch(setPassword(loginPassword));
+    dispatch(setRepeatedPassword(''));
     dispatch(setErrors({ email: '', password: '', repeatedPassword: '' }));
   }, []);
 

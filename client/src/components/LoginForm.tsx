@@ -11,6 +11,7 @@ import { REGISTRATION_ROUTE } from '../utils/const';
 import { RootState } from '../store/store';
 import { setEmail, setErrors, setPassword } from '../store/slices/loginSlice';
 import { login } from '../store/actions';
+import { validateEmail, validatePassword } from '../utils/validators';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -41,8 +42,15 @@ export default function LoginForm(): React.ReactNode {
     dispatch(setErrors({ email: '', password: '' }));
   }, []);
 
-  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => dispatch(setEmail(event.target.value));
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => dispatch(setPassword(event.target.value));
+  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setEmail(event.target.value));
+    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value, true) }));
+  };
+
+  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setPassword(event.target.value));
+    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value, true) }));
+  };
 
   return (
     <>

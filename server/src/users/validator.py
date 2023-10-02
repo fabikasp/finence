@@ -7,16 +7,21 @@ MAX_PASSWORD_LENGTH = 128
 
 
 class UserValidator:
-    def validate(self, email, password) -> bool:
+    def validate(self, email, password, login: bool = False) -> bool:
         if not isinstance(email, str) or not isinstance(password, str):
             return False
 
         emailLen = len(email)
         passwordLen = len(password)
+
+        if emailLen == 0 or passwordLen == 0:
+            return False
+
+        if login:
+            return True
+
         if (
-            emailLen == 0
-            or emailLen > MAX_EMAIL_LENGTH
-            or passwordLen == 0
+            emailLen > MAX_EMAIL_LENGTH
             or passwordLen < MIN_PASSWORD_LENGTH
             or passwordLen > MAX_PASSWORD_LENGTH
         ):

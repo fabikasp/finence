@@ -4,9 +4,13 @@ const MAX_EMAIL_LENGTH = 320;
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
-export function validateEmail(email: string): string {
+export function validateEmail(email: string, login?: boolean): string {
   if (email === '') {
     return 'Die E-Mail-Adresse darf nicht leer sein.';
+  }
+
+  if (login) {
+    return '';
   }
 
   if (email.length > MAX_EMAIL_LENGTH) {
@@ -16,9 +20,13 @@ export function validateEmail(email: string): string {
   return !EMAIL_REGEX.test(email) ? 'Die E-Mail-Adresse ist nicht gültig.' : '';
 }
 
-export function validatePassword(password: string): string {
+export function validatePassword(password: string, login?: boolean): string {
   if (password === '') {
     return 'Das Passwort darf nicht leer sein.';
+  }
+
+  if (login) {
+    return '';
   }
 
   if (password.length < MIN_PASSWORD_LENGTH) {
