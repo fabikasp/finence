@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AuthenticatedPage from './AuthenticatedPage';
 import UnauthenticatedPage from './UnauthenticatedPage';
+import { useDispatch } from 'react-redux';
+import { highlight } from '../store/slices/sideBarSlice';
 
 interface PageProps {
-  readonly child: React.ReactNode;
+  readonly component: React.ReactNode;
+  readonly componentName?: 'Dashboard' | 'Finanzen' | 'Konto';
   readonly protected?: boolean;
 }
 
 export default function Page(props: PageProps): React.ReactNode {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(highlight(props.componentName));
+  }, [props.componentName]);
+
   if (!props.protected) {
-    return <UnauthenticatedPage>{props.child}</UnauthenticatedPage>;
+    return <UnauthenticatedPage>{props.component}</UnauthenticatedPage>;
   }
 
-  return <AuthenticatedPage>{props.child}</AuthenticatedPage>;
+  return <AuthenticatedPage>{props.component}</AuthenticatedPage>;
 }

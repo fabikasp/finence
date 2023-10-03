@@ -51,6 +51,13 @@ export const theme = createTheme({
           }
         }
       }
+    },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#232F3B'
+        }
+      }
     }
   }
 });

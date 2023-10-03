@@ -9,11 +9,21 @@ import { theme } from './theme/theme';
 import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
 import Page from './pages/Page';
-import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, LOGIN_ROUTE, REGISTRATION_ROUTE } from './utils/const';
+import {
+  ACCOUNT,
+  ACCOUNT_ROUTE,
+  DASHBOARD,
+  DASHBOARD_ROUTE,
+  FINANCES,
+  FINANCES_ROUTE,
+  LOGIN_ROUTE,
+  REGISTRATION_ROUTE
+} from './utils/const';
 import dotenv from 'dotenv';
 import SnackBar from './components/SnackBar';
 import Navigator from './components/Navigator';
 import GlobalProgressIndicator from './components/GlobalProgressIndicator';
+import AccountManagement from './components/AccountManagement';
 
 dotenv.config();
 
@@ -29,11 +39,20 @@ ReactDOM.createRoot(rootElement).render(
         <Navigator />
         <Routes>
           <Route index element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />
-          <Route path={DASHBOARD_ROUTE} element={<Page child={<div>Dashboard</div>} protected />} />
-          <Route path={FINANCES_ROUTE} element={<Page child={<div>Finanzen</div>} protected />} />
-          <Route path={ACCOUNT_ROUTE} element={<Page child={<div>Konto</div>} protected />} />
-          <Route path={REGISTRATION_ROUTE} element={<Page child={<RegistrationForm />} />} />
-          <Route path={LOGIN_ROUTE} element={<Page child={<LoginForm />} />} />
+          <Route
+            path={DASHBOARD_ROUTE}
+            element={<Page component={<div>Dashboard</div>} componentName={DASHBOARD} protected />}
+          />
+          <Route
+            path={FINANCES_ROUTE}
+            element={<Page component={<div>Finanzen</div>} componentName={FINANCES} protected />}
+          />
+          <Route
+            path={ACCOUNT_ROUTE}
+            element={<Page component={<AccountManagement />} componentName={ACCOUNT} protected />}
+          />
+          <Route path={REGISTRATION_ROUTE} element={<Page component={<RegistrationForm />} />} />
+          <Route path={LOGIN_ROUTE} element={<Page component={<LoginForm />} />} />
           <Route path="*" element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />
         </Routes>
       </BrowserRouter>

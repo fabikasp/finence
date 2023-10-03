@@ -1,7 +1,16 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
-import { ACCOUNT_ROUTE, DASHBOARD_ROUTE, FINANCES_ROUTE, SIDEBAR_WIDTH } from '../utils/const';
+import {
+  ACCOUNT,
+  ACCOUNT_ROUTE,
+  DASHBOARD,
+  DASHBOARD_ROUTE,
+  FINANCES,
+  FINANCES_ROUTE,
+  LOGOUT,
+  SIDEBAR_WIDTH
+} from '../utils/const';
 import { Drawer, IconButton, List, ListItem, ListItemButton, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -73,7 +82,7 @@ export default function SideBar(): React.ReactNode {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { open } = useSelector((state: RootState) => state.sideBar);
+  const { open, highlighted } = useSelector((state: RootState) => state.sideBar);
 
   const closeAndNavigate = useCallback(
     (routeName: string): void => {
@@ -88,17 +97,17 @@ export default function SideBar(): React.ReactNode {
 
   const sideBarItems: SideBarItem[] = [
     {
-      title: 'Dashboard',
+      title: DASHBOARD,
       icon: <LeaderboardIcon color="secondary" />,
       onClick: () => closeAndNavigate(DASHBOARD_ROUTE)
     },
     {
-      title: 'Finanzen',
+      title: FINANCES,
       icon: <AccountBalanceIcon color="secondary" />,
       onClick: () => closeAndNavigate(FINANCES_ROUTE)
     },
-    { title: 'Konto', icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate(ACCOUNT_ROUTE) },
-    { title: 'Logout', icon: <LogoutIcon color="secondary" />, onClick: () => dispatch(logout()) }
+    { title: ACCOUNT, icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate(ACCOUNT_ROUTE) },
+    { title: LOGOUT, icon: <LogoutIcon color="secondary" />, onClick: () => dispatch(logout()) }
   ];
 
   return (
@@ -116,7 +125,13 @@ export default function SideBar(): React.ReactNode {
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
-                  px: 2.5
+                  px: 2.5,
+                  ...(item.title === highlighted && {
+                    backgroundColor: '#232F3B',
+                    '&:hover': {
+                      backgroundColor: '#232F3B'
+                    }
+                  })
                 }}
                 onClick={item.onClick}
               >

@@ -1,20 +1,26 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface SideBar {
   readonly open: boolean;
+  readonly highlighted?: 'Dashboard' | 'Finanzen' | 'Konto';
 }
 
 const initialState: SideBar = {
-  open: false
+  open: false,
+  highlighted: undefined
 };
 
 const sideBarSlice = createSlice({
   name: 'sideBar',
   initialState,
   reducers: {
-    toggle: (state: SideBar) => ({ open: !state.open })
+    toggle: (state: SideBar) => ({ ...state, open: !state.open }),
+    highlight: (state: SideBar, action: PayloadAction<'Dashboard' | 'Finanzen' | 'Konto' | undefined>) => ({
+      ...state,
+      highlighted: action.payload
+    })
   }
 });
 
-export const { toggle } = sideBarSlice.actions;
+export const { toggle, highlight } = sideBarSlice.actions;
 export default sideBarSlice.reducer;
