@@ -30,7 +30,7 @@ def register():
         return {"message": "Invalid data provided."}, 422
 
     if user_service.readByEmail(email) is not None:
-        return {"message": "User already exists."}, 409
+        return {"message": "User with this email already exists."}, 409
 
     user = user_service.create(email, password)
     access_token = create_access_token(identity=user.get_id())
@@ -81,8 +81,13 @@ def update(id: int):
     if email is None and password is None:
         return {"message": "At least one of email and password must be given."}, 400
 
-    if email is not None and not user_validator.validate_email(email):
-        return {"message": "Invalid email provided."}, 422
+    if email is not None:
+        if not user_validator.validate_email(email):
+            return {"message": "Invalid email provided."}, 422
+
+        user_with_email = user_service.readByEmail(email)
+        if user_with_email is not None and user_with_email.get_id() != id:
+            return {"message": "User with this email already exists."}, 409
 
     if password is not None and not user_validator.validate_password(password):
         return {"message": "Invalid password provided."}, 422

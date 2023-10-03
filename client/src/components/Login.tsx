@@ -26,7 +26,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-export default function LoginForm(): React.ReactNode {
+export default function Login(): React.ReactNode {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

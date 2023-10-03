@@ -6,8 +6,8 @@ import { assertNonNullable } from './utils/assert';
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
 import { theme } from './theme/theme';
-import LoginForm from './components/LoginForm';
-import RegistrationForm from './components/RegistrationForm';
+import Login from './components/Login';
+import Registration from './components/Registration';
 import Page from './pages/Page';
 import {
   ACCOUNT,
@@ -51,8 +51,8 @@ ReactDOM.createRoot(rootElement).render(
             path={ACCOUNT_ROUTE}
             element={<Page component={<AccountManagement />} componentName={ACCOUNT} protected />}
           />
-          <Route path={REGISTRATION_ROUTE} element={<Page component={<RegistrationForm />} />} />
-          <Route path={LOGIN_ROUTE} element={<Page component={<LoginForm />} />} />
+          <Route path={REGISTRATION_ROUTE} element={<Page component={<Registration />} />} />
+          <Route path={LOGIN_ROUTE} element={<Page component={<Login />} />} />
           <Route path="*" element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />
         </Routes>
       </BrowserRouter>

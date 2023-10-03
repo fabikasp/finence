@@ -3,9 +3,7 @@ import { fetchSagaFactory } from './fetchSaga';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ACCESS_TOKEN_KEY, DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
-import { PayloadAction } from '@reduxjs/toolkit';
 import { navigate } from '../store/slices/navigatorSlice';
-import { UserPayload } from '../store/actions';
 import { evoke } from '../store/slices/snackBarSlice';
 import { clear as clearRegistration, setErrors } from '../store/slices/registrationSlice';
 import { clear as clearLogin } from '../store/slices/loginSlice';
@@ -25,7 +23,7 @@ const isRegistrationResponseData = (object: unknown): object is RegistrationResp
   return registrationResponseDataScheme.safeParse(object).success;
 };
 
-export function* registrationSaga(action: PayloadAction<UserPayload>): SagaGenerator<void> {
+export function* registrationSaga(): SagaGenerator<void> {
   yield* put(setErrors({ email: '', password: '', repeatedPassword: '' }));
 
   const { email, password, repeatedPassword } = yield* select((state: RootState) => state.registration);
@@ -42,7 +40,7 @@ export function* registrationSaga(action: PayloadAction<UserPayload>): SagaGener
 
   yield* call(
     fetchSagaFactory(
-      { url: `${USER_URL_PATH_PREFIX}/register`, method: 'POST', data: action.payload },
+      { url: `${USER_URL_PATH_PREFIX}/register`, method: 'POST', data: { email, password } },
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isRegistrationResponseData(response.data));
 

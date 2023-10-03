@@ -45,3 +45,7 @@ export function validateRepeatedPassword(repeatedPassword: string, password: str
 
   return repeatedPassword !== password ? 'Die Passwörter müssen identisch sein.' : '';
 }
+
+export function validateConfirmation(confirmation: string, targetValue: string): string {
+  return confirmation !== targetValue ? `Die Eingabe muss dem Wort „${targetValue}“ entsprechen.` : '';
+}
