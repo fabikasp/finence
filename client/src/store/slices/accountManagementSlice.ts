@@ -8,10 +8,18 @@ interface AccountManagementErrors {
 }
 
 interface AccountManagement {
+  readonly email: string;
+  readonly password: string;
+  readonly repeatedPassword: string;
+  readonly confirmation: string;
   readonly errors: AccountManagementErrors;
 }
 
 const initialState: AccountManagement = {
+  email: '',
+  password: '',
+  repeatedPassword: '',
+  confirmation: '',
   errors: {
     email: '',
     password: '',
@@ -24,6 +32,16 @@ const accountManagementSlice = createSlice({
   name: 'accountManagement',
   initialState,
   reducers: {
+    setEmail: (state: AccountManagement, action: PayloadAction<string>) => ({ ...state, email: action.payload }),
+    setPassword: (state: AccountManagement, action: PayloadAction<string>) => ({ ...state, password: action.payload }),
+    setRepeatedPassword: (state: AccountManagement, action: PayloadAction<string>) => ({
+      ...state,
+      repeatedPassword: action.payload
+    }),
+    setConfirmation: (state: AccountManagement, action: PayloadAction<string>) => ({
+      ...state,
+      confirmation: action.payload
+    }),
     setErrors: (state: AccountManagement, action: PayloadAction<AccountManagementErrors>) => ({
       ...state,
       errors: action.payload
@@ -31,5 +49,6 @@ const accountManagementSlice = createSlice({
   }
 });
 
-export const { setErrors } = accountManagementSlice.actions;
+export const { setEmail, setPassword, setRepeatedPassword, setConfirmation, setErrors } =
+  accountManagementSlice.actions;
 export default accountManagementSlice.reducer;

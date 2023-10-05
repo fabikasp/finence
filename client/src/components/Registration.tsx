@@ -127,7 +127,7 @@ export default function RegistrationForm(): React.ReactNode {
       <StyledButton variant="text" onClick={() => navigate(`/${LOGIN_ROUTE}`)} sx={{ float: 'left' }}>
         Login
       </StyledButton>
-      <StyledButton variant="contained" onClick={() => dispatch(register({ email, password }))} sx={{ float: 'right' }}>
+      <StyledButton variant="contained" onClick={() => dispatch(register())} sx={{ float: 'right' }}>
         Registrieren
       </StyledButton>
     </>

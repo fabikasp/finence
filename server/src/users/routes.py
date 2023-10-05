@@ -109,4 +109,7 @@ def delete(id: int):
     if user is None:
         return {"message": "User not found."}, 404
 
+    jti = get_jwt()["jti"]
+    redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
+
     return {"message": "Successfully deleted user."}

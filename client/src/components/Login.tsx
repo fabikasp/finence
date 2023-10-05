@@ -95,7 +95,7 @@ export default function Login(): React.ReactNode {
       <StyledButton variant="text" onClick={() => navigate(`/${REGISTRATION_ROUTE}`)} sx={{ float: 'left' }}>
         Registrieren
       </StyledButton>
-      <StyledButton variant="contained" onClick={() => dispatch(login({ email, password }))} sx={{ float: 'right' }}>
+      <StyledButton variant="contained" onClick={() => dispatch(login())} sx={{ float: 'right' }}>
         Login
       </StyledButton>
     </>

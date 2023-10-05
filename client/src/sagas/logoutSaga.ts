@@ -5,13 +5,8 @@ import { navigate } from '../store/slices/navigatorSlice';
 
 export function* logoutSaga(): SagaGenerator<void> {
   yield* call(
-    fetchSagaFactory(
-      { url: `${USER_URL_PATH_PREFIX}/logout`, method: 'POST' },
-      function* handleResponse() {
-        yield* put(navigate(`/${LOGIN_ROUTE}`));
-      },
-      function* handleError() {},
-      true
-    )
+    fetchSagaFactory({ url: `${USER_URL_PATH_PREFIX}/logout`, method: 'POST' }, function* handleResponse() {
+      yield* put(navigate(`/${LOGIN_ROUTE}`));
+    })
   );
 }

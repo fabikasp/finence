@@ -25,7 +25,7 @@ export default function SnackBar(): React.ReactNode {
       TransitionComponent={SnackbarTransition}
       onClose={onClose}
     >
-      <Alert severity={snackBar.severity} onClose={onClose}>
+      <Alert severity={snackBar.severity} onClose={onClose} variant="filled">
         {snackBar.message}
       </Alert>
     </Snackbar>

@@ -21,11 +21,17 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { styled } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
-import { setErrors } from '../store/slices/accountManagementSlice';
+import {
+  setConfirmation,
+  setEmail,
+  setErrors,
+  setPassword,
+  setRepeatedPassword
+} from '../store/slices/accountManagementSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { validateConfirmation, validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
-import { updateAccount } from '../store/actions';
+import { updateEmail, updatePassword } from '../store/actions';
 
 const CHANGE_EMAIL_PANEL = 'email';
 const CHANGE_PASSWORD_PANEL = 'password';
@@ -54,50 +60,35 @@ export default function AccountManagement(): React.ReactNode {
   const dispatch = useDispatch();
 
   const [expanded, setExpanded] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatedPassword, setRepeatedPassword] = useState('');
   const [secretPasswordMode, setSecretPasswordMode] = useState(true);
   const [secretRepeatedPasswordMode, setSecretRepeatedPasswordMode] = useState(true);
-  const [confirmation, setConfirmation] = useState('');
 
-  const { errors } = useSelector((state: RootState) => state.accountManagement);
+  const { email, password, repeatedPassword, confirmation, errors } = useSelector(
+    (state: RootState) => state.accountManagement
+  );
 
   const onAccordionClick = (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : '');
   };
 
   const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+    dispatch(setEmail(event.target.value));
     dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
   };
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
+    dispatch(setPassword(event.target.value));
     dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
   };
 
   const onRepeatedPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRepeatedPassword(event.target.value);
+    dispatch(setRepeatedPassword(event.target.value));
     dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
   };
 
   const onConfirmationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmation(event.target.value);
+    dispatch(setConfirmation(event.target.value));
     dispatch(setErrors({ ...errors, confirmation: validateConfirmation(event.target.value, 'Löschen') }));
-  };
-
-  const onUpdateEmailClick = () => {
-    dispatch(setErrors({ ...errors, email: '' }));
-
-    const emailError = validateEmail(email);
-    if (emailError) {
-      dispatch(setErrors({ ...errors, email: validateEmail(email) }));
-
-      return;
-    }
-
-    dispatch(updateAccount({ email }));
   };
 
   return (
@@ -127,7 +118,7 @@ export default function AccountManagement(): React.ReactNode {
               error={errors.email !== ''}
               helperText={errors.email}
             />
-            <StyledButton variant="contained" startIcon={<EditIcon />} onClick={onUpdateEmailClick}>
+            <StyledButton variant="contained" startIcon={<EditIcon />} onClick={() => dispatch(updateEmail())}>
               Ändern
             </StyledButton>
           </Box>
@@ -145,7 +136,7 @@ export default function AccountManagement(): React.ReactNode {
           <Box display="flex" flexDirection="column">
             <StyledTextField
               fullWidth
-              type={'password'}
+              type={secretPasswordMode ? 'password' : 'text'}
               label="Passwort"
               value={password}
               onChange={onPasswordChange}
@@ -172,7 +163,7 @@ export default function AccountManagement(): React.ReactNode {
             />
             <StyledTextField
               fullWidth
-              type={'password'}
+              type={secretRepeatedPasswordMode ? 'password' : 'text'}
               label="Passwort wiederholen"
               value={repeatedPassword}
               onChange={onRepeatedPasswordChange}
@@ -197,7 +188,7 @@ export default function AccountManagement(): React.ReactNode {
               error={errors.repeatedPassword !== ''}
               helperText={errors.repeatedPassword}
             />
-            <StyledButton variant="contained" startIcon={<EditIcon />} onClick={() => alert('WIP')}>
+            <StyledButton variant="contained" startIcon={<EditIcon />} onClick={() => dispatch(updatePassword())}>
               Ändern
             </StyledButton>
           </Box>
@@ -214,7 +205,7 @@ export default function AccountManagement(): React.ReactNode {
         <AccordionDetails>
           <Box display="flex" flexDirection="column">
             <Typography sx={{ marginBottom: 3 }}>
-              Die Kontolöschung muss mit dem Wort <strong>„Löschen“</strong> bestätigt werden.
+              Bitte bestätigen Sie die Kontolöschung mit dem Wort <strong>„Löschen“</strong>.
             </Typography>
             <StyledTextField
               fullWidth

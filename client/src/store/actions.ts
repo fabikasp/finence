@@ -6,11 +6,8 @@ export const login = createAction('LOGIN');
 
 export const logout = createAction('LOGOUT');
 
-export interface UpdateAccountPayload {
-  email?: string;
-  password?: string;
-}
+export const updateEmail = createAction('UPDATE_EMAIL');
 
-export const updateAccount = createAction<UpdateAccountPayload>('UPDATE_ACCOUNT');
+export const updatePassword = createAction('UPDATE_PASSWORD');
 
 export const deleteAccount = createAction('DELETE_ACCOUNT');

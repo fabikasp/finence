@@ -9,6 +9,7 @@ import { clear as clearRegistration, setErrors } from '../store/slices/registrat
 import { clear as clearLogin } from '../store/slices/loginSlice';
 import { validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
 import { RootState } from '../store/store';
+import { setEmail } from '../store/slices/accountManagementSlice';
 import z from 'zod';
 
 const USER_ALREADY_EXISTS_ERROR = 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse.';
@@ -48,15 +49,15 @@ export function* registrationSaga(): SagaGenerator<void> {
 
         yield* put(clearRegistration());
         yield* put(clearLogin());
-        yield* put(evoke({ severity: 'success', message: 'Die Registrierung war erfolgreich.' }));
+        yield* put(setEmail(email));
+        yield* put(evoke({ severity: 'success', message: 'Sie haben sich erfolgreich registriert.' }));
         yield* put(navigate(`/${DASHBOARD_ROUTE}`));
       },
       function* handleError(error: AxiosError) {
         if (error.response?.status === 409) {
           yield* put(setErrors({ email: USER_ALREADY_EXISTS_ERROR, password: '', repeatedPassword: '' }));
         }
-      },
-      true
+      }
     )
   );
 }

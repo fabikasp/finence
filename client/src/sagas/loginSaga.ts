@@ -8,6 +8,7 @@ import { clear as clearRegistration } from '../store/slices/registrationSlice';
 import { navigate } from '../store/slices/navigatorSlice';
 import { RootState } from '../store/store';
 import { validateEmail, validatePassword } from '../utils/validators';
+import { setEmail } from '../store/slices/accountManagementSlice';
 import z from 'zod';
 
 const USER_NOT_FOUND_ERROR = 'Das Finence-Konto wurde nicht gefunden.';
@@ -46,14 +47,14 @@ export function* loginSaga(): SagaGenerator<void> {
 
         yield* put(clearLogin());
         yield* put(clearRegistration());
+        yield* put(setEmail(email));
         yield* put(navigate(`/${DASHBOARD_ROUTE}`));
       },
       function* handleError(error: AxiosError) {
         if (error.response?.status === 404) {
           yield* put(setErrors({ email: USER_NOT_FOUND_ERROR, password: USER_NOT_FOUND_ERROR }));
         }
-      },
-      true
+      }
     )
   );
 }
