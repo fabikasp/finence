@@ -3,7 +3,7 @@ import { fetchSagaFactory } from './fetchSaga';
 import { AxiosError } from 'axios';
 import { LOGIN_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { navigate } from '../store/slices/navigatorSlice';
-import { evoke } from '../store/slices/snackBarSlice';
+import { evoke, evokeExpiredSessionError } from '../store/slices/snackBarSlice';
 import { getDecodedJwt } from '../utils/helper';
 import { setEmail, setErrors } from '../store/slices/accountManagementSlice';
 import { RootState } from '../store/store';
@@ -27,7 +27,7 @@ export function* updateEmailSaga(): SagaGenerator<void> {
 
   const decodedJwt = getDecodedJwt();
   if (!decodedJwt) {
-    yield* put(evoke({ severity: 'error', message: 'Ihre Sitzung ist abgelaufen.' }));
+    yield* put(evokeExpiredSessionError());
     yield* put(navigate(`/${LOGIN_ROUTE}`));
 
     return;

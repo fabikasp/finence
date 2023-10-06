@@ -2,7 +2,7 @@ import { call, put, SagaGenerator } from 'typed-redux-saga';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ACCESS_TOKEN_KEY, LOGIN_ROUTE } from '../utils/const';
 import { assertTrue } from '../utils/assert';
-import { evoke, evokeDefault } from '../store/slices/snackBarSlice';
+import { evokeExpiredSessionError, evokeUnknownError } from '../store/slices/snackBarSlice';
 import { navigate } from '../store/slices/navigatorSlice';
 import { set } from '../store/slices/globalProgressIndicatorSlice';
 
@@ -34,10 +34,10 @@ export function fetchSagaFactory(
 
       const status = error.response?.status;
       if (status === 401 || status === 403) {
-        yield* put(evoke({ severity: 'error', message: 'Ihre Sitzung ist abgelaufen.' }));
+        yield* put(evokeExpiredSessionError());
         yield* put(navigate(`/${LOGIN_ROUTE}`));
       } else if (status !== 404 && status !== 409) {
-        yield* put(evokeDefault());
+        yield* put(evokeUnknownError());
       }
 
       if (errorCallback) {

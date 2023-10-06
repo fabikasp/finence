@@ -58,6 +58,13 @@ export const theme = createTheme({
           backgroundColor: '#232F3B'
         }
       }
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#101820'
+        }
+      }
     }
   }
 });

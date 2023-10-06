@@ -2,7 +2,7 @@ import { call, put, select, SagaGenerator } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
 import { LOGIN_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { navigate } from '../store/slices/navigatorSlice';
-import { evoke } from '../store/slices/snackBarSlice';
+import { evoke, evokeExpiredSessionError } from '../store/slices/snackBarSlice';
 import { getDecodedJwt } from '../utils/helper';
 import { setErrors, setPassword, setRepeatedPassword } from '../store/slices/accountManagementSlice';
 import { RootState } from '../store/store';
@@ -26,7 +26,7 @@ export function* updatePasswordSaga(): SagaGenerator<void> {
 
   const decodedJwt = getDecodedJwt();
   if (!decodedJwt) {
-    yield* put(evoke({ severity: 'error', message: 'Ihre Sitzung ist abgelaufen.' }));
+    yield* put(evokeExpiredSessionError());
     yield* put(navigate(`/${LOGIN_ROUTE}`));
 
     return;

@@ -1,16 +1,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { AlertColor } from '@mui/material';
 
-const DEFAULT_SEVERITY: AlertColor = 'error';
-const DEFAULT_MESSAGE = 'Es ist ein unbekannter Fehler aufgetreten.';
-
 interface SnackBar {
   readonly open: boolean;
   readonly severity: AlertColor;
   readonly message: string;
 }
 
-const initialState: SnackBar = { open: false, severity: DEFAULT_SEVERITY, message: DEFAULT_MESSAGE };
+const initialState: SnackBar = { open: false, severity: 'success', message: '' };
 
 const snackBarSlice = createSlice({
   name: 'snackBar',
@@ -21,13 +18,18 @@ const snackBarSlice = createSlice({
       severity: action.payload.severity,
       message: action.payload.message
     }),
-    evokeDefault: () => ({
+    evokeExpiredSessionError: () => ({
       open: true,
-      severity: DEFAULT_SEVERITY,
-      message: DEFAULT_MESSAGE
+      severity: 'error' as AlertColor,
+      message: 'Ihre Sitzung ist abgelaufen.'
+    }),
+    evokeUnknownError: () => ({
+      open: true,
+      severity: 'error' as AlertColor,
+      message: 'Es ist ein unbekannter Fehler aufgetreten.'
     })
   }
 });
 
-export const { evoke, evokeDefault } = snackBarSlice.actions;
+export const { evoke, evokeExpiredSessionError, evokeUnknownError } = snackBarSlice.actions;
 export default snackBarSlice.reducer;
