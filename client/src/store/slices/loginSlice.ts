@@ -27,7 +27,7 @@ const loginSlice = createSlice({
     setEmail: (state: Login, action: PayloadAction<string>) => ({ ...state, email: action.payload }),
     setPassword: (state: Login, action: PayloadAction<string>) => ({ ...state, password: action.payload }),
     setErrors: (state: Login, action: PayloadAction<LoginErrors>) => ({ ...state, errors: action.payload }),
-    clear: () => ({ email: '', password: '', errors: { email: '', password: '' } })
+    clear: () => initialState
   }
 });
 

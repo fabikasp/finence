@@ -13,6 +13,9 @@ export const theme = createTheme({
     },
     secondary: {
       main: '#C0C0C0'
+    },
+    action: {
+      disabledBackground: '#89ABE3'
     }
   },
   typography: {
@@ -62,7 +65,7 @@ export const theme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: {
-          backgroundColor: '#101820'
+          backgroundColor: '#000000'
         }
       }
     }

@@ -49,7 +49,7 @@ export default function RegistrationForm(): React.ReactNode {
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setPassword(event.target.value));
-    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
+    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
   };
 
   const onRepeatedPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {

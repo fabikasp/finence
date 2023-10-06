@@ -45,10 +45,11 @@ const accountManagementSlice = createSlice({
     setErrors: (state: AccountManagement, action: PayloadAction<AccountManagementErrors>) => ({
       ...state,
       errors: action.payload
-    })
+    }),
+    clear: () => initialState
   }
 });
 
-export const { setEmail, setPassword, setRepeatedPassword, setConfirmation, setErrors } =
+export const { setEmail, setPassword, setRepeatedPassword, setConfirmation, setErrors, clear } =
   accountManagementSlice.actions;
 export default accountManagementSlice.reducer;

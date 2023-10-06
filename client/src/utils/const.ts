@@ -12,5 +12,6 @@ export const REGISTRATION_ROUTE = 'registration';
 export const LOGIN_ROUTE = 'login';
 
 export const ACCESS_TOKEN_KEY = 'accessToken';
+export const USER_EMAIL_KEY = 'userEmail';
 
 export const USER_URL_PATH_PREFIX = '/users';

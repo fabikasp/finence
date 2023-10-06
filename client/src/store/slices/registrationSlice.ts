@@ -38,12 +38,7 @@ const registrationSlice = createSlice({
       ...state,
       errors: action.payload
     }),
-    clear: () => ({
-      email: '',
-      password: '',
-      repeatedPassword: '',
-      errors: { email: '', password: '', repeatedPassword: '' }
-    })
+    clear: () => initialState
   }
 });
 

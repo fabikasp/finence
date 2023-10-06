@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -22,6 +22,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { styled } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
 import {
+  clear,
   setConfirmation,
   setEmail,
   setErrors,
@@ -32,6 +33,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { validateConfirmation, validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
 import { updateEmail, updatePassword } from '../store/actions';
+import { USER_EMAIL_KEY } from '../utils/const';
 
 const CHANGE_EMAIL_PANEL = 'email';
 const CHANGE_PASSWORD_PANEL = 'password';
@@ -67,6 +69,14 @@ export default function AccountManagement(): React.ReactNode {
     (state: RootState) => state.accountManagement
   );
 
+  useEffect(() => {
+    dispatch(setEmail(localStorage.getItem(USER_EMAIL_KEY) ?? ''));
+
+    return () => {
+      dispatch(clear());
+    };
+  }, []);
+
   const onAccordionClick = (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : '');
   };
@@ -78,7 +88,7 @@ export default function AccountManagement(): React.ReactNode {
 
   const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setPassword(event.target.value));
-    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value) }));
+    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
   };
 
   const onRepeatedPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,7 +128,12 @@ export default function AccountManagement(): React.ReactNode {
               error={errors.email !== ''}
               helperText={errors.email}
             />
-            <StyledButton variant="contained" startIcon={<EditIcon />} onClick={() => dispatch(updateEmail())}>
+            <StyledButton
+              disabled={localStorage.getItem(USER_EMAIL_KEY) === email}
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={() => dispatch(updateEmail())}
+            >
               Ändern
             </StyledButton>
           </Box>
