@@ -5,7 +5,7 @@ import { LOGIN_ROUTE, USER_EMAIL_KEY, USER_URL_PATH_PREFIX } from '../utils/cons
 import { navigate } from '../store/slices/navigatorSlice';
 import { evoke, evokeExpiredSessionError } from '../store/slices/snackBarSlice';
 import { getDecodedJwt } from '../utils/helper';
-import { setErrors } from '../store/slices/accountManagementSlice';
+import { setEmail, setErrors } from '../store/slices/accountManagementSlice';
 import { RootState } from '../store/store';
 import { validateEmail } from '../utils/validators';
 import { assertTrue } from '../utils/assert';
@@ -52,6 +52,7 @@ export function* updateEmailSaga(): SagaGenerator<void> {
         assertTrue(isUpdateEmailResponseData(response.data));
 
         localStorage.setItem(USER_EMAIL_KEY, response.data.email);
+        yield* put(setEmail(response.data.email));
 
         yield* put(evoke({ severity: 'success', message: 'Ihre E-Mail-Adresse wurde erfolgreich geändert.' }));
       },

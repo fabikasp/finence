@@ -32,8 +32,8 @@ import {
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { validateConfirmation, validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
-import { updateEmail, updatePassword } from '../store/actions';
-import { USER_EMAIL_KEY } from '../utils/const';
+import { deleteAccount, updateEmail, updatePassword } from '../store/actions';
+import { CONFIRMATION_TEXT, USER_EMAIL_KEY } from '../utils/const';
 
 const CHANGE_EMAIL_PANEL = 'email';
 const CHANGE_PASSWORD_PANEL = 'password';
@@ -55,6 +55,18 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
   [theme.breakpoints.up('lg')]: {
     width: '20%'
+  }
+}));
+
+const UpdateEmailButton = styled(StyledButton)(() => ({
+  '&:disabled': {
+    backgroundColor: '#89ABE3'
+  }
+}));
+
+const DeleteAccountButton = styled(StyledButton)(({ theme }) => ({
+  '&:disabled': {
+    backgroundColor: theme.palette.error.main
   }
 }));
 
@@ -98,7 +110,7 @@ export default function AccountManagement(): React.ReactNode {
 
   const onConfirmationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setConfirmation(event.target.value));
-    dispatch(setErrors({ ...errors, confirmation: validateConfirmation(event.target.value, 'Löschen') }));
+    dispatch(setErrors({ ...errors, confirmation: validateConfirmation(event.target.value) }));
   };
 
   return (
@@ -128,14 +140,14 @@ export default function AccountManagement(): React.ReactNode {
               error={errors.email !== ''}
               helperText={errors.email}
             />
-            <StyledButton
+            <UpdateEmailButton
               disabled={localStorage.getItem(USER_EMAIL_KEY) === email}
               variant="contained"
               startIcon={<EditIcon />}
               onClick={() => dispatch(updateEmail())}
             >
               Ändern
-            </StyledButton>
+            </UpdateEmailButton>
           </Box>
         </AccordionDetails>
       </Accordion>
@@ -220,7 +232,7 @@ export default function AccountManagement(): React.ReactNode {
         <AccordionDetails>
           <Box display="flex" flexDirection="column">
             <Typography sx={{ marginBottom: 3 }}>
-              Bitte bestätigen Sie die Kontolöschung mit dem Wort <strong>„Löschen“</strong>.
+              Bitte bestätigen Sie die Kontolöschung mit dem Wort <strong>{`„${CONFIRMATION_TEXT}“`}</strong>.
             </Typography>
             <StyledTextField
               fullWidth
@@ -241,14 +253,15 @@ export default function AccountManagement(): React.ReactNode {
               error={errors.confirmation !== ''}
               helperText={errors.confirmation}
             />
-            <StyledButton
+            <DeleteAccountButton
+              disabled={confirmation !== CONFIRMATION_TEXT}
               variant="contained"
               color="error"
               startIcon={<DeleteForeverIcon />}
-              onClick={() => alert('WIP')}
+              onClick={() => dispatch(deleteAccount())}
             >
               Konto löschen
-            </StyledButton>
+            </DeleteAccountButton>
           </Box>
         </AccordionDetails>
       </Accordion>

@@ -10,7 +10,7 @@ import { RootState } from '../store/store';
 import { validateEmail, validatePassword } from '../utils/validators';
 import z from 'zod';
 
-const USER_NOT_FOUND_ERROR = 'Das Finence-Konto wurde nicht gefunden.';
+const USER_NOT_FOUND_ERROR = 'Dieses Finence-Konto wurde nicht gefunden.';
 
 const loginResponseDataScheme = z.object({
   email: z.string(),

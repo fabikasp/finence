@@ -1,6 +1,9 @@
+import { CONFIRMATION_TEXT } from './const';
+
 const EMAIL_REGEX =
   /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
 const MAX_EMAIL_LENGTH = 320;
+
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
@@ -46,6 +49,6 @@ export function validateRepeatedPassword(repeatedPassword: string, password: str
   return repeatedPassword !== password ? 'Die Passwörter müssen identisch sein.' : '';
 }
 
-export function validateConfirmation(confirmation: string, targetValue: string): string {
-  return confirmation !== targetValue ? `Die Eingabe muss dem Wort „${targetValue}“ entsprechen.` : '';
+export function validateConfirmation(confirmation: string): string {
+  return confirmation !== CONFIRMATION_TEXT ? `Die Eingabe muss dem Wort „${CONFIRMATION_TEXT}“ entsprechen.` : '';
 }

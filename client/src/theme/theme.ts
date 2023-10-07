@@ -13,9 +13,6 @@ export const theme = createTheme({
     },
     secondary: {
       main: '#C0C0C0'
-    },
-    action: {
-      disabledBackground: '#89ABE3'
     }
   },
   typography: {

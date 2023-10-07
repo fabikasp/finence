@@ -1,5 +1,3 @@
-export const SIDEBAR_WIDTH = 200;
-
 export const DASHBOARD = 'Dashboard';
 export const FINANCES = 'Finanzen';
 export const ACCOUNT = 'Konto';
@@ -15,3 +13,7 @@ export const ACCESS_TOKEN_KEY = 'accessToken';
 export const USER_EMAIL_KEY = 'userEmail';
 
 export const USER_URL_PATH_PREFIX = '/users';
+
+export const SIDEBAR_WIDTH = 200;
+
+export const CONFIRMATION_TEXT = 'Löschen';
