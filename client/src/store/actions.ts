@@ -6,6 +6,8 @@ export const login = createAction('LOGIN');
 
 export const logout = createAction('LOGOUT');
 
+export const validateSession = createAction('VALIDATE_SESSION');
+
 export const updateEmail = createAction('UPDATE_EMAIL');
 
 export const updatePassword = createAction('UPDATE_PASSWORD');

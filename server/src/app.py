@@ -1,9 +1,14 @@
-from flask import Flask
+from flask import Flask, Response
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity
 from config import Config
 from extensions import db, jwt
 from flask_migrate import Migrate
 from users import bp as users_bp
+from datetime import datetime
+import json
+
+CRITICAL_JWT_VALIDITY_TIME_IN_SECONDS = 600
 
 
 class FlaskApp:
@@ -28,3 +33,24 @@ class FlaskApp:
 
 flaskApp = FlaskApp()
 app = flaskApp.get_app()
+
+
+@app.after_request
+def refresh_expiring_jwts(response: Response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        exp_datetime = datetime.fromtimestamp(exp_timestamp)
+        now = datetime.now()
+        difference = exp_datetime - now
+
+        if difference.seconds <= CRITICAL_JWT_VALIDITY_TIME_IN_SECONDS:
+            data = response.get_json()
+
+            if type(data) is dict:
+                access_token = create_access_token(identity=get_jwt_identity())
+                data["accessToken"] = access_token
+                response.data = json.dumps(data)
+
+        return response
+    except (RuntimeError, KeyError):
+        return response

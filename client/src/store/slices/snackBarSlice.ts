@@ -18,11 +18,6 @@ const snackBarSlice = createSlice({
       severity: action.payload.severity,
       message: action.payload.message
     }),
-    evokeExpiredSessionError: () => ({
-      open: true,
-      severity: 'error' as AlertColor,
-      message: 'Ihre Sitzung ist abgelaufen.'
-    }),
     evokeUnknownError: () => ({
       open: true,
       severity: 'error' as AlertColor,
@@ -31,5 +26,5 @@ const snackBarSlice = createSlice({
   }
 });
 
-export const { evoke, evokeExpiredSessionError, evokeUnknownError } = snackBarSlice.actions;
+export const { evoke, evokeUnknownError } = snackBarSlice.actions;
 export default snackBarSlice.reducer;

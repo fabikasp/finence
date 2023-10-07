@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from flask_cors import cross_origin
 from users import bp
@@ -69,6 +69,13 @@ def logout():
     redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 
     return {"message": "Successfully logged out user."}
+
+
+@bp.route("/validateSession", methods=["GET"])
+@jwt_required()
+@cross_origin()
+def validate_session():
+    return {"message": "Session is valid."}
 
 
 @bp.route(f"/update/<int:{ID_ENTRY}>", methods=["PUT"])

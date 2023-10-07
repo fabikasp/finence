@@ -1,7 +1,7 @@
 import { call, put, select, SagaGenerator } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
 import { AxiosError, AxiosResponse } from 'axios';
-import { ACCESS_TOKEN_KEY, DASHBOARD_ROUTE, USER_EMAIL_KEY, USER_URL_PATH_PREFIX } from '../utils/const';
+import { DASHBOARD_ROUTE, USER_EMAIL_KEY, USER_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
 import { navigate } from '../store/slices/navigatorSlice';
 import { evoke } from '../store/slices/snackBarSlice';
@@ -14,8 +14,7 @@ import z from 'zod';
 const USER_ALREADY_EXISTS_ERROR = 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse.';
 
 const registrationResponseDataScheme = z.object({
-  email: z.string(),
-  accessToken: z.string()
+  email: z.string()
 });
 
 type RegistrationResponseData = z.infer<typeof registrationResponseDataScheme>;
@@ -45,7 +44,6 @@ export function* registrationSaga(): SagaGenerator<void> {
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isRegistrationResponseData(response.data));
 
-        localStorage.setItem(ACCESS_TOKEN_KEY, response.data.accessToken);
         localStorage.setItem(USER_EMAIL_KEY, response.data.email);
 
         yield* put(clearRegistration());

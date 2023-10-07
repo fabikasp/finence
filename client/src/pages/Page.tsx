@@ -3,6 +3,7 @@ import AuthenticatedPage from './AuthenticatedPage';
 import UnauthenticatedPage from './UnauthenticatedPage';
 import { useDispatch } from 'react-redux';
 import { highlight } from '../store/slices/sideBarSlice';
+import { validateSession } from '../store/actions';
 
 interface PageProps {
   readonly component: React.ReactNode;
@@ -12,6 +13,12 @@ interface PageProps {
 
 export default function Page(props: PageProps): React.ReactNode {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (props.protected) {
+      dispatch(validateSession());
+    }
+  });
 
   useEffect(() => {
     dispatch(highlight(props.componentName));
