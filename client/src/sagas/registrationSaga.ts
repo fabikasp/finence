@@ -40,7 +40,7 @@ export function* registrationSaga(): SagaGenerator<void> {
 
   yield* call(
     fetchSagaFactory(
-      { url: `${USER_URL_PATH_PREFIX}/register`, method: 'POST', data: { email, password } },
+      { url: `${USER_URL_PATH_PREFIX}register`, method: 'POST', data: { email, password } },
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isRegistrationResponseData(response.data));
 

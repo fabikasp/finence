@@ -38,7 +38,7 @@ export function* loginSaga(): SagaGenerator<void> {
 
   yield* call(
     fetchSagaFactory(
-      { url: `${USER_URL_PATH_PREFIX}/login`, method: 'POST', data: { email, password } },
+      { url: `${USER_URL_PATH_PREFIX}login`, method: 'POST', data: { email, password } },
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isLoginResponseData(response.data));
 

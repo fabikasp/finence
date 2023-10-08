@@ -14,10 +14,13 @@ class UserService:
 
         return user
 
-    def readByEmail(self, email: str) -> UserModel:
+    def read_by_id(self, id: int) -> UserModel:
+        return UserModel.query.filter_by(id=id).first()
+
+    def read_by_email(self, email: str) -> UserModel:
         return UserModel.query.filter_by(email=email).first()
 
-    def readByEmailAndPassword(self, email: str, password: str) -> UserModel:
+    def read_by_email_and_password(self, email: str, password: str) -> UserModel:
         user = UserModel.query.filter_by(email=email).first()
 
         if user is None:
@@ -29,7 +32,7 @@ class UserService:
         return user
 
     def update(self, id: int, email: str = None, password: str = None) -> UserModel:
-        user = UserModel.query.filter_by(id=id).first()
+        user = self.read_by_id(id)
 
         if user is None:
             return None
@@ -46,7 +49,7 @@ class UserService:
         return user
 
     def delete(self, id: int) -> UserModel:
-        user = UserModel.query.filter_by(id=id).first()
+        user = self.read_by_id(id)
 
         if user is None:
             return None

@@ -29,7 +29,7 @@ def register():
     ):
         return {"message": "Invalid data provided."}, 422
 
-    if user_service.readByEmail(email) is not None:
+    if user_service.read_by_email(email) is not None:
         return {"message": "User with this email already exists."}, 409
 
     user = user_service.create(email, password)
@@ -52,7 +52,7 @@ def login():
     ) or not user_validator.validate_password(password, True):
         return {"message": "Invalid data provided."}, 422
 
-    user = user_service.readByEmailAndPassword(email, password)
+    user = user_service.read_by_email_and_password(email, password)
     if user is None:
         return {"message": "User not found."}, 404
 
@@ -71,10 +71,10 @@ def logout():
     return {"message": "Successfully logged out user."}
 
 
-@bp.route(f"/update/<int:{ID_ENTRY}>", methods=["PUT"])
+@bp.route("/", methods=["PUT"])
 @jwt_required()
 @cross_origin()
-def update(id: int):
+def update():
     email = request.json.get(EMAIL_ENTRY, None)
     password = request.json.get(PASSWORD_ENTRY, None)
 
@@ -85,7 +85,7 @@ def update(id: int):
         if not user_validator.validate_email(email):
             return {"message": "Invalid email provided."}, 422
 
-        user_with_email = user_service.readByEmail(email)
+        user_with_email = user_service.read_by_email(email)
         if user_with_email is not None:
             if user_with_email.get_id() != id:
                 return {"message": "User with this email already exists."}, 409
@@ -95,7 +95,8 @@ def update(id: int):
     if password is not None and not user_validator.validate_password(password):
         return {"message": "Invalid password provided."}, 422
 
-    user = user_service.update(id, email, password)
+    user_id = get_jwt()["sub"]
+    user = user_service.update(user_id, email, password)
 
     if user is None:
         return {"message": "User not found."}, 404
@@ -103,16 +104,18 @@ def update(id: int):
     return {"email": user.get_email()}
 
 
-@bp.route(f"/delete/<int:{ID_ENTRY}>", methods=["DELETE"])
+@bp.route("/", methods=["DELETE"])
 @jwt_required()
 @cross_origin()
-def delete(id: int):
-    user = user_service.delete(id)
+def delete():
+    jwt = get_jwt()
+    user_id = jwt["sub"]
+    user = user_service.delete(user_id)
 
     if user is None:
         return {"message": "User not found."}, 404
 
-    jti = get_jwt()["jti"]
+    jti = jwt["jti"]
     redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 
     return {"message": "Successfully deleted user."}

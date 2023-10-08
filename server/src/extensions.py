@@ -23,3 +23,4 @@ def check_if_token_is_blocklisted(jwt_header, jwt_payload: dict):
 
 
 from users import model
+from categories import model

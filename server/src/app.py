@@ -5,6 +5,7 @@ from config import Config
 from extensions import db, jwt
 from flask_migrate import Migrate
 from users import bp as users_bp
+from categories import bp as categories_bp
 from datetime import datetime
 import json
 
@@ -26,6 +27,7 @@ class FlaskApp:
         Migrate(self.__app, db)
 
         self.__app.register_blueprint(users_bp, url_prefix="/users")
+        self.__app.register_blueprint(categories_bp, url_prefix="/categories")
 
     def get_app(self) -> Flask:
         return self.__app

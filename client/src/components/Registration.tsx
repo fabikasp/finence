@@ -7,6 +7,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import KeyIcon from '@mui/icons-material/Key';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import PersonAddIcon from '@mui/icons-material/PersonAddAlt1';
 import { validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
 import { LOGIN_ROUTE } from '../utils/const';
 import { RootState } from '../store/store';
@@ -127,7 +128,12 @@ export default function RegistrationForm(): React.ReactNode {
       <StyledButton variant="text" onClick={() => navigate(`/${LOGIN_ROUTE}`)} sx={{ float: 'left' }}>
         Login
       </StyledButton>
-      <StyledButton variant="contained" onClick={() => dispatch(register())} sx={{ float: 'right' }}>
+      <StyledButton
+        variant="contained"
+        startIcon={<PersonAddIcon />}
+        onClick={() => dispatch(register())}
+        sx={{ float: 'right' }}
+      >
         Registrieren
       </StyledButton>
     </>
