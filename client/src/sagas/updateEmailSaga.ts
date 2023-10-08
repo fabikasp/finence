@@ -5,7 +5,7 @@ import { LOGIN_ROUTE, USER_EMAIL_KEY, USER_URL_PATH_PREFIX } from '../utils/cons
 import { navigate } from '../store/slices/navigatorSlice';
 import { evoke } from '../store/slices/snackBarSlice';
 import { getDecodedJwt } from '../utils/helper';
-import { setEmail, setErrors } from '../store/slices/accountManagementSlice';
+import { setEmail, setErrors } from '../store/slices/settingsSlice';
 import { RootState } from '../store/store';
 import { validateEmail } from '../utils/validators';
 import { assertTrue } from '../utils/assert';
@@ -24,11 +24,10 @@ const isUpdateEmailResponseData = (object: unknown): object is UpdateEmailRespon
 };
 
 export function* updateEmailSaga(): SagaGenerator<void> {
-  const errors = yield* select((state: RootState) => state.accountManagement.errors);
+  const { email, errors } = yield* select((state: RootState) => state.settings);
 
   yield* put(setErrors({ ...errors, email: '' }));
 
-  const { email } = yield* select((state: RootState) => state.accountManagement);
   const emailError = validateEmail(email);
 
   if (emailError) {

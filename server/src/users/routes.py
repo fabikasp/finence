@@ -71,13 +71,6 @@ def logout():
     return {"message": "Successfully logged out user."}
 
 
-@bp.route("/validateSession", methods=["GET"])
-@jwt_required()
-@cross_origin()
-def validate_session():
-    return {"message": "Session is valid."}
-
-
 @bp.route(f"/update/<int:{ID_ENTRY}>", methods=["PUT"])
 @jwt_required()
 @cross_origin()

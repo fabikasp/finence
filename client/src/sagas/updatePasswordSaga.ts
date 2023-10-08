@@ -4,16 +4,14 @@ import { LOGIN_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { navigate } from '../store/slices/navigatorSlice';
 import { evoke } from '../store/slices/snackBarSlice';
 import { getDecodedJwt } from '../utils/helper';
-import { setErrors, setPassword, setRepeatedPassword } from '../store/slices/accountManagementSlice';
+import { setErrors, setPassword, setRepeatedPassword } from '../store/slices/settingsSlice';
 import { RootState } from '../store/store';
 import { validatePassword, validateRepeatedPassword } from '../utils/validators';
 
 export function* updatePasswordSaga(): SagaGenerator<void> {
-  const errors = yield* select((state: RootState) => state.accountManagement.errors);
+  const { password, repeatedPassword, errors } = yield* select((state: RootState) => state.settings);
 
   yield* put(setErrors({ ...errors, password: '', repeatedPassword: '' }));
-
-  const { password, repeatedPassword } = yield* select((state: RootState) => state.accountManagement);
 
   const passwordError = validatePassword(password);
   const repeatedPasswordError = validateRepeatedPassword(repeatedPassword, password);

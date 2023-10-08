@@ -10,20 +10,21 @@ import Login from './components/Login';
 import Registration from './components/Registration';
 import Page from './pages/Page';
 import {
-  ACCOUNT,
-  ACCOUNT_ROUTE,
   DASHBOARD,
   DASHBOARD_ROUTE,
   FINANCES,
   FINANCES_ROUTE,
   LOGIN_ROUTE,
-  REGISTRATION_ROUTE
+  REGISTRATION_ROUTE,
+  SETTINGS,
+  SETTINGS_ROUTE
 } from './utils/const';
 import dotenv from 'dotenv';
 import SnackBar from './components/SnackBar';
 import Navigator from './components/Navigator';
 import GlobalProgressIndicator from './components/GlobalProgressIndicator';
-import AccountManagement from './components/AccountManagement';
+import Settings from './components/Settings';
+import Finances from './components/Finances';
 
 dotenv.config();
 
@@ -43,14 +44,8 @@ ReactDOM.createRoot(rootElement).render(
             path={DASHBOARD_ROUTE}
             element={<Page component={<div>Dashboard</div>} componentName={DASHBOARD} protected />}
           />
-          <Route
-            path={FINANCES_ROUTE}
-            element={<Page component={<div>Finanzen</div>} componentName={FINANCES} protected />}
-          />
-          <Route
-            path={ACCOUNT_ROUTE}
-            element={<Page component={<AccountManagement />} componentName={ACCOUNT} protected />}
-          />
+          <Route path={FINANCES_ROUTE} element={<Page component={<Finances />} componentName={FINANCES} protected />} />
+          <Route path={SETTINGS_ROUTE} element={<Page component={<Settings />} componentName={SETTINGS} protected />} />
           <Route path={REGISTRATION_ROUTE} element={<Page component={<Registration />} />} />
           <Route path={LOGIN_ROUTE} element={<Page component={<Login />} />} />
           <Route path="*" element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />

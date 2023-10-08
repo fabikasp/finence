@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface SideBar {
   readonly open: boolean;
-  readonly highlighted?: 'Dashboard' | 'Finanzen' | 'Konto';
+  readonly highlighted?: 'Dashboard' | 'Finanzen' | 'Einstellungen';
 }
 
 const initialState: SideBar = {
@@ -15,7 +15,7 @@ const sideBarSlice = createSlice({
   initialState,
   reducers: {
     toggle: (state: SideBar) => ({ ...state, open: !state.open }),
-    highlight: (state: SideBar, action: PayloadAction<'Dashboard' | 'Finanzen' | 'Konto' | undefined>) => ({
+    highlight: (state: SideBar, action: PayloadAction<'Dashboard' | 'Finanzen' | 'Einstellungen' | undefined>) => ({
       ...state,
       highlighted: action.payload
     })

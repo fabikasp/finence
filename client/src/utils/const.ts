@@ -1,11 +1,11 @@
 export const DASHBOARD = 'Dashboard';
 export const FINANCES = 'Finanzen';
-export const ACCOUNT = 'Konto';
+export const SETTINGS = 'Einstellungen';
 export const LOGOUT = 'Logout';
 
 export const DASHBOARD_ROUTE = 'dashboard';
 export const FINANCES_ROUTE = 'finances';
-export const ACCOUNT_ROUTE = 'account';
+export const SETTINGS_ROUTE = 'settings';
 export const REGISTRATION_ROUTE = 'registration';
 export const LOGIN_ROUTE = 'login';
 

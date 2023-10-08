@@ -2,13 +2,13 @@ import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import {
-  ACCOUNT,
-  ACCOUNT_ROUTE,
   DASHBOARD,
   DASHBOARD_ROUTE,
   FINANCES,
   FINANCES_ROUTE,
   LOGOUT,
+  SETTINGS,
+  SETTINGS_ROUTE,
   SIDEBAR_WIDTH
 } from '../utils/const';
 import { Drawer, IconButton, List, ListItem, ListItemButton, Tooltip } from '@mui/material';
@@ -17,9 +17,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux';
 import { toggle } from '../store/slices/sideBarSlice';
@@ -106,7 +106,11 @@ export default function SideBar(): React.ReactNode {
       icon: <AccountBalanceIcon color="secondary" />,
       onClick: () => closeAndNavigate(FINANCES_ROUTE)
     },
-    { title: ACCOUNT, icon: <ManageAccountsIcon color="secondary" />, onClick: () => closeAndNavigate(ACCOUNT_ROUTE) },
+    {
+      title: SETTINGS,
+      icon: <SettingsIcon color="secondary" />,
+      onClick: () => closeAndNavigate(SETTINGS_ROUTE)
+    },
     { title: LOGOUT, icon: <LogoutIcon color="secondary" />, onClick: () => dispatch(logout()) }
   ];
 
