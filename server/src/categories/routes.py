@@ -43,8 +43,13 @@ def create():
         return {"message": "Invalid data provided."}, 422
 
     user_id = get_jwt()["sub"]
-    if category_service.read_by_user_id_and_name(user_id, name) is not None:
-        return {"message": "Category already exists for this user."}, 409
+    if (
+        category_service.read_by_user_id_and_name_and_for_income(
+            user_id, name, for_income
+        )
+        is not None
+    ):
+        return {"message": "Category already exists."}, 409
 
     category = category_service.create(user_id, name, description, for_income)
 

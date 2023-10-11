@@ -65,6 +65,16 @@ export const theme = createTheme({
           backgroundColor: '#000000'
         }
       }
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          color: '#C0C0C0',
+          '&:hover': {
+            color: '#89ABE3'
+          }
+        }
+      }
     }
   }
 });

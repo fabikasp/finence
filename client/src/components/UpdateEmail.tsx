@@ -29,7 +29,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
     width: '25%'
   },
   [theme.breakpoints.up('lg')]: {
-    width: '20%'
+    width: '15%'
   }
 }));
 

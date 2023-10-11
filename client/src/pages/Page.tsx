@@ -6,7 +6,7 @@ import { highlight } from '../store/slices/sideBarSlice';
 
 interface PageProps {
   readonly component: React.ReactNode;
-  readonly componentName?: 'Dashboard' | 'Finanzen' | 'Einstellungen';
+  readonly componentName?: 'Dashboard' | 'Finanzen' | 'Kategorien' | 'Einstellungen';
   readonly protected?: boolean;
 }
 

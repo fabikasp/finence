@@ -42,7 +42,7 @@ class UserService:
 
         if password is not None:
             hashed_password = flask_bcrypt.generate_password_hash(password)
-            user.set_password(hashed_password)
+            user.set_password(hashed_password.decode())
 
         db.session.commit()
 

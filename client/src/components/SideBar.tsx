@@ -2,6 +2,8 @@ import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import {
+  CATEGORIES,
+  CATEGORIES_ROUTE,
   DASHBOARD,
   DASHBOARD_ROUTE,
   FINANCES,
@@ -19,6 +21,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import CategoryIcon from '@mui/icons-material/Category';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux';
@@ -105,6 +108,11 @@ export default function SideBar(): React.ReactNode {
       title: FINANCES,
       icon: <AccountBalanceIcon color="secondary" />,
       onClick: () => closeAndNavigate(FINANCES_ROUTE)
+    },
+    {
+      title: CATEGORIES,
+      icon: <CategoryIcon color="secondary" />,
+      onClick: () => closeAndNavigate(CATEGORIES_ROUTE)
     },
     {
       title: SETTINGS,

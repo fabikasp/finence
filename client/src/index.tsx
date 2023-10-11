@@ -10,6 +10,8 @@ import Login from './components/Login';
 import Registration from './components/Registration';
 import Page from './pages/Page';
 import {
+  CATEGORIES,
+  CATEGORIES_ROUTE,
   DASHBOARD,
   DASHBOARD_ROUTE,
   FINANCES,
@@ -25,6 +27,7 @@ import Navigator from './components/Navigator';
 import GlobalProgressIndicator from './components/GlobalProgressIndicator';
 import Settings from './components/Settings';
 import Finances from './components/Finances';
+import Categories from './components/Categories';
 
 dotenv.config();
 
@@ -45,6 +48,10 @@ ReactDOM.createRoot(rootElement).render(
             element={<Page component={<div>Dashboard</div>} componentName={DASHBOARD} protected />}
           />
           <Route path={FINANCES_ROUTE} element={<Page component={<Finances />} componentName={FINANCES} protected />} />
+          <Route
+            path={CATEGORIES_ROUTE}
+            element={<Page component={<Categories />} componentName={CATEGORIES} protected />}
+          />
           <Route path={SETTINGS_ROUTE} element={<Page component={<Settings />} componentName={SETTINGS} protected />} />
           <Route path={REGISTRATION_ROUTE} element={<Page component={<Registration />} />} />
           <Route path={LOGIN_ROUTE} element={<Page component={<Login />} />} />
