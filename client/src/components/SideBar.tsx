@@ -19,7 +19,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import SavingsIcon from '@mui/icons-material/Savings';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import CategoryIcon from '@mui/icons-material/Category';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -106,7 +106,7 @@ export default function SideBar(): React.ReactNode {
     },
     {
       title: FINANCES,
-      icon: <AccountBalanceIcon color="secondary" />,
+      icon: <SavingsIcon color="secondary" />,
       onClick: () => closeAndNavigate(FINANCES_ROUTE)
     },
     {

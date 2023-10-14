@@ -3,18 +3,20 @@ MAX_DESCRIPTION_LENGTH = 200
 
 
 class CategoryValidator:
-    def validate(self, name, description, for_income) -> bool:
-        if not isinstance(name, str) or not isinstance(for_income, bool):
+    def validate_name(self, name) -> bool:
+        if not isinstance(name, str):
             return False
 
-        if description is not None and not isinstance(description, str):
+        return len(name) <= MAX_NAME_LENGTH
+
+    def validate_description(self, description) -> bool:
+        if description is None:
+            return True
+
+        if not isinstance(description, str):
             return False
 
-        if (
-            len(name) > MAX_NAME_LENGTH
-            or description is not None
-            and len(description) > MAX_DESCRIPTION_LENGTH
-        ):
-            return False
+        return len(description) <= MAX_DESCRIPTION_LENGTH
 
-        return True
+    def validate_for_income(self, for_income: bool) -> bool:
+        return isinstance(for_income, bool)

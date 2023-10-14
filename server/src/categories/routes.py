@@ -39,7 +39,11 @@ def create():
     if name is None or for_income is None:
         return {"message": "Category name and affiliation must be given."}, 400
 
-    if not category_validator.validate(name, description, for_income):
+    if (
+        not category_validator.validate_name(name)
+        or not category_validator.validate_description(description)
+        or not category_validator.validate_for_income(for_income)
+    ):
         return {"message": "Invalid data provided."}, 422
 
     user_id = get_jwt()["sub"]
@@ -59,12 +63,50 @@ def create():
 @bp.route(f"/<int:{ID_ENTRY}>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
-def update():
-    pass
+def update(id: int):
+    name = request.json.get(NAME_ENTRY, None)
+    description = request.json.get(DESCRIPTION_ENTRY, None)
+
+    if name is None and description is None:
+        return {"message": "At least one of name and description must be given."}, 400
+
+    category = category_service.read_by_id(id)
+    if category is None:
+        return {"message": "Category not found."}, 404
+
+    user_id = get_jwt()["sub"]
+    if name is not None:
+        if not category_validator.validate_name(name):
+            return {"message": "Invalid name provided."}, 422
+
+        category_with_name_and_affiliation = (
+            category_service.read_by_user_id_and_name_and_for_income(
+                user_id, name, category.get_for_income()
+            )
+        )
+        if (
+            category_with_name_and_affiliation is not None
+            and category_with_name_and_affiliation.get_id() != id
+        ):
+            return {"message": "Category already exists."}, 409
+
+    if description is not None and not category_validator.validate_description(
+        description
+    ):
+        return {"message": "Invalid description provided."}, 422
+
+    updated_category = category_service.update(user_id, name, description)
+
+    return updated_category.jsonify()
 
 
 @bp.route(f"/<int:{ID_ENTRY}>", methods=["DELETE"])
 @jwt_required()
 @cross_origin()
-def delete():
-    pass
+def delete(id: int):
+    category = category_service.delete(id)
+
+    if category is None:
+        return {"message": "Category not found."}, 404
+
+    return {"message": "Successfully deleted category."}

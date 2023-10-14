@@ -32,7 +32,7 @@ export default function Settings(): React.ReactNode {
       <Accordion
         expanded={expanded === CHANGE_EMAIL_PANEL}
         onChange={onAccordionClick(CHANGE_EMAIL_PANEL)}
-        sx={{ borderTop: '1px solid #101820', borderBottom: '1px solid #101820' }}
+        sx={{ borderBottom: '1px solid #101820', borderTopLeftRadius: 5, borderTopRightRadius: 5 }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon color="secondary" />}>
           <Typography>E-Mail-Adresse ändern</Typography>
@@ -56,7 +56,7 @@ export default function Settings(): React.ReactNode {
       <Accordion
         expanded={expanded === DELETE_ACCOUNT_PANEL}
         onChange={onAccordionClick(DELETE_ACCOUNT_PANEL)}
-        sx={{ borderTop: '1px solid #101820' }}
+        sx={{ borderTop: '1px solid #101820', borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon color="secondary" />}>
           <Typography>Konto löschen</Typography>

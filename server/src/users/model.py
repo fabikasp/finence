@@ -5,8 +5,8 @@ class UserModel(db.Model):
     __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(), unique=True)
-    password = db.Column(db.String())
+    email = db.Column(db.String(320), nullable=False, unique=True)
+    password = db.Column(db.String(), nullable=False)
 
     def __init__(self, email: str, password: str):
         self.email = email

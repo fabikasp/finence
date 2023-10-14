@@ -86,11 +86,8 @@ def update():
             return {"message": "Invalid email provided."}, 422
 
         user_with_email = user_service.read_by_email(email)
-        if user_with_email is not None:
-            if user_with_email.get_id() != id:
-                return {"message": "User with this email already exists."}, 409
-
-            return {"message": "Email is already persisted for this user."}, 409
+        if user_with_email is not None and user_with_email.get_id() != id:
+            return {"message": "User with this email already exists."}, 409
 
     if password is not None and not user_validator.validate_password(password):
         return {"message": "Invalid password provided."}, 422
