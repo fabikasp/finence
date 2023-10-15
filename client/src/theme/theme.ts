@@ -62,6 +62,7 @@ export const theme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: {
+          color: '#FCF6F5',
           backgroundColor: '#000000'
         }
       }
@@ -73,6 +74,20 @@ export const theme = createTheme({
           '&:hover': {
             color: '#89ABE3'
           }
+        }
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#232F3B'
+        }
+      }
+    },
+    MuiDialogContentText: {
+      styleOverrides: {
+        root: {
+          color: '#FCF6F5'
         }
       }
     }

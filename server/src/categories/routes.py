@@ -109,4 +109,4 @@ def delete(id: int):
     if category is None:
         return {"message": "Category not found."}, 404
 
-    return {"message": "Successfully deleted category."}
+    return category.jsonify()

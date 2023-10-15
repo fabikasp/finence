@@ -22,8 +22,10 @@ const StyledAlert = styled(Alert)<StyledAlertProps>(({ theme, severity }) => {
 
   return {
     border: `2px solid ${colorMapping[severity]}`,
-    color: colorMapping[severity],
     '& .MuiAlert-icon': {
+      color: colorMapping[severity]
+    },
+    '& .MuiAlert-action': {
       color: colorMapping[severity]
     }
   };

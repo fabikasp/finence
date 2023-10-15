@@ -6,6 +6,7 @@ import sideBarReducer from './slices/sideBarSlice';
 import snackBarReducer from './slices/snackBarSlice';
 import registrationReducer from './slices/registrationSlice';
 import loginReducer from './slices/loginSlice';
+import categoriesReducer from './slices/categoriesSlice';
 import settingsReducer from './slices/settingsSlice';
 import rootSaga from '../sagas/rootSaga';
 
@@ -19,6 +20,7 @@ const store = configureStore({
     snackBar: snackBarReducer,
     registration: registrationReducer,
     login: loginReducer,
+    categories: categoriesReducer,
     settings: settingsReducer
   },
   middleware(getDefaultMiddleware) {
