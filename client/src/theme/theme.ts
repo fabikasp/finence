@@ -62,7 +62,6 @@ export const theme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: {
-          color: '#FCF6F5',
           backgroundColor: '#000000'
         }
       }

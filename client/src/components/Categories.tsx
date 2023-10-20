@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Button,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Stack,
-  Tabs,
-  Tab
-} from '@mui/material';
+import { Box, Button, Chip, ChipProps, Stack, Tabs, Tab, CardActionArea } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import EditIcon from '@mui/icons-material/Edit';
-import CancelIcon from '@mui/icons-material/Cancel';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useDispatch } from 'react-redux';
-import { deleteCategory, loadCategories } from '../store/actions';
+import { loadCategories } from '../store/actions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import DeleteCategory from './DeleteCategory';
+import { setDeletedCategoryId, setViewedCategory } from '../store/slices/categoriesSlice';
+import ViewCategory from './ViewCategory';
 
 const INCOME_TAB = 'income';
 const EXPENSES_TAB = 'expenses';
@@ -34,21 +22,11 @@ const StyledStack = styled(Stack)(() => ({
   marginTop: 20
 }));
 
-const StyledChip = styled(Chip)(({ theme }) => ({
+const StyledChip = styled(Chip)<ChipProps & { component: React.ElementType }>(({ theme }) => ({
+  width: 'auto',
   border: `2px solid ${theme.palette.primary.main}`,
-  '& .MuiChip-icon': {
-    marginRight: 5,
-    order: 1
-  },
-  '& .MuiChip-icon:hover': {
-    color: theme.palette.primary.main
-  },
   '& .MuiChip-deleteIcon': {
-    color: theme.palette.secondary.main,
-    order: 2
-  },
-  '& .MuiChip-deleteIcon:hover': {
-    color: theme.palette.error.main
+    color: theme.palette.secondary.main
   }
 }));
 
@@ -66,7 +44,6 @@ export default function Categories(): React.ReactNode {
   const dispatch = useDispatch();
 
   const [tab, setTab] = useState(INCOME_TAB);
-  const [deletedCategory, setDeletedCategory] = useState<number | undefined>(undefined);
   const { categories } = useSelector((state: RootState) => state.categories);
 
   useEffect(() => {
@@ -75,12 +52,6 @@ export default function Categories(): React.ReactNode {
 
   const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
     setTab(newTab);
-  };
-
-  const onDeleteDialogClose = () => setDeletedCategory(undefined);
-  const onDeleteClick = () => {
-    dispatch(deleteCategory(deletedCategory!));
-    setDeletedCategory(undefined);
   };
 
   return (
@@ -100,9 +71,9 @@ export default function Categories(): React.ReactNode {
                 key={index}
                 label={category.name}
                 variant="outlined"
-                onDelete={() => setDeletedCategory(category.id)}
-                deleteIcon={<DeleteForeverIcon />}
-                icon={<EditIcon color="secondary" />}
+                component={CardActionArea}
+                onClick={() => dispatch(setViewedCategory(category))}
+                onDelete={() => dispatch(setDeletedCategoryId(category.id))}
               />
             ))}
         </StyledStack>
@@ -110,24 +81,8 @@ export default function Categories(): React.ReactNode {
           Hinzufügen
         </StyledButton>
       </StyledBox>
-
-      <Dialog open={deletedCategory !== undefined} onClose={onDeleteDialogClose}>
-        <DialogTitle>Kategorie löschen</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Wollen Sie diese Kategorie wirklich löschen? Alle verknüpften Einnahmen und Ausgaben erhalten eine leere
-            Kategorie.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" startIcon={<CancelIcon />} onClick={onDeleteDialogClose}>
-            Abbrechen
-          </Button>
-          <Button variant="contained" color="error" startIcon={<DeleteForeverIcon />} onClick={onDeleteClick}>
-            Löschen
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ViewCategory />
+      <DeleteCategory />
     </>
   );
 }
