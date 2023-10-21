@@ -1,12 +1,10 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface Navigator {
-  path: string | undefined;
+  path?: string;
 }
 
-const initialState: Navigator = {
-  path: undefined
-};
+const initialState: Navigator = {};
 
 const navigatorSlice = createSlice({
   name: 'navigator',

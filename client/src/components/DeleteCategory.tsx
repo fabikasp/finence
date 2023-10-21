@@ -15,8 +15,7 @@ import { useDispatch } from 'react-redux';
 import { deleteCategory } from '../store/actions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { assertNonNullable } from '../utils/assert';
-import { setDeletedCategoryId } from '../store/slices/categoriesSlice';
+import { setDeletedCategory } from '../store/slices/categoriesSlice';
 
 const StyledIconButton = styled(IconButton)(() => ({
   position: 'absolute',
@@ -26,17 +25,13 @@ const StyledIconButton = styled(IconButton)(() => ({
 
 export default function DeleteCategory(): React.ReactNode {
   const dispatch = useDispatch();
-  const { deletedCategoryId } = useSelector((state: RootState) => state.categories);
+  const { deletedCategory } = useSelector((state: RootState) => state.categories);
 
-  const onClose = () => dispatch(setDeletedCategoryId(undefined));
-  const onDelete = () => {
-    assertNonNullable(deletedCategoryId);
-    dispatch(deleteCategory(deletedCategoryId));
-    dispatch(setDeletedCategoryId(undefined));
-  };
+  const onClose = () => dispatch(setDeletedCategory(undefined));
+  const onDelete = () => dispatch(deleteCategory());
 
   return (
-    <Dialog fullWidth open={deletedCategoryId !== undefined} onClose={onClose}>
+    <Dialog fullWidth open={deletedCategory !== undefined} onClose={onClose}>
       <DialogTitle>Kategorie löschen</DialogTitle>
       <StyledIconButton onClick={onClose}>
         <CloseIcon color="secondary" />
@@ -48,6 +43,7 @@ export default function DeleteCategory(): React.ReactNode {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
+        <Button onClick={onClose}>Abbrechen</Button>
         <Button variant="contained" color="error" startIcon={<DeleteForeverIcon />} onClick={onDelete}>
           Löschen
         </Button>

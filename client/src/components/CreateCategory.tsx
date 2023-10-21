@@ -43,7 +43,7 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   }
 }));
 
-export default function ViewCategory(): React.ReactNode {
+export default function CreateCategory(): React.ReactNode {
   const dispatch = useDispatch();
   const { createdCategory } = useSelector((state: RootState) => state.categories);
 

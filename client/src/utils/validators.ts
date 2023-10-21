@@ -7,6 +7,9 @@ const MAX_EMAIL_LENGTH = 320;
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
+const MAX_CATEGORY_NAME_LENGTH = 50;
+const MAX_CATEGORY_DESCRIPTION_LENGTH = 200;
+
 export function validateEmail(email: string, login?: boolean): string {
   if (email === '') {
     return 'Die E-Mail-Adresse darf nicht leer sein.';
@@ -51,4 +54,20 @@ export function validateRepeatedPassword(repeatedPassword: string, password: str
 
 export function validateConfirmation(confirmation: string): string {
   return confirmation !== CONFIRMATION_TEXT ? `Die Eingabe muss dem Wort „${CONFIRMATION_TEXT}“ entsprechen.` : '';
+}
+
+export function validateCategoryName(categoryName: string): string {
+  if (categoryName === '') {
+    return 'Der Name darf nicht leer sein.';
+  }
+
+  return categoryName.length > MAX_CATEGORY_NAME_LENGTH
+    ? `Der Name darf maximal ${MAX_CATEGORY_NAME_LENGTH} Zeichen enthalten.`
+    : '';
+}
+
+export function validateCategoryDescription(categoryDescription: string): string {
+  return categoryDescription.length > MAX_CATEGORY_DESCRIPTION_LENGTH
+    ? `Die Beschreibung darf maximal ${MAX_CATEGORY_DESCRIPTION_LENGTH} Zeichen enthalten.`
+    : '';
 }

@@ -8,4 +8,5 @@ export const updatePassword = createAction('UPDATE_PASSWORD');
 export const deleteAccount = createAction('DELETE_ACCOUNT');
 
 export const loadCategories = createAction('LOAD_CATEGORIES');
-export const deleteCategory = createAction<number>('DELETE_CATEGORY');
+export const createCategory = createAction('CREATE_CATEGORY');
+export const deleteCategory = createAction('DELETE_CATEGORY');

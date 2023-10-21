@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
 const StyledBackdrop = styled(Backdrop)(({ theme }) => ({
-  zIndex: theme.zIndex.drawer + 1
+  zIndex: theme.zIndex.modal + 1
 }));
 
 export default function GlobalProgressIndicator(): React.ReactNode {

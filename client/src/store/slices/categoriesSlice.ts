@@ -14,16 +14,22 @@ export const isCategory = (object: unknown): object is Category => {
   return categoryScheme.safeParse(object).success;
 };
 
+interface CategoryErrors {
+  name: string;
+  description: string;
+}
+
+type EditableCategory = { readonly description: string; errors: CategoryErrors } & Pick<Category, 'name' | 'forIncome'>;
+
 interface Categories {
   readonly categories: Category[];
-  readonly viewedCategory: Category | undefined;
-  readonly deletedCategoryId: number | undefined;
+  readonly createdCategory?: EditableCategory;
+  readonly viewedCategory?: Category;
+  readonly deletedCategory?: Category;
 }
 
 const initialState: Categories = {
-  categories: [],
-  viewedCategory: undefined,
-  deletedCategoryId: undefined
+  categories: []
 };
 
 const categoriesSlice = createSlice({
@@ -31,16 +37,20 @@ const categoriesSlice = createSlice({
   initialState,
   reducers: {
     setCategories: (state: Categories, action: PayloadAction<Category[]>) => ({ ...state, categories: action.payload }),
+    setCreatedCategory: (state: Categories, action: PayloadAction<EditableCategory | undefined>) => ({
+      ...state,
+      createdCategory: action.payload
+    }),
     setViewedCategory: (state: Categories, action: PayloadAction<Category | undefined>) => ({
       ...state,
       viewedCategory: action.payload
     }),
-    setDeletedCategoryId: (state: Categories, action: PayloadAction<number | undefined>) => ({
+    setDeletedCategory: (state: Categories, action: PayloadAction<Category | undefined>) => ({
       ...state,
-      deletedCategoryId: action.payload
+      deletedCategory: action.payload
     })
   }
 });
 
-export const { setCategories, setViewedCategory, setDeletedCategoryId } = categoriesSlice.actions;
+export const { setCategories, setCreatedCategory, setViewedCategory, setDeletedCategory } = categoriesSlice.actions;
 export default categoriesSlice.reducer;

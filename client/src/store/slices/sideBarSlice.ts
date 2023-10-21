@@ -6,8 +6,7 @@ interface SideBar {
 }
 
 const initialState: SideBar = {
-  open: false,
-  highlighted: undefined
+  open: false
 };
 
 const sideBarSlice = createSlice({

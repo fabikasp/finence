@@ -7,8 +7,9 @@ import { loadCategories } from '../store/actions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import DeleteCategory from './DeleteCategory';
-import { setDeletedCategoryId, setViewedCategory } from '../store/slices/categoriesSlice';
+import { setCreatedCategory, setDeletedCategory, setViewedCategory } from '../store/slices/categoriesSlice';
 import ViewCategory from './ViewCategory';
+import CreateCategory from './CreateCategory';
 
 const INCOME_TAB = 'income';
 const EXPENSES_TAB = 'expenses';
@@ -73,14 +74,28 @@ export default function Categories(): React.ReactNode {
                 variant="outlined"
                 component={CardActionArea}
                 onClick={() => dispatch(setViewedCategory(category))}
-                onDelete={() => dispatch(setDeletedCategoryId(category.id))}
+                onDelete={() => dispatch(setDeletedCategory(category))}
               />
             ))}
         </StyledStack>
-        <StyledButton variant="contained" startIcon={<AddCircleIcon />}>
+        <StyledButton
+          variant="contained"
+          startIcon={<AddCircleIcon />}
+          onClick={() =>
+            dispatch(
+              setCreatedCategory({
+                name: '',
+                description: '',
+                forIncome: tab === INCOME_TAB,
+                errors: { name: '', description: '' }
+              })
+            )
+          }
+        >
           Hinzufügen
         </StyledButton>
       </StyledBox>
+      <CreateCategory />
       <ViewCategory />
       <DeleteCategory />
     </>

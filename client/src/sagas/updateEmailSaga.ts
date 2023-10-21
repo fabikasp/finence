@@ -36,7 +36,7 @@ export function* updateEmailSaga(): SagaGenerator<void> {
 
   yield* call(
     fetchSagaFactory(
-      { url: `${USER_URL_PATH_PREFIX}`, method: 'PUT', data: { email } },
+      { url: USER_URL_PATH_PREFIX, method: 'PUT', data: { email } },
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isUpdateEmailResponseData(response.data));
 
