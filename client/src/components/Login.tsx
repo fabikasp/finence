@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
@@ -41,17 +41,27 @@ export default function Login(): React.ReactNode {
     dispatch(setEmail(registrationEmail));
     dispatch(setPassword(registrationPassword));
     dispatch(setErrors({ email: '', password: '' }));
-  }, []);
+  }, [registrationEmail, registrationPassword, dispatch]);
 
-  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setEmail(event.target.value));
-    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value, true) }));
-  };
+  const onEmailChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setEmail(event.target.value));
+      dispatch(setErrors({ ...errors, email: validateEmail(event.target.value, true) }));
+    },
+    [errors, dispatch]
+  );
 
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setPassword(event.target.value));
-    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value, true) }));
-  };
+  const onPasswordChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setPassword(event.target.value));
+      dispatch(setErrors({ ...errors, password: validatePassword(event.target.value, true) }));
+    },
+    [errors, dispatch]
+  );
+
+  const onSecretModeClick = useCallback(() => setSecretMode((state) => !state), []);
+  const onRegister = useCallback(() => navigate(`/${REGISTRATION_ROUTE}`), [navigate]);
+  const onLogin = useCallback(() => dispatch(login()), [dispatch]);
 
   return (
     <>
@@ -84,7 +94,7 @@ export default function Login(): React.ReactNode {
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setSecretMode((state) => !state)}>
+              <IconButton onClick={onSecretModeClick}>
                 {secretMode ? <VisibilityOffIcon color="secondary" /> : <VisibilityIcon color="secondary" />}
               </IconButton>
             </InputAdornment>
@@ -93,15 +103,10 @@ export default function Login(): React.ReactNode {
         error={errors.password !== ''}
         helperText={errors.password}
       />
-      <StyledButton variant="text" onClick={() => navigate(`/${REGISTRATION_ROUTE}`)} sx={{ float: 'left' }}>
+      <StyledButton variant="text" onClick={onRegister} sx={{ float: 'left' }}>
         Registrieren
       </StyledButton>
-      <StyledButton
-        variant="contained"
-        startIcon={<LoginIcon />}
-        onClick={() => dispatch(login())}
-        sx={{ float: 'right' }}
-      >
+      <StyledButton variant="contained" startIcon={<LoginIcon />} onClick={onLogin} sx={{ float: 'right' }}>
         Login
       </StyledButton>
     </>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Box, Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyIcon from '@mui/icons-material/Key';
@@ -39,15 +39,25 @@ export default function UpdatePassword(): React.ReactNode {
 
   const { password, repeatedPassword, errors } = useSelector((state: RootState) => state.settings);
 
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setPassword(event.target.value));
-    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
-  };
+  const onPasswordChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setPassword(event.target.value));
+      dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
+    },
+    [errors, dispatch]
+  );
 
-  const onRepeatedPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setRepeatedPassword(event.target.value));
-    dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
-  };
+  const onRepeatedPasswordChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setRepeatedPassword(event.target.value));
+      dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
+    },
+    [errors, password, dispatch]
+  );
+
+  const onSecretPasswordModeClick = useCallback(() => setSecretPasswordMode((state) => !state), []);
+  const onSecretRepeatedPasswordModeClick = useCallback(() => setSecretRepeatedPasswordMode((state) => !state), []);
+  const onUpdate = useCallback(() => dispatch(updatePassword()), [dispatch]);
 
   return (
     <Box display="flex" flexDirection="column">
@@ -65,7 +75,7 @@ export default function UpdatePassword(): React.ReactNode {
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setSecretPasswordMode((state) => !state)}>
+              <IconButton onClick={onSecretPasswordModeClick}>
                 {secretPasswordMode ? <VisibilityOffIcon color="secondary" /> : <VisibilityIcon color="secondary" />}
               </IconButton>
             </InputAdornment>
@@ -88,7 +98,7 @@ export default function UpdatePassword(): React.ReactNode {
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setSecretRepeatedPasswordMode((state) => !state)}>
+              <IconButton onClick={onSecretRepeatedPasswordModeClick}>
                 {secretRepeatedPasswordMode ? (
                   <VisibilityOffIcon color="secondary" />
                 ) : (
@@ -101,7 +111,7 @@ export default function UpdatePassword(): React.ReactNode {
         error={errors.repeatedPassword !== ''}
         helperText={errors.repeatedPassword}
       />
-      <StyledButton variant="contained" startIcon={<EditIcon />} onClick={() => dispatch(updatePassword())}>
+      <StyledButton variant="contained" startIcon={<EditIcon />} onClick={onUpdate}>
         Ändern
       </StyledButton>
     </Box>

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import {
@@ -98,34 +98,40 @@ export default function SideBar(): React.ReactNode {
     [open, dispatch, navigate]
   );
 
-  const sideBarItems: SideBarItem[] = [
-    {
-      title: DASHBOARD,
-      icon: <LeaderboardIcon color="secondary" />,
-      onClick: () => closeAndNavigate(DASHBOARD_ROUTE)
-    },
-    {
-      title: FINANCES,
-      icon: <SavingsIcon color="secondary" />,
-      onClick: () => closeAndNavigate(FINANCES_ROUTE)
-    },
-    {
-      title: CATEGORIES,
-      icon: <CategoryIcon color="secondary" />,
-      onClick: () => closeAndNavigate(CATEGORIES_ROUTE)
-    },
-    {
-      title: SETTINGS,
-      icon: <SettingsIcon color="secondary" />,
-      onClick: () => closeAndNavigate(SETTINGS_ROUTE)
-    },
-    { title: LOGOUT, icon: <LogoutIcon color="secondary" />, onClick: () => dispatch(logout()) }
-  ];
+  const onToggle = useCallback(() => dispatch(toggle()), [dispatch]);
+  const onLogout = useCallback(() => dispatch(logout()), [dispatch]);
+
+  const sideBarItems: SideBarItem[] = useMemo(
+    () => [
+      {
+        title: DASHBOARD,
+        icon: <LeaderboardIcon color="secondary" />,
+        onClick: () => closeAndNavigate(DASHBOARD_ROUTE)
+      },
+      {
+        title: FINANCES,
+        icon: <SavingsIcon color="secondary" />,
+        onClick: () => closeAndNavigate(FINANCES_ROUTE)
+      },
+      {
+        title: CATEGORIES,
+        icon: <CategoryIcon color="secondary" />,
+        onClick: () => closeAndNavigate(CATEGORIES_ROUTE)
+      },
+      {
+        title: SETTINGS,
+        icon: <SettingsIcon color="secondary" />,
+        onClick: () => closeAndNavigate(SETTINGS_ROUTE)
+      },
+      { title: LOGOUT, icon: <LogoutIcon color="secondary" />, onClick: onLogout }
+    ],
+    [closeAndNavigate, onLogout]
+  );
 
   return (
     <SideBarWrapper variant="permanent" open={open}>
       <SideBarHeader>
-        <IconButton onClick={() => dispatch(toggle())}>
+        <IconButton onClick={onToggle}>
           {theme.direction === 'rtl' ? <ChevronRightIcon color="secondary" /> : <ChevronLeftIcon color="secondary" />}
         </IconButton>
       </SideBarHeader>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Button,
   Dialog,
@@ -47,40 +47,50 @@ export default function CreateCategory(): React.ReactNode {
   const dispatch = useDispatch();
   const { createdCategory } = useSelector((state: RootState) => state.categories);
 
-  const onClose = () => dispatch(setCreatedCategory(undefined));
+  const onClose = useCallback(() => dispatch(setCreatedCategory(undefined)), [dispatch]);
+  const onSave = useCallback(() => dispatch(createCategory()), [dispatch]);
 
-  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    assertNonNullable(createdCategory);
-    dispatch(
-      setCreatedCategory({
-        ...createdCategory,
-        name: event.target.value,
-        errors: {
-          ...createdCategory.errors,
-          name: validateCategoryName(event.target.value)
-        }
-      })
-    );
-  };
+  const onNameChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(createdCategory);
+      dispatch(
+        setCreatedCategory({
+          ...createdCategory,
+          name: event.target.value,
+          errors: {
+            ...createdCategory.errors,
+            name: validateCategoryName(event.target.value)
+          }
+        })
+      );
+    },
+    [createdCategory, dispatch]
+  );
 
-  const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    assertNonNullable(createdCategory);
-    dispatch(
-      setCreatedCategory({
-        ...createdCategory,
-        description: event.target.value,
-        errors: {
-          ...createdCategory.errors,
-          description: validateCategoryDescription(event.target.value)
-        }
-      })
-    );
-  };
+  const onDescriptionChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(createdCategory);
+      dispatch(
+        setCreatedCategory({
+          ...createdCategory,
+          description: event.target.value,
+          errors: {
+            ...createdCategory.errors,
+            description: validateCategoryDescription(event.target.value)
+          }
+        })
+      );
+    },
+    [createdCategory, dispatch]
+  );
 
-  const onToggleButtonClick = (forIncome: boolean) => {
-    assertNonNullable(createdCategory);
-    dispatch(setCreatedCategory({ ...createdCategory, forIncome }));
-  };
+  const onToggleButtonClick = useCallback(
+    (forIncome: boolean) => {
+      assertNonNullable(createdCategory);
+      dispatch(setCreatedCategory({ ...createdCategory, forIncome }));
+    },
+    [createdCategory, dispatch]
+  );
 
   return (
     <Dialog fullWidth open={createdCategory !== undefined} onClose={onClose}>
@@ -132,7 +142,7 @@ export default function CreateCategory(): React.ReactNode {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button variant="contained" startIcon={<SaveIcon />} onClick={() => dispatch(createCategory())}>
+        <Button variant="contained" startIcon={<SaveIcon />} onClick={onSave}>
           Speichern
         </Button>
       </DialogActions>

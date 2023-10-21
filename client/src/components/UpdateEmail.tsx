@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Box, Button, InputAdornment, TextField } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
@@ -40,12 +40,17 @@ export default function UpdateEmail(): React.ReactNode {
 
   useEffect(() => {
     dispatch(setEmail(localStorage.getItem(USER_EMAIL_KEY) ?? ''));
-  }, []);
+  }, [dispatch]);
 
-  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setEmail(event.target.value));
-    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
-  };
+  const onEmailChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setEmail(event.target.value));
+      dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
+    },
+    [errors, dispatch]
+  );
+
+  const onUpdate = useCallback(() => dispatch(updateEmail()), [dispatch]);
 
   return (
     <Box display="flex" flexDirection="column">
@@ -68,7 +73,7 @@ export default function UpdateEmail(): React.ReactNode {
         disabled={localStorage.getItem(USER_EMAIL_KEY) === email}
         variant="contained"
         startIcon={<EditIcon />}
-        onClick={() => dispatch(updateEmail())}
+        onClick={onUpdate}
       >
         Ändern
       </StyledButton>

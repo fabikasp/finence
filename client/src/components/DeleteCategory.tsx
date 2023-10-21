@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Button,
   Dialog,
@@ -27,8 +27,8 @@ export default function DeleteCategory(): React.ReactNode {
   const dispatch = useDispatch();
   const { deletedCategory } = useSelector((state: RootState) => state.categories);
 
-  const onClose = () => dispatch(setDeletedCategory(undefined));
-  const onDelete = () => dispatch(deleteCategory());
+  const onClose = useCallback(() => dispatch(setDeletedCategory(undefined)), [dispatch]);
+  const onDelete = useCallback(() => dispatch(deleteCategory()), [dispatch]);
 
   return (
     <Dialog fullWidth open={deletedCategory !== undefined} onClose={onClose}>

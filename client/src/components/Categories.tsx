@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Button, Chip, ChipProps, Stack, Tabs, Tab, CardActionArea } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -7,7 +7,13 @@ import { loadCategories } from '../store/actions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import DeleteCategory from './DeleteCategory';
-import { setCreatedCategory, setDeletedCategory, setViewedCategory } from '../store/slices/categoriesSlice';
+import {
+  Category,
+  convertToEditableCategory,
+  setCreatedCategory,
+  setDeletedCategory,
+  setViewedCategory
+} from '../store/slices/categoriesSlice';
 import ViewCategory from './ViewCategory';
 import CreateCategory from './CreateCategory';
 
@@ -49,11 +55,29 @@ export default function Categories(): React.ReactNode {
 
   useEffect(() => {
     dispatch(loadCategories());
-  }, []);
+  }, [dispatch]);
 
-  const handleTabChange = (_: React.SyntheticEvent, newTab: string) => {
-    setTab(newTab);
-  };
+  const handleTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
+
+  const onChipClick = useCallback(
+    (category: Category) => dispatch(setViewedCategory(convertToEditableCategory(category))),
+    [dispatch]
+  );
+
+  const onDeleteClick = useCallback((category: Category) => dispatch(setDeletedCategory(category)), [dispatch]);
+
+  const onCreateClick = useCallback(
+    () =>
+      dispatch(
+        setCreatedCategory({
+          name: '',
+          description: '',
+          forIncome: tab === INCOME_TAB,
+          errors: { name: '', description: '' }
+        })
+      ),
+    [tab, dispatch]
+  );
 
   return (
     <>
@@ -73,25 +97,12 @@ export default function Categories(): React.ReactNode {
                 label={category.name}
                 variant="outlined"
                 component={CardActionArea}
-                onClick={() => dispatch(setViewedCategory(category))}
-                onDelete={() => dispatch(setDeletedCategory(category))}
+                onClick={() => onChipClick(category)}
+                onDelete={() => onDeleteClick(category)}
               />
             ))}
         </StyledStack>
-        <StyledButton
-          variant="contained"
-          startIcon={<AddCircleIcon />}
-          onClick={() =>
-            dispatch(
-              setCreatedCategory({
-                name: '',
-                description: '',
-                forIncome: tab === INCOME_TAB,
-                errors: { name: '', description: '' }
-              })
-            )
-          }
-        >
+        <StyledButton variant="contained" startIcon={<AddCircleIcon />} onClick={onCreateClick}>
           Hinzufügen
         </StyledButton>
       </StyledBox>

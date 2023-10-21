@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Alert, AlertColor, AlertProps, Snackbar, Slide, SlideProps } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
@@ -41,7 +41,7 @@ export default function SnackBar(): React.ReactNode {
     setOpen(snackBar.open);
   }, [snackBar]);
 
-  const onClose = () => setOpen(false);
+  const onClose = useCallback(() => setOpen(false), []);
 
   return (
     <Snackbar

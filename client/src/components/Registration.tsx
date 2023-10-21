@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
@@ -41,22 +41,36 @@ export default function RegistrationForm(): React.ReactNode {
     dispatch(setPassword(loginPassword));
     dispatch(setRepeatedPassword(''));
     dispatch(setErrors({ email: '', password: '', repeatedPassword: '' }));
-  }, []);
+  }, [loginEmail, loginPassword, dispatch]);
 
-  const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setEmail(event.target.value));
-    dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
-  };
+  const onEmailChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setEmail(event.target.value));
+      dispatch(setErrors({ ...errors, email: validateEmail(event.target.value) }));
+    },
+    [errors, dispatch]
+  );
 
-  const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setPassword(event.target.value));
-    dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
-  };
+  const onPasswordChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setPassword(event.target.value));
+      dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
+    },
+    [errors, dispatch]
+  );
 
-  const onRepeatedPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setRepeatedPassword(event.target.value));
-    dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
-  };
+  const onRepeatedPasswordChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setRepeatedPassword(event.target.value));
+      dispatch(setErrors({ ...errors, repeatedPassword: validateRepeatedPassword(event.target.value, password) }));
+    },
+    [errors, password, dispatch]
+  );
+
+  const onSecretPasswordModeClick = useCallback(() => setSecretPasswordMode((state) => !state), []);
+  const onSecretRepeatedPasswordModeClick = useCallback(() => setSecretRepeatedPasswordMode((state) => !state), []);
+  const onLogin = useCallback(() => navigate(`/${LOGIN_ROUTE}`), [navigate]);
+  const onRegister = useCallback(() => dispatch(register()), [dispatch]);
 
   return (
     <>
@@ -89,7 +103,7 @@ export default function RegistrationForm(): React.ReactNode {
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setSecretPasswordMode((state) => !state)}>
+              <IconButton onClick={onSecretPasswordModeClick}>
                 {secretPasswordMode ? <VisibilityOffIcon color="secondary" /> : <VisibilityIcon color="secondary" />}
               </IconButton>
             </InputAdornment>
@@ -112,7 +126,7 @@ export default function RegistrationForm(): React.ReactNode {
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setSecretRepeatedPasswordMode((state) => !state)}>
+              <IconButton onClick={onSecretRepeatedPasswordModeClick}>
                 {secretRepeatedPasswordMode ? (
                   <VisibilityOffIcon color="secondary" />
                 ) : (
@@ -125,15 +139,10 @@ export default function RegistrationForm(): React.ReactNode {
         error={errors.repeatedPassword !== ''}
         helperText={errors.repeatedPassword}
       />
-      <StyledButton variant="text" onClick={() => navigate(`/${LOGIN_ROUTE}`)} sx={{ float: 'left' }}>
+      <StyledButton variant="text" onClick={onLogin} sx={{ float: 'left' }}>
         Login
       </StyledButton>
-      <StyledButton
-        variant="contained"
-        startIcon={<PersonAddIcon />}
-        onClick={() => dispatch(register())}
-        sx={{ float: 'right' }}
-      >
+      <StyledButton variant="contained" startIcon={<PersonAddIcon />} onClick={onRegister} sx={{ float: 'right' }}>
         Registrieren
       </StyledButton>
     </>

@@ -15,7 +15,7 @@ export default function Navigator(): React.ReactNode {
       navigate(navigationPath);
       dispatch(reset());
     }
-  }, [navigationPath]);
+  }, [navigationPath, navigate, dispatch]);
 
   return <></>;
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -39,10 +39,15 @@ export default function DeleteAccount(): React.ReactNode {
 
   const { confirmation, errors } = useSelector((state: RootState) => state.settings);
 
-  const onConfirmationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setConfirmation(event.target.value));
-    dispatch(setErrors({ ...errors, confirmation: validateConfirmation(event.target.value) }));
-  };
+  const onConfirmationChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setConfirmation(event.target.value));
+      dispatch(setErrors({ ...errors, confirmation: validateConfirmation(event.target.value) }));
+    },
+    [errors, dispatch]
+  );
+
+  const onDelete = useCallback(() => dispatch(deleteAccount()), [dispatch]);
 
   return (
     <Box display="flex" flexDirection="column">
@@ -73,7 +78,7 @@ export default function DeleteAccount(): React.ReactNode {
         variant="contained"
         color="error"
         startIcon={<DeleteForeverIcon />}
-        onClick={() => dispatch(deleteAccount())}
+        onClick={onDelete}
       >
         Konto löschen
       </StyledButton>

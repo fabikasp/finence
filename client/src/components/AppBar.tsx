@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import MuiAppBar, { AppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import { SIDEBAR_WIDTH } from '../utils/const';
@@ -47,10 +47,12 @@ export default function AppBar(): React.ReactNode {
   const dispatch = useDispatch();
   const sideBarOpen = useSelector((state: RootState) => state.sideBar.open);
 
+  const onToggle = useCallback(() => dispatch(toggle()), [dispatch]);
+
   return (
     <AppBarWrapper position="fixed" sideBarOpen={sideBarOpen}>
       <Toolbar variant="dense">
-        <StyledIconButton sideBarOpen={sideBarOpen} color="inherit" onClick={() => dispatch(toggle())} edge="start">
+        <StyledIconButton sideBarOpen={sideBarOpen} color="inherit" onClick={onToggle} edge="start">
           <MenuIcon />
         </StyledIconButton>
         <Box component="img" src={Logo} width={30} />

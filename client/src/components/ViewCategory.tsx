@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Button,
   Dialog,
@@ -12,15 +12,14 @@ import {
   ToggleButton
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import CategoryIcon from '@mui/icons-material/Category';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { createCategory } from '../store/actions';
-import { setCreatedCategory } from '../store/slices/categoriesSlice';
+import { setViewedCategory } from '../store/slices/categoriesSlice';
 import { assertNonNullable } from '../utils/assert';
 import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
 
@@ -35,9 +34,12 @@ const StyledTextField = styled(TextField)(() => ({
 }));
 
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
-  border: `1px solid ${theme.palette.primary.main}`,
-  color: theme.palette.primary.main,
-  '&.Mui-selected, &.Mui-selected:hover': {
+  '&.Mui-disabled': {
+    opacity: 0.8,
+    border: `1px solid ${theme.palette.primary.main}`,
+    color: theme.palette.primary.main
+  },
+  '&.Mui-selected': {
     backgroundColor: theme.palette.primary.main,
     color: '#000000'
   }
@@ -45,46 +47,47 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
 
 export default function ViewCategory(): React.ReactNode {
   const dispatch = useDispatch();
-  const { createdCategory } = useSelector((state: RootState) => state.categories);
+  const { viewedCategory } = useSelector((state: RootState) => state.categories);
 
-  const onClose = () => dispatch(setCreatedCategory(undefined));
+  const onClose = useCallback(() => dispatch(setViewedCategory(undefined)), [dispatch]);
 
-  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    assertNonNullable(createdCategory);
-    dispatch(
-      setCreatedCategory({
-        ...createdCategory,
-        name: event.target.value,
-        errors: {
-          ...createdCategory.errors,
-          name: validateCategoryName(event.target.value)
-        }
-      })
-    );
-  };
+  const onNameChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(viewedCategory);
+      dispatch(
+        setViewedCategory({
+          ...viewedCategory,
+          name: event.target.value,
+          errors: {
+            ...viewedCategory.errors,
+            name: validateCategoryName(event.target.value)
+          }
+        })
+      );
+    },
+    [viewedCategory, dispatch]
+  );
 
-  const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    assertNonNullable(createdCategory);
-    dispatch(
-      setCreatedCategory({
-        ...createdCategory,
-        description: event.target.value,
-        errors: {
-          ...createdCategory.errors,
-          description: validateCategoryDescription(event.target.value)
-        }
-      })
-    );
-  };
-
-  const onToggleButtonClick = (forIncome: boolean) => {
-    assertNonNullable(createdCategory);
-    dispatch(setCreatedCategory({ ...createdCategory, forIncome }));
-  };
+  const onDescriptionChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(viewedCategory);
+      dispatch(
+        setViewedCategory({
+          ...viewedCategory,
+          description: event.target.value,
+          errors: {
+            ...viewedCategory.errors,
+            description: validateCategoryDescription(event.target.value)
+          }
+        })
+      );
+    },
+    [viewedCategory, dispatch]
+  );
 
   return (
-    <Dialog fullWidth open={createdCategory !== undefined} onClose={onClose}>
-      <DialogTitle>Kategorie hinzufügen</DialogTitle>
+    <Dialog fullWidth open={viewedCategory !== undefined} onClose={onClose}>
+      <DialogTitle>Kategorie verwalten</DialogTitle>
       <StyledIconButton onClick={onClose}>
         <CloseIcon color="secondary" />
       </StyledIconButton>
@@ -92,7 +95,7 @@ export default function ViewCategory(): React.ReactNode {
         <StyledTextField
           fullWidth
           label="Name"
-          value={createdCategory?.name ?? ''}
+          value={viewedCategory?.name ?? ''}
           onChange={onNameChange}
           InputProps={{
             startAdornment: (
@@ -101,15 +104,15 @@ export default function ViewCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(createdCategory?.errors?.name ?? '') !== ''}
-          helperText={createdCategory?.errors?.name ?? ''}
+          error={(viewedCategory?.errors?.name ?? '') !== ''}
+          helperText={viewedCategory?.errors?.name ?? ''}
         />
         <StyledTextField
           fullWidth
           label="Beschreibung"
           multiline
           rows={4}
-          value={createdCategory?.description ?? ''}
+          value={viewedCategory?.description ?? ''}
           onChange={onDescriptionChange}
           InputProps={{
             startAdornment: (
@@ -118,22 +121,22 @@ export default function ViewCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(createdCategory?.errors?.description ?? '') !== ''}
-          helperText={createdCategory?.errors?.description ?? ''}
+          error={(viewedCategory?.errors?.description ?? '') !== ''}
+          helperText={viewedCategory?.errors?.description ?? ''}
         />
-        <ToggleButtonGroup color="primary" value={createdCategory?.forIncome}>
-          <StyledToggleButton size="small" value={true} onClick={() => onToggleButtonClick(true)}>
+        <ToggleButtonGroup color="primary" value={viewedCategory?.forIncome} disabled>
+          <StyledToggleButton size="small" value={true}>
             Für Einnahmen
           </StyledToggleButton>
-          <StyledToggleButton size="small" value={false} onClick={() => onToggleButtonClick(false)}>
+          <StyledToggleButton size="small" value={false}>
             Für Ausgaben
           </StyledToggleButton>
         </ToggleButtonGroup>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button variant="contained" startIcon={<SaveIcon />} onClick={() => dispatch(createCategory())}>
-          Speichern
+        <Button variant="contained" startIcon={<EditIcon />}>
+          Ändern
         </Button>
       </DialogActions>
     </Dialog>

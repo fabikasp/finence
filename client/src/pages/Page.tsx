@@ -15,7 +15,7 @@ export default function Page(props: PageProps): React.ReactNode {
 
   useEffect(() => {
     dispatch(highlight(props.componentName));
-  }, [props.componentName]);
+  }, [props.componentName, dispatch]);
 
   if (!props.protected) {
     return <UnauthenticatedPage>{props.component}</UnauthenticatedPage>;

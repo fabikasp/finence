@@ -8,7 +8,7 @@ const categoryScheme = z.object({
   forIncome: z.boolean()
 });
 
-type Category = z.infer<typeof categoryScheme>;
+export type Category = z.infer<typeof categoryScheme>;
 
 export const isCategory = (object: unknown): object is Category => {
   return categoryScheme.safeParse(object).success;
@@ -21,10 +21,20 @@ interface CategoryErrors {
 
 type EditableCategory = { readonly description: string; errors: CategoryErrors } & Pick<Category, 'name' | 'forIncome'>;
 
+export const convertToEditableCategory = (category: Category): EditableCategory => ({
+  name: category.name,
+  description: category.description ?? '',
+  forIncome: category.forIncome,
+  errors: {
+    name: '',
+    description: ''
+  }
+});
+
 interface Categories {
   readonly categories: Category[];
   readonly createdCategory?: EditableCategory;
-  readonly viewedCategory?: Category;
+  readonly viewedCategory?: EditableCategory;
   readonly deletedCategory?: Category;
 }
 
@@ -41,7 +51,7 @@ const categoriesSlice = createSlice({
       ...state,
       createdCategory: action.payload
     }),
-    setViewedCategory: (state: Categories, action: PayloadAction<Category | undefined>) => ({
+    setViewedCategory: (state: Categories, action: PayloadAction<EditableCategory | undefined>) => ({
       ...state,
       viewedCategory: action.payload
     }),

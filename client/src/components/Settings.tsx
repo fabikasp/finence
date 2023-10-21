@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useDispatch } from 'react-redux';
@@ -13,19 +13,21 @@ const DELETE_ACCOUNT_PANEL = 'account';
 
 export default function Settings(): React.ReactNode {
   const dispatch = useDispatch();
-
   const [expanded, setExpanded] = useState('');
 
   useEffect(
     () => () => {
       dispatch(clear());
     },
-    []
+    [dispatch]
   );
 
-  const onAccordionClick = (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpanded(isExpanded ? panel : '');
-  };
+  const onAccordionClick = useCallback(
+    (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : '');
+    },
+    []
+  );
 
   return (
     <>
