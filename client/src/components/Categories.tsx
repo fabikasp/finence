@@ -60,11 +60,11 @@ export default function Categories(): React.ReactNode {
   const handleTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
 
   const onChipClick = useCallback(
-    (category: Category) => dispatch(setViewedCategory(convertToEditableCategory(category))),
+    (category: Category) => () => dispatch(setViewedCategory(convertToEditableCategory(category))),
     [dispatch]
   );
 
-  const onDeleteClick = useCallback((category: Category) => dispatch(setDeletedCategory(category)), [dispatch]);
+  const onDeleteClick = useCallback((category: Category) => () => dispatch(setDeletedCategory(category)), [dispatch]);
 
   const onCreateClick = useCallback(
     () =>
@@ -97,8 +97,8 @@ export default function Categories(): React.ReactNode {
                 label={category.name}
                 variant="outlined"
                 component={CardActionArea}
-                onClick={() => onChipClick(category)}
-                onDelete={() => onDeleteClick(category)}
+                onClick={onChipClick(category)}
+                onDelete={onDeleteClick(category)}
               />
             ))}
         </StyledStack>

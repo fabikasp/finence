@@ -88,7 +88,7 @@ export default function SideBar(): React.ReactNode {
   const { open, highlighted } = useSelector((state: RootState) => state.sideBar);
 
   const closeAndNavigate = useCallback(
-    (routeName: string): void => {
+    (routeName: string) => () => {
       if (open) {
         dispatch(toggle());
       }
@@ -106,22 +106,22 @@ export default function SideBar(): React.ReactNode {
       {
         title: DASHBOARD,
         icon: <LeaderboardIcon color="secondary" />,
-        onClick: () => closeAndNavigate(DASHBOARD_ROUTE)
+        onClick: closeAndNavigate(DASHBOARD_ROUTE)
       },
       {
         title: FINANCES,
         icon: <SavingsIcon color="secondary" />,
-        onClick: () => closeAndNavigate(FINANCES_ROUTE)
+        onClick: closeAndNavigate(FINANCES_ROUTE)
       },
       {
         title: CATEGORIES,
         icon: <CategoryIcon color="secondary" />,
-        onClick: () => closeAndNavigate(CATEGORIES_ROUTE)
+        onClick: closeAndNavigate(CATEGORIES_ROUTE)
       },
       {
         title: SETTINGS,
         icon: <SettingsIcon color="secondary" />,
-        onClick: () => closeAndNavigate(SETTINGS_ROUTE)
+        onClick: closeAndNavigate(SETTINGS_ROUTE)
       },
       { title: LOGOUT, icon: <LogoutIcon color="secondary" />, onClick: onLogout }
     ],

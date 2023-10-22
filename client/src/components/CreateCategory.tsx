@@ -85,7 +85,7 @@ export default function CreateCategory(): React.ReactNode {
   );
 
   const onToggleButtonClick = useCallback(
-    (forIncome: boolean) => {
+    (_: React.SyntheticEvent, forIncome: boolean) => {
       assertNonNullable(createdCategory);
       dispatch(setCreatedCategory({ ...createdCategory, forIncome }));
     },
@@ -132,10 +132,10 @@ export default function CreateCategory(): React.ReactNode {
           helperText={createdCategory?.errors?.description ?? ''}
         />
         <ToggleButtonGroup color="primary" value={createdCategory?.forIncome}>
-          <StyledToggleButton size="small" value={true} onClick={() => onToggleButtonClick(true)}>
+          <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>
             Für Einnahmen
           </StyledToggleButton>
-          <StyledToggleButton size="small" value={false} onClick={() => onToggleButtonClick(false)}>
+          <StyledToggleButton size="small" value={false} onClick={onToggleButtonClick}>
             Für Ausgaben
           </StyledToggleButton>
         </ToggleButtonGroup>
