@@ -1,9 +1,9 @@
 import { call, put, select, SagaGenerator } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
 import { AxiosError, AxiosResponse } from 'axios';
-import { USER_EMAIL_KEY, USER_URL_PATH_PREFIX } from '../utils/const';
+import { USER_URL_PATH_PREFIX } from '../utils/const';
 import { evoke } from '../store/slices/snackBarSlice';
-import { setEmail, setErrors } from '../store/slices/settingsSlice';
+import { setComparativeEmail, setErrors } from '../store/slices/settingsSlice';
 import { RootState } from '../store/store';
 import { validateEmail } from '../utils/validators';
 import { assertTrue } from '../utils/assert';
@@ -12,6 +12,7 @@ import z from 'zod';
 const USER_ALREADY_EXISTS_ERROR = 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse.';
 
 const updateEmailResponseDataScheme = z.object({
+  id: z.number(),
   email: z.string()
 });
 
@@ -40,9 +41,7 @@ export function* updateEmailSaga(): SagaGenerator<void> {
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isUpdateEmailResponseData(response.data));
 
-        localStorage.setItem(USER_EMAIL_KEY, response.data.email);
-        yield* put(setEmail(response.data.email));
-
+        yield* put(setComparativeEmail(response.data.email));
         yield* put(evoke({ severity: 'success', message: 'Ihre E-Mail-Adresse wurde erfolgreich geändert.' }));
       },
       function* handleError(error: AxiosError) {

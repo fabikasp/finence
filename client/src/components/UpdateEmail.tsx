@@ -8,8 +8,7 @@ import { setEmail, setErrors } from '../store/slices/settingsSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { validateEmail } from '../utils/validators';
-import { updateEmail } from '../store/actions';
-import { USER_EMAIL_KEY } from '../utils/const';
+import { loadUser, updateEmail } from '../store/actions';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: 20,
@@ -35,11 +34,10 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 export default function UpdateEmail(): React.ReactNode {
   const dispatch = useDispatch();
-
-  const { email, errors } = useSelector((state: RootState) => state.settings);
+  const { email, comparativeEmail, errors } = useSelector((state: RootState) => state.settings);
 
   useEffect(() => {
-    dispatch(setEmail(localStorage.getItem(USER_EMAIL_KEY) ?? ''));
+    dispatch(loadUser());
   }, [dispatch]);
 
   const onEmailChange = useCallback(
@@ -70,7 +68,7 @@ export default function UpdateEmail(): React.ReactNode {
         helperText={errors.email}
       />
       <StyledButton
-        disabled={localStorage.getItem(USER_EMAIL_KEY) === email}
+        disabled={email === comparativeEmail}
         variant="contained"
         startIcon={<EditIcon />}
         onClick={onUpdate}

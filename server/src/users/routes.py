@@ -35,7 +35,7 @@ def register():
     user = user_service.create(email, password)
     access_token = create_access_token(identity=user.get_id())
 
-    return {"accessToken": access_token, "email": user.get_email()}
+    return {"accessToken": access_token} | user.jsonify()
 
 
 @bp.route("/login", methods=["POST"])
@@ -58,7 +58,7 @@ def login():
 
     access_token = create_access_token(identity=user.get_id())
 
-    return {"accessToken": access_token, "email": user.get_email()}
+    return {"accessToken": access_token} | user.jsonify()
 
 
 @bp.route("/logout", methods=["POST"])
@@ -69,6 +69,14 @@ def logout():
     redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 
     return {"message": "Successfully logged out user."}
+
+
+@bp.route("/")
+@jwt_required()
+@cross_origin()
+def read():
+    user_id = get_jwt()["sub"]
+    return user_service.read_by_id(user_id).jsonify()
 
 
 @bp.route("/", methods=["PUT"])
@@ -98,7 +106,7 @@ def update():
     if user is None:
         return {"message": "User not found."}, 404
 
-    return {"email": user.get_email()}
+    return user.jsonify()
 
 
 @bp.route("/", methods=["DELETE"])
@@ -115,4 +123,4 @@ def delete():
     jti = jwt["jti"]
     redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 
-    return {"message": "Successfully deleted user."}
+    return user.jsonify()

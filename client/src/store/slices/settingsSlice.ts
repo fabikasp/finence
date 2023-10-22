@@ -9,6 +9,7 @@ interface SettingsErrors {
 
 interface Settings {
   readonly email: string;
+  readonly comparativeEmail: string;
   readonly password: string;
   readonly repeatedPassword: string;
   readonly confirmation: string;
@@ -17,6 +18,7 @@ interface Settings {
 
 const initialState: Settings = {
   email: '',
+  comparativeEmail: '',
   password: '',
   repeatedPassword: '',
   confirmation: '',
@@ -33,6 +35,10 @@ const settingsSlice = createSlice({
   initialState,
   reducers: {
     setEmail: (state: Settings, action: PayloadAction<string>) => ({ ...state, email: action.payload }),
+    setComparativeEmail: (state: Settings, action: PayloadAction<string>) => ({
+      ...state,
+      comparativeEmail: action.payload
+    }),
     setPassword: (state: Settings, action: PayloadAction<string>) => ({ ...state, password: action.payload }),
     setRepeatedPassword: (state: Settings, action: PayloadAction<string>) => ({
       ...state,
@@ -50,5 +56,6 @@ const settingsSlice = createSlice({
   }
 });
 
-export const { setEmail, setPassword, setRepeatedPassword, setConfirmation, setErrors, clear } = settingsSlice.actions;
+export const { setEmail, setComparativeEmail, setPassword, setRepeatedPassword, setConfirmation, setErrors, clear } =
+  settingsSlice.actions;
 export default settingsSlice.reducer;

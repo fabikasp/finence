@@ -1,27 +1,15 @@
 import { call, put, select, SagaGenerator } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
-import { AxiosError, AxiosResponse } from 'axios';
-import { DASHBOARD_ROUTE, USER_EMAIL_KEY, USER_URL_PATH_PREFIX } from '../utils/const';
-import { assertTrue } from '../utils/assert';
+import { AxiosError } from 'axios';
+import { DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { navigate } from '../store/slices/navigatorSlice';
 import { evoke } from '../store/slices/snackBarSlice';
 import { clear as clearRegistration, setErrors } from '../store/slices/registrationSlice';
 import { clear as clearLogin } from '../store/slices/loginSlice';
 import { validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
 import { RootState } from '../store/store';
-import z from 'zod';
 
 const USER_ALREADY_EXISTS_ERROR = 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse.';
-
-const registrationResponseDataScheme = z.object({
-  email: z.string()
-});
-
-type RegistrationResponseData = z.infer<typeof registrationResponseDataScheme>;
-
-const isRegistrationResponseData = (object: unknown): object is RegistrationResponseData => {
-  return registrationResponseDataScheme.safeParse(object).success;
-};
 
 export function* registrationSaga(): SagaGenerator<void> {
   yield* put(setErrors({ email: '', password: '', repeatedPassword: '' }));
@@ -41,11 +29,7 @@ export function* registrationSaga(): SagaGenerator<void> {
   yield* call(
     fetchSagaFactory(
       { url: `${USER_URL_PATH_PREFIX}register`, method: 'POST', data: { email, password } },
-      function* handleResponse(response: AxiosResponse) {
-        assertTrue(isRegistrationResponseData(response.data));
-
-        localStorage.setItem(USER_EMAIL_KEY, response.data.email);
-
+      function* handleResponse() {
         yield* put(clearRegistration());
         yield* put(clearLogin());
         yield* put(evoke({ severity: 'success', message: 'Sie haben sich erfolgreich registriert.' }));
