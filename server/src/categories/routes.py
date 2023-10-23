@@ -94,7 +94,7 @@ def update(id: int):
     if not category_validator.validate_description(description):
         return {"message": "Invalid description provided."}, 422
 
-    updated_category = category_service.update(user_id, name, description)
+    updated_category = category_service.update(id, name, description)
 
     return updated_category.jsonify()
 
