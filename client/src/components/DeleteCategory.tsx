@@ -31,7 +31,7 @@ export default function DeleteCategory(): React.ReactNode {
   const onDelete = useCallback(() => dispatch(deleteCategory()), [dispatch]);
 
   return (
-    <Dialog fullWidth open={deletedCategory !== undefined} onClose={onClose}>
+    <Dialog fullWidth open={!!deletedCategory} onClose={onClose}>
       <DialogTitle>Kategorie löschen</DialogTitle>
       <StyledIconButton onClick={onClose}>
         <CloseIcon color="secondary" />

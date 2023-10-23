@@ -7,7 +7,11 @@ class CategoryValidator:
         if not isinstance(name, str):
             return False
 
-        return len(name) <= MAX_NAME_LENGTH
+        nameLen = len(name)
+        if nameLen == 0:
+            return False
+
+        return nameLen <= MAX_NAME_LENGTH
 
     def validate_description(self, description) -> bool:
         if description is None:

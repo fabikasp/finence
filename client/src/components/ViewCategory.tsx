@@ -22,6 +22,7 @@ import { RootState } from '../store/store';
 import { setViewedCategory } from '../store/slices/categoriesSlice';
 import { assertNonNullable } from '../utils/assert';
 import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
+import { updateCategory } from '../store/actions';
 
 const StyledIconButton = styled(IconButton)(() => ({
   position: 'absolute',
@@ -50,6 +51,7 @@ export default function ViewCategory(): React.ReactNode {
   const { viewedCategory } = useSelector((state: RootState) => state.categories);
 
   const onClose = useCallback(() => dispatch(setViewedCategory(undefined)), [dispatch]);
+  const onUpdate = useCallback(() => dispatch(updateCategory()), [dispatch]);
 
   const onNameChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,8 +87,20 @@ export default function ViewCategory(): React.ReactNode {
     [viewedCategory, dispatch]
   );
 
+  const categoryIsNotEdited = useCallback(
+    () =>
+      viewedCategory?.name === viewedCategory?.comparativeName &&
+      viewedCategory?.description === viewedCategory?.comparativeDescription,
+    [
+      viewedCategory?.name,
+      viewedCategory?.comparativeName,
+      viewedCategory?.description,
+      viewedCategory?.comparativeDescription
+    ]
+  );
+
   return (
-    <Dialog fullWidth open={viewedCategory !== undefined} onClose={onClose}>
+    <Dialog fullWidth open={!!viewedCategory} onClose={onClose}>
       <DialogTitle>Kategorie verwalten</DialogTitle>
       <StyledIconButton onClick={onClose}>
         <CloseIcon color="secondary" />
@@ -135,7 +149,7 @@ export default function ViewCategory(): React.ReactNode {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button variant="contained" startIcon={<EditIcon />}>
+        <Button disabled={categoryIsNotEdited()} variant="contained" startIcon={<EditIcon />} onClick={onUpdate}>
           Ändern
         </Button>
       </DialogActions>

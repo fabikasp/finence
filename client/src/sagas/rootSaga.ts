@@ -8,6 +8,7 @@ import {
   login,
   logout,
   register,
+  updateCategory,
   updateEmail,
   updatePassword
 } from '../store/actions';
@@ -21,6 +22,7 @@ import { loadCategoriesSaga } from './loadCategoriesSaga';
 import { deleteCategorySaga } from './deleteCategorySaga';
 import { createCategorySaga } from './createCategorySaga';
 import { loadUserSaga } from './loadUserSaga';
+import { updateCategorySaga } from './updateCategorySaga';
 
 export default function* rootSaga(): SagaGenerator<void> {
   yield* takeEvery(register, registrationSaga);
@@ -32,5 +34,6 @@ export default function* rootSaga(): SagaGenerator<void> {
   yield* takeEvery(deleteAccount, deleteAccountSaga);
   yield* takeEvery(loadCategories, loadCategoriesSaga);
   yield* takeEvery(createCategory, createCategorySaga);
+  yield* takeEvery(updateCategory, updateCategorySaga);
   yield* takeEvery(deleteCategory, deleteCategorySaga);
 }

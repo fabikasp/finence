@@ -10,4 +10,5 @@ export const deleteAccount = createAction('DELETE_ACCOUNT');
 
 export const loadCategories = createAction('LOAD_CATEGORIES');
 export const createCategory = createAction('CREATE_CATEGORY');
+export const updateCategory = createAction('UPDATE_CATEGORY');
 export const deleteCategory = createAction('DELETE_CATEGORY');

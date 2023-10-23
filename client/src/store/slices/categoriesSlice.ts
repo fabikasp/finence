@@ -19,11 +19,18 @@ interface CategoryErrors {
   description: string;
 }
 
-type EditableCategory = { readonly description: string; errors: CategoryErrors } & Pick<Category, 'name' | 'forIncome'>;
+type CreateableCategory = { readonly description: string; errors: CategoryErrors } & Pick<
+  Category,
+  'name' | 'forIncome'
+>;
+type UpdateableCategory = CreateableCategory & { id: number; comparativeName: string; comparativeDescription: string };
 
-export const convertToEditableCategory = (category: Category): EditableCategory => ({
+export const convertToUpdateableCategory = (category: Category): UpdateableCategory => ({
+  id: category.id,
   name: category.name,
+  comparativeName: category.name,
   description: category.description ?? '',
+  comparativeDescription: category.description ?? '',
   forIncome: category.forIncome,
   errors: {
     name: '',
@@ -33,8 +40,8 @@ export const convertToEditableCategory = (category: Category): EditableCategory 
 
 interface Categories {
   readonly categories: Category[];
-  readonly createdCategory?: EditableCategory;
-  readonly viewedCategory?: EditableCategory;
+  readonly createdCategory?: CreateableCategory;
+  readonly viewedCategory?: UpdateableCategory;
   readonly deletedCategory?: Category;
 }
 
@@ -47,11 +54,11 @@ const categoriesSlice = createSlice({
   initialState,
   reducers: {
     setCategories: (state: Categories, action: PayloadAction<Category[]>) => ({ ...state, categories: action.payload }),
-    setCreatedCategory: (state: Categories, action: PayloadAction<EditableCategory | undefined>) => ({
+    setCreatedCategory: (state: Categories, action: PayloadAction<CreateableCategory | undefined>) => ({
       ...state,
       createdCategory: action.payload
     }),
-    setViewedCategory: (state: Categories, action: PayloadAction<EditableCategory | undefined>) => ({
+    setViewedCategory: (state: Categories, action: PayloadAction<UpdateableCategory | undefined>) => ({
       ...state,
       viewedCategory: action.payload
     }),

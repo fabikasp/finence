@@ -48,7 +48,7 @@ export default function CreateCategory(): React.ReactNode {
   const { createdCategory } = useSelector((state: RootState) => state.categories);
 
   const onClose = useCallback(() => dispatch(setCreatedCategory(undefined)), [dispatch]);
-  const onSave = useCallback(() => dispatch(createCategory()), [dispatch]);
+  const onCreate = useCallback(() => dispatch(createCategory()), [dispatch]);
 
   const onNameChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +93,7 @@ export default function CreateCategory(): React.ReactNode {
   );
 
   return (
-    <Dialog fullWidth open={createdCategory !== undefined} onClose={onClose}>
+    <Dialog fullWidth open={!!createdCategory} onClose={onClose}>
       <DialogTitle>Kategorie hinzufügen</DialogTitle>
       <StyledIconButton onClick={onClose}>
         <CloseIcon color="secondary" />
@@ -142,7 +142,7 @@ export default function CreateCategory(): React.ReactNode {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button variant="contained" startIcon={<SaveIcon />} onClick={onSave}>
+        <Button variant="contained" startIcon={<SaveIcon />} onClick={onCreate}>
           Speichern
         </Button>
       </DialogActions>

@@ -37,8 +37,7 @@ class CategoryService:
         if name is not None:
             category.set_name(name)
 
-        if description is not None:
-            category.set_description(description)
+        category.set_description(description)
 
         db.session.commit()
 

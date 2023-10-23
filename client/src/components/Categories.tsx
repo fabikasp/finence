@@ -9,7 +9,7 @@ import { RootState } from '../store/store';
 import DeleteCategory from './DeleteCategory';
 import {
   Category,
-  convertToEditableCategory,
+  convertToUpdateableCategory,
   setCreatedCategory,
   setDeletedCategory,
   setViewedCategory
@@ -60,7 +60,7 @@ export default function Categories(): React.ReactNode {
   const handleTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
 
   const onChipClick = useCallback(
-    (category: Category) => () => dispatch(setViewedCategory(convertToEditableCategory(category))),
+    (category: Category) => () => dispatch(setViewedCategory(convertToUpdateableCategory(category))),
     [dispatch]
   );
 

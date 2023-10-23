@@ -48,6 +48,7 @@ export default function DeleteAccount(): React.ReactNode {
   );
 
   const onDelete = useCallback(() => dispatch(deleteAccount()), [dispatch]);
+  const confirmationTextNotMatching = useCallback(() => confirmation !== CONFIRMATION_TEXT, [confirmation]);
 
   return (
     <Box display="flex" flexDirection="column">
@@ -74,7 +75,7 @@ export default function DeleteAccount(): React.ReactNode {
         helperText={errors.confirmation}
       />
       <StyledButton
-        disabled={confirmation !== CONFIRMATION_TEXT}
+        disabled={confirmationTextNotMatching()}
         variant="contained"
         color="error"
         startIcon={<DeleteForeverIcon />}

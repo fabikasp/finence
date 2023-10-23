@@ -49,6 +49,7 @@ export default function UpdateEmail(): React.ReactNode {
   );
 
   const onUpdate = useCallback(() => dispatch(updateEmail()), [dispatch]);
+  const emailIsNotEdited = useCallback(() => email === comparativeEmail, [email, comparativeEmail]);
 
   return (
     <Box display="flex" flexDirection="column">
@@ -67,12 +68,7 @@ export default function UpdateEmail(): React.ReactNode {
         error={errors.email !== ''}
         helperText={errors.email}
       />
-      <StyledButton
-        disabled={email === comparativeEmail}
-        variant="contained"
-        startIcon={<EditIcon />}
-        onClick={onUpdate}
-      >
+      <StyledButton disabled={emailIsNotEdited()} variant="contained" startIcon={<EditIcon />} onClick={onUpdate}>
         Ändern
       </StyledButton>
     </Box>

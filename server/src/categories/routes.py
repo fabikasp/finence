@@ -84,15 +84,14 @@ def update(id: int):
                 user_id, name, category.get_for_income()
             )
         )
+
         if (
             category_with_name_and_affiliation is not None
             and category_with_name_and_affiliation.get_id() != id
         ):
             return {"message": "Category already exists."}, 409
 
-    if description is not None and not category_validator.validate_description(
-        description
-    ):
+    if not category_validator.validate_description(description):
         return {"message": "Invalid description provided."}, 422
 
     updated_category = category_service.update(user_id, name, description)
