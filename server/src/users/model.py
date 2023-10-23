@@ -8,6 +8,11 @@ class UserModel(db.Model):
     email = db.Column(db.String(320), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
 
+    __table_args__ = (
+        db.CheckConstraint("char_length(email) > 0", name="email_not_empty"),
+        db.CheckConstraint("char_length(password) > 0", name="password_not_empty"),
+    )
+
     def __init__(self, email: str, password: str):
         self.email = email
         self.password = password

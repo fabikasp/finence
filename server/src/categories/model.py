@@ -12,7 +12,9 @@ class CategoryModel(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(200))
     for_income = db.Column(db.Boolean, nullable=False)
+
     __table_args__ = (
+        db.CheckConstraint("char_length(name) > 0", name="name_not_empty"),
         db.UniqueConstraint("user_id", "name", "for_income", name="unique_category"),
     )
 
