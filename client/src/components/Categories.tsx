@@ -57,7 +57,7 @@ export default function Categories(): React.ReactNode {
     dispatch(loadCategories());
   }, [dispatch]);
 
-  const handleTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
+  const onTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
 
   const onChipClick = useCallback(
     (category: Category) => () => dispatch(setViewedCategory(convertToUpdateableCategory(category))),
@@ -83,7 +83,7 @@ export default function Categories(): React.ReactNode {
     <>
       <StyledBox display="flex" flexDirection="column">
         <Box sx={{ borderBottom: 1, borderColor: '#000000' }}>
-          <Tabs value={tab} onChange={handleTabChange}>
+          <Tabs value={tab} onChange={onTabChange}>
             <Tab value={INCOME_TAB} label="Einnahmen" />
             <Tab value={EXPENSES_TAB} label="Ausgaben" />
           </Tabs>

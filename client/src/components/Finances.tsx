@@ -1,20 +1,34 @@
-import React, { useState } from 'react';
-import { Tabs, Tab } from '@mui/material';
+import React, { useState, useCallback } from 'react';
+import { Box, Tabs, Tab } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import IntervalSelection from './IntervalSelection';
 
-export default function Finances(): React.ReactNode {
-  const [value, setValue] = useState('one');
+const TOTAL_TAB = 'total';
+const INCOME_TAB = 'income';
+const EXPENSES_TAB = 'expenses';
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
+const StyledBox = styled(Box)(() => ({
+  backgroundColor: '#232F3B',
+  padding: '15px 20px 20px'
+}));
+
+export default function Categories(): React.ReactNode {
+  const [tab, setTab] = useState(TOTAL_TAB);
+
+  const onTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
+
+  // TODO: Tabelle anfügen
 
   return (
-    <>
-      <Tabs value={value} onChange={handleChange}>
-        <Tab value="one" label="Gesamt" />
-        <Tab value="two" label="Einnahmen" />
-        <Tab value="three" label="Ausgaben" />
-      </Tabs>
-    </>
+    <StyledBox display="flex" flexDirection="column">
+      <Box sx={{ borderBottom: 1, borderColor: '#000000' }}>
+        <Tabs value={tab} onChange={onTabChange}>
+          <Tab value={TOTAL_TAB} label="Gesamt" />
+          <Tab value={INCOME_TAB} label="Einnahmen" />
+          <Tab value={EXPENSES_TAB} label="Ausgaben" />
+        </Tabs>
+      </Box>
+      <IntervalSelection />
+    </StyledBox>
   );
 }

@@ -52,6 +52,42 @@ export const theme = createTheme({
         }
       }
     },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#FCF6F5'
+          },
+          '& .MuiSvgIcon-root': {
+            color: '#FCF6F5'
+          },
+          '&.Mui-focused .MuiSvgIcon-root': {
+            color: '#89ABE3'
+          }
+        }
+      }
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: '#FCF6F5'
+        }
+      }
+    },
+    MuiMenu: {
+      styleOverrides: {
+        list: {
+          backgroundColor: '#232F3B'
+        }
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          padding: 15
+        }
+      }
+    },
     MuiAccordion: {
       styleOverrides: {
         root: {
@@ -62,7 +98,8 @@ export const theme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: {
-          backgroundColor: '#101820'
+          color: '#000000',
+          backgroundColor: '#FCF6F5'
         }
       }
     },

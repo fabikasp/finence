@@ -1,40 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Alert, AlertColor, AlertProps, Snackbar, Slide, SlideProps } from '@mui/material';
+import { Snackbar, Slide, SlideProps, Alert } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { styled } from '@mui/material/styles';
-
-interface StyledAlertProps extends AlertProps {
-  readonly severity: AlertColor;
-}
-
-interface ColorMapping {
-  [severity: string]: string;
-}
-
-const StyledAlert = styled(Alert)<StyledAlertProps>(({ theme, severity }) => {
-  const colorMapping: ColorMapping = {
-    info: theme.palette.info.main,
-    success: theme.palette.success.main,
-    warning: theme.palette.warning.main,
-    error: theme.palette.error.main
-  };
-
-  return {
-    border: `2px solid ${colorMapping[severity]}`,
-    color: colorMapping[severity],
-    '& .MuiAlert-icon': {
-      color: colorMapping[severity]
-    }
-  };
-});
 
 function SnackbarTransition(props: SlideProps) {
   return <Slide {...props} direction="left" />;
 }
 
 export default function SnackBar(): React.ReactNode {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const snackBar = useSelector((state: RootState) => state.snackBar);
 
   useEffect(() => {
@@ -51,9 +28,17 @@ export default function SnackBar(): React.ReactNode {
       TransitionComponent={SnackbarTransition}
       onClose={onClose}
     >
-      <StyledAlert severity={snackBar.severity} onClose={onClose}>
+      <Alert
+        severity={snackBar.severity}
+        onClose={onClose}
+        iconMapping={{
+          success: <CheckCircleIcon />,
+          warning: <WarningIcon />,
+          error: <ErrorIcon />
+        }}
+      >
         {snackBar.message}
-      </StyledAlert>
+      </Alert>
     </Snackbar>
   );
 }
