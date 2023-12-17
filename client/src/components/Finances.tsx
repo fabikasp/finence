@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import IntervalSelection from './IntervalSelection';
+import BookingsTable from './BookingsTable';
 
 const TOTAL_TAB = 'total';
 const INCOME_TAB = 'income';
@@ -12,23 +12,21 @@ const StyledBox = styled(Box)(() => ({
   padding: '15px 20px 20px'
 }));
 
-export default function Categories(): React.ReactNode {
+export default function Finances(): React.ReactNode {
   const [tab, setTab] = useState(TOTAL_TAB);
 
   const onTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
 
-  // TODO: Tabelle anfügen
-
   return (
     <StyledBox display="flex" flexDirection="column">
-      <Box sx={{ borderBottom: 1, borderColor: '#000000' }}>
+      <Box sx={{ borderBottom: 1, borderColor: '#000000', marginBottom: 2 }}>
         <Tabs value={tab} onChange={onTabChange}>
           <Tab value={TOTAL_TAB} label="Gesamt" />
           <Tab value={INCOME_TAB} label="Einnahmen" />
           <Tab value={EXPENSES_TAB} label="Ausgaben" />
         </Tabs>
       </Box>
-      <IntervalSelection />
+      <BookingsTable />
     </StyledBox>
   );
 }

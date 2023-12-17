@@ -126,6 +126,13 @@ export const theme = createTheme({
           color: '#FCF6F5'
         }
       }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#101820'
+        }
+      }
     }
   }
 });
