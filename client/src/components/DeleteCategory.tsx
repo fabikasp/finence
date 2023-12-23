@@ -1,27 +1,12 @@
 import React, { useCallback } from 'react';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  IconButton
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import CloseIcon from '@mui/icons-material/Close';
+import { Button, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useDispatch } from 'react-redux';
 import { deleteCategory } from '../store/actions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { setDeletedCategory } from '../store/slices/categoriesSlice';
-
-const StyledIconButton = styled(IconButton)(() => ({
-  position: 'absolute',
-  right: 8,
-  top: 8
-}));
+import Dialog from './Dialog';
 
 export default function DeleteCategory(): React.ReactNode {
   const dispatch = useDispatch();
@@ -31,11 +16,7 @@ export default function DeleteCategory(): React.ReactNode {
   const onDelete = useCallback(() => dispatch(deleteCategory()), [dispatch]);
 
   return (
-    <Dialog fullWidth open={!!deletedCategory} onClose={onClose}>
-      <DialogTitle>Kategorie löschen</DialogTitle>
-      <StyledIconButton onClick={onClose}>
-        <CloseIcon color="secondary" />
-      </StyledIconButton>
+    <Dialog open={!!deletedCategory} title="Kategorie löschen" onClose={onClose}>
       <DialogContent>
         <DialogContentText>
           Durch die Löschung dieser Kategorie werden alle damit verknüpften Einnahmen und Ausgaben ebenfalls gelöscht.

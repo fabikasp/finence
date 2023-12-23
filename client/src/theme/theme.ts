@@ -127,10 +127,10 @@ export const theme = createTheme({
         }
       }
     },
-    MuiPaper: {
+    MuiPopover: {
       styleOverrides: {
-        root: {
-          backgroundColor: '#101820'
+        paper: {
+          backgroundColor: '#232F3B'
         }
       }
     }

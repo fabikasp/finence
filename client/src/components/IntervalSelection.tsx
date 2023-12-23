@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Box, FormControl, InputLabel, Select, SelectChangeEvent, MenuItem, IconButton, Zoom } from '@mui/material';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { DesktopDatePicker, DesktopDatePickerProps } from '@mui/x-date-pickers/DesktopDatePicker';
 import SwapVerticalCircleOutlinedIcon from '@mui/icons-material/SwapVerticalCircleOutlined';
 import { Theme, styled } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -12,6 +12,52 @@ const YEAR_LABEL = 'Jahr';
 const MONTH_LABEL = 'Monat';
 const DAY_LABEL = 'Tag';
 
+const StyledDatePicker = styled(DesktopDatePicker<Moment>)(({ theme }) => ({
+  margin: '20px 0px 10px',
+  '& .MuiSvgIcon-root': {
+    color: theme.palette.secondary.main
+  },
+  [theme.breakpoints.up('md')]: {
+    width: '30%'
+  }
+}));
+
+type DatePickerProps = Pick<DesktopDatePickerProps<Moment>, 'value' | 'minDate' | 'maxDate'> & {
+  onChange: (value: Moment | null) => void;
+  style: object;
+};
+
+function DatePicker(props: DatePickerProps): React.ReactNode {
+  const { value, minDate, maxDate, onChange, style } = props;
+
+  return (
+    <StyledDatePicker
+      label="Von"
+      value={value}
+      minDate={minDate}
+      maxDate={maxDate}
+      slotProps={{
+        layout: {
+          sx: (theme: Theme) => ({
+            backgroundColor: '#232F3B',
+            '& .MuiTypography-root': {
+              color: theme.palette.secondary.main,
+              fontSize: 13,
+              fontWeight: 'bold'
+            },
+            '& .MuiSvgIcon-root': {
+              color: theme.palette.secondary.main
+            }
+          })
+        },
+        textField: { size: 'small' }
+      }}
+      onChange={onChange}
+      sx={style}
+    />
+  );
+}
+
 const StyledFormControl = styled(FormControl)(() => ({
   margin: '20px 0px 10px'
 }));
@@ -20,40 +66,21 @@ const StyledIconButton = styled(IconButton)(() => ({
   margin: '5px 10px 0px'
 }));
 
-const StyledDatePicker = styled(DesktopDatePicker<Moment>)(({ theme }) => ({
-  margin: '20px 0px 10px',
-  '& .MuiSvgIcon-root': {
-    color: theme.palette.secondary.main
-  },
-  [theme.breakpoints.up('lg')]: {
-    width: '30%'
-  }
-}));
-
-const DatePickerLayout = (theme: Theme) => ({
-  backgroundColor: '#232F3B',
-  '& .MuiTypography-root': {
-    color: theme.palette.secondary.main,
-    fontSize: 13,
-    fontWeight: 'bold'
-  },
-  '& .MuiSvgIcon-root': {
-    color: theme.palette.secondary.main
-  }
-});
-
 export default function IntervalSelection(): React.ReactNode {
   moment.locale('de');
-  const inFiftyYears = moment().add(50, 'year');
-  const fiftyYearsAgo = moment().subtract(50, 'year');
+  const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
+  const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
 
-  const years = Array.from({ length: 101 }, (_, i) => (inFiftyYears.toDate().getFullYear() - i).toString());
-  const months = moment.monthsShort();
-  const days = (year: string, monthName: string) => {
+  const years = useMemo(
+    () => Array.from({ length: 101 }, (_, i) => (inFiftyYears.toDate().getFullYear() - i).toString()),
+    [inFiftyYears]
+  );
+  const months = useMemo(() => moment.monthsShort(), []);
+  const days = useCallback((year: string, monthName: string) => {
     const countDays = moment(year + '-' + moment().month(monthName).format('M'), 'YYYY-MM').daysInMonth();
 
     return Array.from({ length: countDays }, (_, i) => (++i).toString());
-  };
+  }, []);
 
   const [customIntervalEnabled, setCustomIntervalEnabled] = useState(false);
   const [year, setYear] = useState<string>(years[Math.round((years.length - 1) / 2)]);
@@ -62,41 +89,53 @@ export default function IntervalSelection(): React.ReactNode {
   const [startDate, setStartDate] = useState<Moment | null>(moment());
   const [endDate, setEndDate] = useState<Moment | null>(null);
 
-  const onSwap = () => setCustomIntervalEnabled((state) => !state);
+  const onSwap = useCallback(() => setCustomIntervalEnabled((state) => !state), []);
 
-  const onYearChange = (event: SelectChangeEvent) => {
-    if (day !== '') {
-      setDay('');
-    }
+  const onYearChange = useCallback(
+    (event: SelectChangeEvent) => {
+      if (day !== '') {
+        setDay('');
+      }
 
-    setYear(event.target.value);
-  };
+      setYear(event.target.value);
+    },
+    [day]
+  );
 
-  const onMonthChange = (event: SelectChangeEvent) => {
-    if (day !== '') {
-      setDay('');
-    }
+  const onMonthChange = useCallback(
+    (event: SelectChangeEvent) => {
+      if (day !== '') {
+        setDay('');
+      }
 
-    setMonth(event.target.value);
-  };
+      setMonth(event.target.value);
+    },
+    [day]
+  );
 
-  const onDayChange = (event: SelectChangeEvent) => setDay(event.target.value);
+  const onDayChange = useCallback((event: SelectChangeEvent) => setDay(event.target.value), []);
 
-  const onStartDateChange = (value: Moment | null) => {
-    if (value !== null && endDate !== null && moment(value).isAfter(endDate)) {
-      setEndDate(null);
-    }
+  const onStartDateChange = useCallback(
+    (value: Moment | null) => {
+      if (value !== null && endDate !== null && moment(value).isAfter(endDate)) {
+        setEndDate(null);
+      }
 
-    setStartDate(value);
-  };
+      setStartDate(value);
+    },
+    [endDate]
+  );
 
-  const onEndDateChange = (value: Moment | null) => {
-    if (value !== null && startDate !== null && moment(value).isBefore(startDate)) {
-      setStartDate(null);
-    }
+  const onEndDateChange = useCallback(
+    (value: Moment | null) => {
+      if (value !== null && startDate !== null && moment(value).isBefore(startDate)) {
+        setStartDate(null);
+      }
 
-    setEndDate(value);
-  };
+      setEndDate(value);
+    },
+    [startDate]
+  );
 
   return (
     <Box display="flex">
@@ -167,33 +206,19 @@ export default function IntervalSelection(): React.ReactNode {
         <Zoom in style={{ transitionDelay: '0ms' }}>
           <Box>
             <LocalizationProvider dateAdapter={AdapterMoment}>
-              <StyledDatePicker
-                label="Von"
+              <DatePicker
                 value={startDate}
                 minDate={fiftyYearsAgo}
                 maxDate={inFiftyYears}
-                slotProps={{
-                  layout: {
-                    sx: DatePickerLayout
-                  },
-                  textField: { size: 'small' }
-                }}
                 onChange={onStartDateChange}
-                sx={{ '& .MuiInputBase-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 } }}
+                style={{ '& .MuiInputBase-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 } }}
               />
-              <StyledDatePicker
-                label="Bis"
+              <DatePicker
                 value={endDate}
                 minDate={fiftyYearsAgo}
                 maxDate={inFiftyYears}
-                slotProps={{
-                  layout: {
-                    sx: DatePickerLayout
-                  },
-                  textField: { size: 'small' }
-                }}
                 onChange={onEndDateChange}
-                sx={{ '& .MuiInputBase-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } }}
+                style={{ '& .MuiInputBase-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } }}
               />
             </LocalizationProvider>
           </Box>

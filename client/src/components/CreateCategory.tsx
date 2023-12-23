@@ -1,11 +1,8 @@
 import React, { useCallback } from 'react';
 import {
   Button,
-  Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
   InputAdornment,
   TextField,
   ToggleButtonGroup,
@@ -13,7 +10,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
-import CloseIcon from '@mui/icons-material/Close';
 import CategoryIcon from '@mui/icons-material/Category';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useDispatch } from 'react-redux';
@@ -23,12 +19,7 @@ import { createCategory } from '../store/actions';
 import { setCreatedCategory } from '../store/slices/categoriesSlice';
 import { assertNonNullable } from '../utils/assert';
 import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
-
-const StyledIconButton = styled(IconButton)(() => ({
-  position: 'absolute',
-  right: 8,
-  top: 8
-}));
+import Dialog from './Dialog';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -93,11 +84,7 @@ export default function CreateCategory(): React.ReactNode {
   );
 
   return (
-    <Dialog fullWidth open={!!createdCategory} onClose={onClose}>
-      <DialogTitle>Kategorie hinzufügen</DialogTitle>
-      <StyledIconButton onClick={onClose}>
-        <CloseIcon color="secondary" />
-      </StyledIconButton>
+    <Dialog open={!!createdCategory} title="Kategorie hinzufügen" onClose={onClose}>
       <DialogContent>
         <StyledTextField
           fullWidth

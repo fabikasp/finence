@@ -9,16 +9,16 @@ import {
   ToggleButton
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import CategoryIcon from '@mui/icons-material/Category';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { setViewedCategory } from '../store/slices/categoriesSlice';
+import { createCategory } from '../store/actions';
+import { setCreatedCategory } from '../store/slices/categoriesSlice';
 import { assertNonNullable } from '../utils/assert';
 import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
-import { updateCategory } from '../store/actions';
 import Dialog from './Dialog';
 
 const StyledTextField = styled(TextField)(() => ({
@@ -26,77 +26,70 @@ const StyledTextField = styled(TextField)(() => ({
 }));
 
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
-  '&.Mui-disabled': {
-    opacity: 0.8,
-    border: `1px solid ${theme.palette.primary.main}`,
-    color: theme.palette.primary.main
-  },
-  '&.Mui-selected': {
+  border: `1px solid ${theme.palette.primary.main}`,
+  color: theme.palette.primary.main,
+  '&.Mui-selected, &.Mui-selected:hover': {
     backgroundColor: theme.palette.primary.main,
     color: '#000000'
   }
 }));
 
-export default function ViewCategory(): React.ReactNode {
+export default function CreateBooking(): React.ReactNode {
   const dispatch = useDispatch();
-  const { viewedCategory } = useSelector((state: RootState) => state.categories);
+  const { createdCategory } = useSelector((state: RootState) => state.categories);
 
-  const onClose = useCallback(() => dispatch(setViewedCategory(undefined)), [dispatch]);
-  const onUpdate = useCallback(() => dispatch(updateCategory()), [dispatch]);
+  const onClose = useCallback(() => dispatch(setCreatedCategory(undefined)), [dispatch]);
+  const onCreate = useCallback(() => dispatch(createCategory()), [dispatch]);
 
   const onNameChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      assertNonNullable(viewedCategory);
+      assertNonNullable(createdCategory);
       dispatch(
-        setViewedCategory({
-          ...viewedCategory,
+        setCreatedCategory({
+          ...createdCategory,
           name: event.target.value,
           errors: {
-            ...viewedCategory.errors,
+            ...createdCategory.errors,
             name: validateCategoryName(event.target.value)
           }
         })
       );
     },
-    [viewedCategory, dispatch]
+    [createdCategory, dispatch]
   );
 
   const onDescriptionChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      assertNonNullable(viewedCategory);
+      assertNonNullable(createdCategory);
       dispatch(
-        setViewedCategory({
-          ...viewedCategory,
+        setCreatedCategory({
+          ...createdCategory,
           description: event.target.value,
           errors: {
-            ...viewedCategory.errors,
+            ...createdCategory.errors,
             description: validateCategoryDescription(event.target.value)
           }
         })
       );
     },
-    [viewedCategory, dispatch]
+    [createdCategory, dispatch]
   );
 
-  const categoryIsNotEdited = useCallback(
-    () =>
-      viewedCategory?.name === viewedCategory?.comparativeName &&
-      viewedCategory?.description === viewedCategory?.comparativeDescription,
-    [
-      viewedCategory?.name,
-      viewedCategory?.comparativeName,
-      viewedCategory?.description,
-      viewedCategory?.comparativeDescription
-    ]
+  const onToggleButtonClick = useCallback(
+    (_: React.SyntheticEvent, forIncome: boolean) => {
+      assertNonNullable(createdCategory);
+      dispatch(setCreatedCategory({ ...createdCategory, forIncome }));
+    },
+    [createdCategory, dispatch]
   );
 
   return (
-    <Dialog open={!!viewedCategory} title="Kategorie verwalten" onClose={onClose}>
+    <Dialog open={!!createdCategory} title="Buchung hinzufügen" onClose={onClose}>
       <DialogContent>
         <StyledTextField
           fullWidth
           label="Name"
-          value={viewedCategory?.name ?? ''}
+          value={createdCategory?.name ?? ''}
           onChange={onNameChange}
           InputProps={{
             startAdornment: (
@@ -105,15 +98,15 @@ export default function ViewCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(viewedCategory?.errors?.name ?? '') !== ''}
-          helperText={viewedCategory?.errors?.name ?? ''}
+          error={(createdCategory?.errors?.name ?? '') !== ''}
+          helperText={createdCategory?.errors?.name ?? ''}
         />
         <StyledTextField
           fullWidth
           label="Beschreibung"
           multiline
           rows={4}
-          value={viewedCategory?.description ?? ''}
+          value={createdCategory?.description ?? ''}
           onChange={onDescriptionChange}
           InputProps={{
             startAdornment: (
@@ -122,22 +115,22 @@ export default function ViewCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(viewedCategory?.errors?.description ?? '') !== ''}
-          helperText={viewedCategory?.errors?.description ?? ''}
+          error={(createdCategory?.errors?.description ?? '') !== ''}
+          helperText={createdCategory?.errors?.description ?? ''}
         />
-        <ToggleButtonGroup color="primary" value={viewedCategory?.forIncome} disabled>
-          <StyledToggleButton size="small" value={true}>
-            Für Einnahmen
+        <ToggleButtonGroup color="primary" value={createdCategory?.forIncome}>
+          <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>
+            Einnahme
           </StyledToggleButton>
-          <StyledToggleButton size="small" value={false}>
-            Für Ausgaben
+          <StyledToggleButton size="small" value={false} onClick={onToggleButtonClick}>
+            Ausgabe
           </StyledToggleButton>
         </ToggleButtonGroup>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button disabled={categoryIsNotEdited()} variant="contained" startIcon={<EditIcon />} onClick={onUpdate}>
-          Ändern
+        <Button variant="contained" startIcon={<SaveIcon />} onClick={onCreate}>
+          Speichern
         </Button>
       </DialogActions>
     </Dialog>
