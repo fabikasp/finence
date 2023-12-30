@@ -4,7 +4,7 @@ import { AxiosError } from 'axios';
 import { DASHBOARD_ROUTE, USER_URL_PATH_PREFIX } from '../utils/const';
 import { navigate } from '../store/slices/navigatorSlice';
 import { evoke } from '../store/slices/snackBarSlice';
-import { clear as clearRegistration, setErrors } from '../store/slices/registrationSlice';
+import { clearErrors, clear as clearRegistration, setErrors } from '../store/slices/registrationSlice';
 import { clear as clearLogin } from '../store/slices/loginSlice';
 import { validateEmail, validatePassword, validateRepeatedPassword } from '../utils/validators';
 import { RootState } from '../store/store';
@@ -12,7 +12,7 @@ import { RootState } from '../store/store';
 const USER_ALREADY_EXISTS_ERROR = 'Es existiert bereits ein Konto mit dieser E-Mail-Adresse.';
 
 export function* registrationSaga(): SagaGenerator<void> {
-  yield* put(setErrors({ email: '', password: '', repeatedPassword: '' }));
+  yield* put(clearErrors());
 
   const { email, password, repeatedPassword } = yield* select((state: RootState) => state.registration);
 
@@ -37,7 +37,7 @@ export function* registrationSaga(): SagaGenerator<void> {
       },
       function* handleError(error: AxiosError) {
         if (error.response?.status === 409) {
-          yield* put(setErrors({ email: USER_ALREADY_EXISTS_ERROR, password: '', repeatedPassword: '' }));
+          yield* put(setErrors({ email: USER_ALREADY_EXISTS_ERROR, password: undefined, repeatedPassword: undefined }));
         }
       }
     )

@@ -12,7 +12,7 @@ import { validateEmail, validatePassword, validateRepeatedPassword } from '../ut
 import { LOGIN_ROUTE } from '../utils/const';
 import { RootState } from '../store/store';
 import { register } from '../store/actions';
-import { setEmail, setErrors, setPassword, setRepeatedPassword } from '../store/slices/registrationSlice';
+import { clearErrors, setEmail, setErrors, setPassword, setRepeatedPassword } from '../store/slices/registrationSlice';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -40,7 +40,7 @@ export default function RegistrationForm(): React.ReactNode {
     dispatch(setEmail(loginEmail));
     dispatch(setPassword(loginPassword));
     dispatch(setRepeatedPassword(''));
-    dispatch(setErrors({ email: '', password: '', repeatedPassword: '' }));
+    dispatch(clearErrors());
   }, [loginEmail, loginPassword, dispatch]);
 
   const onEmailChange = useCallback(
@@ -54,7 +54,7 @@ export default function RegistrationForm(): React.ReactNode {
   const onPasswordChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       dispatch(setPassword(event.target.value));
-      dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
+      dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: undefined }));
     },
     [errors, dispatch]
   );
@@ -86,8 +86,8 @@ export default function RegistrationForm(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.email !== ''}
-        helperText={errors.email}
+        error={!!errors?.email}
+        helperText={errors?.email}
       />
       <StyledTextField
         fullWidth
@@ -109,8 +109,8 @@ export default function RegistrationForm(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.password !== ''}
-        helperText={errors.password}
+        error={!!errors?.password}
+        helperText={errors?.password}
       />
       <StyledTextField
         fullWidth
@@ -136,8 +136,8 @@ export default function RegistrationForm(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.repeatedPassword !== ''}
-        helperText={errors.repeatedPassword}
+        error={!!errors?.repeatedPassword}
+        helperText={errors?.repeatedPassword}
       />
       <StyledButton variant="text" onClick={onLogin} sx={{ float: 'left' }}>
         Login

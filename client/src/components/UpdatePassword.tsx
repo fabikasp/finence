@@ -42,7 +42,7 @@ export default function UpdatePassword(): React.ReactNode {
   const onPasswordChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       dispatch(setPassword(event.target.value));
-      dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: '' }));
+      dispatch(setErrors({ ...errors, password: validatePassword(event.target.value), repeatedPassword: undefined }));
     },
     [errors, dispatch]
   );
@@ -81,8 +81,8 @@ export default function UpdatePassword(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.password !== ''}
-        helperText={errors.password}
+        error={!!errors?.password}
+        helperText={errors?.password}
       />
       <StyledTextField
         fullWidth
@@ -108,8 +108,8 @@ export default function UpdatePassword(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.repeatedPassword !== ''}
-        helperText={errors.repeatedPassword}
+        error={!!errors?.repeatedPassword}
+        helperText={errors?.repeatedPassword}
       />
       <StyledButton variant="contained" startIcon={<EditIcon />} onClick={onUpdate}>
         Ändern

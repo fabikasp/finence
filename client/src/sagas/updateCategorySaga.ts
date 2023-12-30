@@ -13,10 +13,10 @@ export function* updateCategorySaga(): SagaGenerator<void> {
   const { categories, viewedCategory } = yield* select((state: RootState) => state.categories);
   assertNonNullable(viewedCategory);
 
-  yield* put(setViewedCategory({ ...viewedCategory, errors: { name: '', description: '' } }));
+  yield* put(setViewedCategory({ ...viewedCategory, errors: undefined }));
 
   const nameError = validateCategoryName(viewedCategory.name);
-  const descriptionError = validateCategoryDescription(viewedCategory.description);
+  const descriptionError = validateCategoryDescription(viewedCategory.description ?? '');
 
   if (nameError || descriptionError) {
     yield* put(setViewedCategory({ ...viewedCategory, errors: { name: nameError, description: descriptionError } }));
@@ -50,7 +50,10 @@ export function* updateCategorySaga(): SagaGenerator<void> {
       function* handleError(error: AxiosError) {
         if (error.response?.status === 409) {
           yield* put(
-            setViewedCategory({ ...viewedCategory, errors: { name: CATEGORY_ALREADY_EXISTS_ERROR, description: '' } })
+            setViewedCategory({
+              ...viewedCategory,
+              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR, description: undefined }
+            })
           );
         }
       }

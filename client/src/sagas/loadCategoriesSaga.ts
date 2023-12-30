@@ -3,17 +3,10 @@ import { fetchSagaFactory } from './fetchSaga';
 import { AxiosResponse } from 'axios';
 import { CATEGORIES_URL_PATH_PREFIX } from '../utils/const';
 import { assertTrue } from '../utils/assert';
-import { setCategories } from '../store/slices/categoriesSlice';
+import { categoryScheme, setCategories } from '../store/slices/categoriesSlice';
 import z from 'zod';
 
-const categoriesResponseDataScheme = z.array(
-  z.object({
-    id: z.number(),
-    name: z.string(),
-    description: z.string().optional(),
-    forIncome: z.boolean()
-  })
-);
+const categoriesResponseDataScheme = z.array(categoryScheme);
 
 type CategoriesResponseData = z.infer<typeof categoriesResponseDataScheme>;
 

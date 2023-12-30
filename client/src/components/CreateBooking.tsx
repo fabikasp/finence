@@ -11,15 +11,13 @@ import {
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
 import CategoryIcon from '@mui/icons-material/Category';
-import DescriptionIcon from '@mui/icons-material/Description';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { createCategory } from '../store/actions';
-import { setCreatedCategory } from '../store/slices/categoriesSlice';
 import { assertNonNullable } from '../utils/assert';
-import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
 import Dialog from './Dialog';
+import { setCreatedBooking } from '../store/slices/financesSlice';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -36,12 +34,12 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
 
 export default function CreateBooking(): React.ReactNode {
   const dispatch = useDispatch();
-  const { createdCategory } = useSelector((state: RootState) => state.categories);
+  const { createdBooking } = useSelector((state: RootState) => state.finances);
 
-  const onClose = useCallback(() => dispatch(setCreatedCategory(undefined)), [dispatch]);
+  const onClose = useCallback(() => dispatch(setCreatedBooking(undefined)), [dispatch]);
   const onCreate = useCallback(() => dispatch(createCategory()), [dispatch]);
 
-  const onNameChange = useCallback(
+  /*const onNameChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       assertNonNullable(createdCategory);
       dispatch(
@@ -56,69 +54,20 @@ export default function CreateBooking(): React.ReactNode {
       );
     },
     [createdCategory, dispatch]
-  );
-
-  const onDescriptionChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      assertNonNullable(createdCategory);
-      dispatch(
-        setCreatedCategory({
-          ...createdCategory,
-          description: event.target.value,
-          errors: {
-            ...createdCategory.errors,
-            description: validateCategoryDescription(event.target.value)
-          }
-        })
-      );
-    },
-    [createdCategory, dispatch]
-  );
+  );*/
 
   const onToggleButtonClick = useCallback(
-    (_: React.SyntheticEvent, forIncome: boolean) => {
-      assertNonNullable(createdCategory);
-      dispatch(setCreatedCategory({ ...createdCategory, forIncome }));
+    (_: React.SyntheticEvent, isIncome: boolean) => {
+      assertNonNullable(createdBooking);
+      dispatch(setCreatedBooking({ ...createdBooking, isIncome }));
     },
-    [createdCategory, dispatch]
+    [createdBooking, dispatch]
   );
 
   return (
-    <Dialog open={!!createdCategory} title="Buchung hinzufügen" onClose={onClose}>
+    <Dialog open={!!createdBooking} title="Buchung hinzufügen" onClose={onClose}>
       <DialogContent>
-        <StyledTextField
-          fullWidth
-          label="Name"
-          value={createdCategory?.name ?? ''}
-          onChange={onNameChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <CategoryIcon color="secondary" />
-              </InputAdornment>
-            )
-          }}
-          error={(createdCategory?.errors?.name ?? '') !== ''}
-          helperText={createdCategory?.errors?.name ?? ''}
-        />
-        <StyledTextField
-          fullWidth
-          label="Beschreibung"
-          multiline
-          rows={4}
-          value={createdCategory?.description ?? ''}
-          onChange={onDescriptionChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <DescriptionIcon color="secondary" />
-              </InputAdornment>
-            )
-          }}
-          error={(createdCategory?.errors?.description ?? '') !== ''}
-          helperText={createdCategory?.errors?.description ?? ''}
-        />
-        <ToggleButtonGroup color="primary" value={createdCategory?.forIncome}>
+        <ToggleButtonGroup color="primary" value={createdBooking?.isIncome}>
           <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>
             Einnahme
           </StyledToggleButton>
@@ -126,6 +75,34 @@ export default function CreateBooking(): React.ReactNode {
             Ausgabe
           </StyledToggleButton>
         </ToggleButtonGroup>
+        <StyledTextField
+          fullWidth
+          label="Betrag"
+          value={createdBooking?.amount ?? 0}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <CategoryIcon color="secondary" />
+              </InputAdornment>
+            )
+          }}
+          error={(createdBooking?.errors?.amount ?? '') !== ''}
+          helperText={createdBooking?.errors?.amount ?? ''}
+        />
+        <StyledTextField
+          fullWidth
+          label="Betrag"
+          value={createdBooking?.amount ?? 0}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <CategoryIcon color="secondary" />
+              </InputAdornment>
+            )
+          }}
+          error={(createdBooking?.errors?.amount ?? '') !== ''}
+          helperText={createdBooking?.errors?.amount ?? ''}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>

@@ -1,27 +1,22 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface RegistrationErrors {
-  readonly email: string;
-  readonly password: string;
-  readonly repeatedPassword: string;
+  readonly email?: string;
+  readonly password?: string;
+  readonly repeatedPassword?: string;
 }
 
 interface Registration {
   readonly email: string;
   readonly password: string;
   readonly repeatedPassword: string;
-  readonly errors: RegistrationErrors;
+  readonly errors?: RegistrationErrors;
 }
 
 const initialState: Registration = {
   email: '',
   password: '',
-  repeatedPassword: '',
-  errors: {
-    email: '',
-    password: '',
-    repeatedPassword: ''
-  }
+  repeatedPassword: ''
 };
 
 const registrationSlice = createSlice({
@@ -38,9 +33,10 @@ const registrationSlice = createSlice({
       ...state,
       errors: action.payload
     }),
+    clearErrors: (state: Registration) => ({ ...state, errors: undefined }),
     clear: () => initialState
   }
 });
 
-export const { setEmail, setPassword, setRepeatedPassword, setErrors, clear } = registrationSlice.actions;
+export const { setEmail, setPassword, setRepeatedPassword, setErrors, clearErrors, clear } = registrationSlice.actions;
 export default registrationSlice.reducer;

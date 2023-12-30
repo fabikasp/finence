@@ -12,3 +12,8 @@ export const loadCategories = createAction('LOAD_CATEGORIES');
 export const createCategory = createAction('CREATE_CATEGORY');
 export const updateCategory = createAction('UPDATE_CATEGORY');
 export const deleteCategory = createAction('DELETE_CATEGORY');
+
+export const loadBookings = createAction('LOAD_BOOKINGS');
+export const createBooking = createAction('CREATE_BOOKING');
+export const updateBooking = createAction('UPDATE_BOOKING');
+export const deleteBooking = createAction('DELETE_BOOKING');

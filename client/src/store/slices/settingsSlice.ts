@@ -1,10 +1,10 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface SettingsErrors {
-  readonly email: string;
-  readonly password: string;
-  readonly repeatedPassword: string;
-  readonly confirmation: string;
+  readonly email?: string;
+  readonly password?: string;
+  readonly repeatedPassword?: string;
+  readonly confirmation?: string;
 }
 
 interface Settings {
@@ -13,7 +13,7 @@ interface Settings {
   readonly password: string;
   readonly repeatedPassword: string;
   readonly confirmation: string;
-  readonly errors: SettingsErrors;
+  readonly errors?: SettingsErrors;
 }
 
 const initialState: Settings = {
@@ -21,13 +21,7 @@ const initialState: Settings = {
   comparativeEmail: '',
   password: '',
   repeatedPassword: '',
-  confirmation: '',
-  errors: {
-    email: '',
-    password: '',
-    repeatedPassword: '',
-    confirmation: ''
-  }
+  confirmation: ''
 };
 
 const settingsSlice = createSlice({

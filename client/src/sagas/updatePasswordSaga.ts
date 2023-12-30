@@ -9,7 +9,7 @@ import { validatePassword, validateRepeatedPassword } from '../utils/validators'
 export function* updatePasswordSaga(): SagaGenerator<void> {
   const { password, repeatedPassword, errors } = yield* select((state: RootState) => state.settings);
 
-  yield* put(setErrors({ ...errors, password: '', repeatedPassword: '' }));
+  yield* put(setErrors({ ...errors, password: undefined, repeatedPassword: undefined }));
 
   const passwordError = validatePassword(password);
   const repeatedPasswordError = validateRepeatedPassword(repeatedPassword, password);

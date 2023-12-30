@@ -105,8 +105,8 @@ export default function ViewCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(viewedCategory?.errors?.name ?? '') !== ''}
-          helperText={viewedCategory?.errors?.name ?? ''}
+          error={!!viewedCategory?.errors?.name}
+          helperText={viewedCategory?.errors?.name}
         />
         <StyledTextField
           fullWidth
@@ -122,8 +122,8 @@ export default function ViewCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(viewedCategory?.errors?.description ?? '') !== ''}
-          helperText={viewedCategory?.errors?.description ?? ''}
+          error={!!viewedCategory?.errors?.description}
+          helperText={viewedCategory?.errors?.description}
         />
         <ToggleButtonGroup color="primary" value={viewedCategory?.forIncome} disabled>
           <StyledToggleButton size="small" value={true}>

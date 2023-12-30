@@ -15,6 +15,7 @@ export const ACCESS_TOKEN_KEY = 'accessToken';
 
 export const USER_URL_PATH_PREFIX = '/users/';
 export const CATEGORIES_URL_PATH_PREFIX = '/categories/';
+export const BOOKINGS_URL_PATH_PREFIX = '/bookings/';
 
 export const SIDEBAR_WIDTH = 200;
 

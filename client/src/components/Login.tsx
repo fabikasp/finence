@@ -10,7 +10,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LoginIcon from '@mui/icons-material/Login';
 import { REGISTRATION_ROUTE } from '../utils/const';
 import { RootState } from '../store/store';
-import { setEmail, setErrors, setPassword } from '../store/slices/loginSlice';
+import { clearErrors, setEmail, setErrors, setPassword } from '../store/slices/loginSlice';
 import { login } from '../store/actions';
 import { validateEmail, validatePassword } from '../utils/validators';
 
@@ -40,7 +40,7 @@ export default function Login(): React.ReactNode {
   useEffect(() => {
     dispatch(setEmail(registrationEmail));
     dispatch(setPassword(registrationPassword));
-    dispatch(setErrors({ email: '', password: '' }));
+    dispatch(clearErrors());
   }, [registrationEmail, registrationPassword, dispatch]);
 
   const onEmailChange = useCallback(
@@ -77,8 +77,8 @@ export default function Login(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.email !== ''}
-        helperText={errors.email}
+        error={!!errors?.email}
+        helperText={errors?.email}
       />
       <StyledTextField
         fullWidth
@@ -100,8 +100,8 @@ export default function Login(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.password !== ''}
-        helperText={errors.password}
+        error={!!errors?.password}
+        helperText={errors?.password}
       />
       <StyledButton variant="text" onClick={onRegister} sx={{ float: 'left' }}>
         Registrieren

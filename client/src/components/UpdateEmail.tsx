@@ -65,8 +65,8 @@ export default function UpdateEmail(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.email !== ''}
-        helperText={errors.email}
+        error={!!errors?.email}
+        helperText={errors?.email}
       />
       <StyledButton disabled={emailIsNotEdited()} variant="contained" startIcon={<EditIcon />} onClick={onUpdate}>
         Ändern

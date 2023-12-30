@@ -1,11 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import { Box, Tabs, Tab } from '@mui/material';
+import React, { useCallback } from 'react';
+import { Box, Tabs, Tab as MuiTab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import BookingsTable from './BookingsTable';
-
-const TOTAL_TAB = 'total';
-const INCOME_TAB = 'income';
-const EXPENSES_TAB = 'expenses';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store/store';
+import { Tab, setTab } from '../store/slices/financesSlice';
 
 const StyledBox = styled(Box)(() => ({
   backgroundColor: '#232F3B',
@@ -13,17 +12,18 @@ const StyledBox = styled(Box)(() => ({
 }));
 
 export default function Finances(): React.ReactNode {
-  const [tab, setTab] = useState(TOTAL_TAB);
+  const dispatch = useDispatch();
+  const { tab } = useSelector((state: RootState) => state.finances);
 
-  const onTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
+  const onTabChange = useCallback((_: React.SyntheticEvent, newTab: Tab) => dispatch(setTab(newTab)), [dispatch]);
 
   return (
     <StyledBox display="flex" flexDirection="column">
       <Box sx={{ borderBottom: 1, borderColor: '#000000', marginBottom: 2 }}>
         <Tabs value={tab} onChange={onTabChange}>
-          <Tab value={TOTAL_TAB} label="Gesamt" />
-          <Tab value={INCOME_TAB} label="Einnahmen" />
-          <Tab value={EXPENSES_TAB} label="Ausgaben" />
+          <MuiTab value={Tab.TOTAL} label="Gesamt" />
+          <MuiTab value={Tab.INCOME} label="Einnahmen" />
+          <MuiTab value={Tab.EXPENSES} label="Ausgaben" />
         </Tabs>
       </Box>
       <BookingsTable />

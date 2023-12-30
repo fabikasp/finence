@@ -10,29 +10,29 @@ const MAX_PASSWORD_LENGTH = 128;
 const MAX_CATEGORY_NAME_LENGTH = 50;
 const MAX_CATEGORY_DESCRIPTION_LENGTH = 200;
 
-export function validateEmail(email: string, login?: boolean): string {
+export function validateEmail(email: string, login?: boolean): string | undefined {
   if (email === '') {
     return 'Die E-Mail-Adresse darf nicht leer sein.';
   }
 
   if (login) {
-    return '';
+    return undefined;
   }
 
   if (email.length > MAX_EMAIL_LENGTH) {
     return `Die E-Mail-Adresse darf maximal ${MAX_EMAIL_LENGTH} Zeichen enthalten.`;
   }
 
-  return !EMAIL_REGEX.test(email) ? 'Die E-Mail-Adresse ist nicht gültig.' : '';
+  return !EMAIL_REGEX.test(email) ? 'Die E-Mail-Adresse ist nicht gültig.' : undefined;
 }
 
-export function validatePassword(password: string, login?: boolean): string {
+export function validatePassword(password: string, login?: boolean): string | undefined {
   if (password === '') {
     return 'Das Passwort darf nicht leer sein.';
   }
 
   if (login) {
-    return '';
+    return undefined;
   }
 
   if (password.length < MIN_PASSWORD_LENGTH) {
@@ -41,33 +41,35 @@ export function validatePassword(password: string, login?: boolean): string {
 
   return password.length > MAX_PASSWORD_LENGTH
     ? `Das Passwort darf maximal ${MAX_PASSWORD_LENGTH} Zeichen enthalten.`
-    : '';
+    : undefined;
 }
 
-export function validateRepeatedPassword(repeatedPassword: string, password: string): string {
+export function validateRepeatedPassword(repeatedPassword: string, password: string): string | undefined {
   if (repeatedPassword === '') {
     return 'Das Passwort darf nicht leer sein.';
   }
 
-  return repeatedPassword !== password ? 'Die Passwörter müssen identisch sein.' : '';
+  return repeatedPassword !== password ? 'Die Passwörter müssen identisch sein.' : undefined;
 }
 
-export function validateConfirmation(confirmation: string): string {
-  return confirmation !== CONFIRMATION_TEXT ? `Die Eingabe muss dem Wort „${CONFIRMATION_TEXT}“ entsprechen.` : '';
+export function validateConfirmation(confirmation: string): string | undefined {
+  return confirmation !== CONFIRMATION_TEXT
+    ? `Die Eingabe muss dem Wort „${CONFIRMATION_TEXT}“ entsprechen.`
+    : undefined;
 }
 
-export function validateCategoryName(categoryName: string): string {
+export function validateCategoryName(categoryName: string): string | undefined {
   if (categoryName === '') {
     return 'Der Name darf nicht leer sein.';
   }
 
   return categoryName.length > MAX_CATEGORY_NAME_LENGTH
     ? `Der Name darf maximal ${MAX_CATEGORY_NAME_LENGTH} Zeichen enthalten.`
-    : '';
+    : undefined;
 }
 
-export function validateCategoryDescription(categoryDescription: string): string {
+export function validateCategoryDescription(categoryDescription: string): string | undefined {
   return categoryDescription.length > MAX_CATEGORY_DESCRIPTION_LENGTH
     ? `Die Beschreibung darf maximal ${MAX_CATEGORY_DESCRIPTION_LENGTH} Zeichen enthalten.`
-    : '';
+    : undefined;
 }

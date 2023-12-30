@@ -1,11 +1,17 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import z from 'zod';
 
-const categoryScheme = z.object({
-  id: z.number(),
+export const categoryScheme = z.object({
+  id: z.number().optional(),
   name: z.string(),
   description: z.string().optional(),
-  forIncome: z.boolean()
+  forIncome: z.boolean(),
+  errors: z
+    .object({
+      name: z.string().optional(),
+      description: z.string().optional()
+    })
+    .optional()
 });
 
 export type Category = z.infer<typeof categoryScheme>;
@@ -14,33 +20,21 @@ export const isCategory = (object: unknown): object is Category => {
   return categoryScheme.safeParse(object).success;
 };
 
-interface CategoryErrors {
-  name: string;
-  description: string;
-}
-
-type CreateableCategory = { readonly description: string; errors: CategoryErrors } & Pick<
-  Category,
-  'name' | 'forIncome'
->;
-type UpdateableCategory = CreateableCategory & { id: number; comparativeName: string; comparativeDescription: string };
+type UpdateableCategory = Category & {
+  readonly comparativeName: string;
+  readonly comparativeDescription?: string;
+};
 
 export const convertToUpdateableCategory = (category: Category): UpdateableCategory => ({
-  id: category.id,
-  name: category.name,
+  ...category,
   comparativeName: category.name,
-  description: category.description ?? '',
-  comparativeDescription: category.description ?? '',
-  forIncome: category.forIncome,
-  errors: {
-    name: '',
-    description: ''
-  }
+  comparativeDescription: category.description,
+  errors: undefined
 });
 
 interface Categories {
   readonly categories: Category[];
-  readonly createdCategory?: CreateableCategory;
+  readonly createdCategory?: Category;
   readonly viewedCategory?: UpdateableCategory;
   readonly deletedCategory?: Category;
 }
@@ -54,7 +48,7 @@ const categoriesSlice = createSlice({
   initialState,
   reducers: {
     setCategories: (state: Categories, action: PayloadAction<Category[]>) => ({ ...state, categories: action.payload }),
-    setCreatedCategory: (state: Categories, action: PayloadAction<CreateableCategory | undefined>) => ({
+    setCreatedCategory: (state: Categories, action: PayloadAction<Category | undefined>) => ({
       ...state,
       createdCategory: action.payload
     }),

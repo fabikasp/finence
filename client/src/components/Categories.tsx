@@ -72,8 +72,7 @@ export default function Categories(): React.ReactNode {
         setCreatedCategory({
           name: '',
           description: '',
-          forIncome: tab === INCOME_TAB,
-          errors: { name: '', description: '' }
+          forIncome: tab === INCOME_TAB
         })
       ),
     [tab, dispatch]

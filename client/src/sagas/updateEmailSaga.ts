@@ -25,7 +25,7 @@ const isUpdateEmailResponseData = (object: unknown): object is UpdateEmailRespon
 export function* updateEmailSaga(): SagaGenerator<void> {
   const { email, errors } = yield* select((state: RootState) => state.settings);
 
-  yield* put(setErrors({ ...errors, email: '' }));
+  yield* put(setErrors({ ...errors, email: undefined }));
 
   const emailError = validateEmail(email);
 

@@ -98,8 +98,8 @@ export default function CreateCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(createdCategory?.errors?.name ?? '') !== ''}
-          helperText={createdCategory?.errors?.name ?? ''}
+          error={!!createdCategory?.errors?.name}
+          helperText={createdCategory?.errors?.name}
         />
         <StyledTextField
           fullWidth
@@ -115,8 +115,8 @@ export default function CreateCategory(): React.ReactNode {
               </InputAdornment>
             )
           }}
-          error={(createdCategory?.errors?.description ?? '') !== ''}
-          helperText={createdCategory?.errors?.description ?? ''}
+          error={!!createdCategory?.errors?.description}
+          helperText={createdCategory?.errors?.description}
         />
         <ToggleButtonGroup color="primary" value={createdCategory?.forIncome}>
           <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>

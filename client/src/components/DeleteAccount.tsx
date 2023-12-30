@@ -63,7 +63,7 @@ export default function DeleteAccount(): React.ReactNode {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              {errors.confirmation === '' && confirmation !== '' ? (
+              {!errors?.confirmation && confirmation !== '' ? (
                 <LockOpenIcon color="secondary" />
               ) : (
                 <LockIcon color="secondary" />
@@ -71,8 +71,8 @@ export default function DeleteAccount(): React.ReactNode {
             </InputAdornment>
           )
         }}
-        error={errors.confirmation !== ''}
-        helperText={errors.confirmation}
+        error={!!errors?.confirmation}
+        helperText={errors?.confirmation}
       />
       <StyledButton
         disabled={confirmationTextNotMatching()}

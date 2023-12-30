@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Box,
   Button,
@@ -22,25 +23,10 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import IntervalSelection from './IntervalSelection';
-import moment from 'moment';
-
-interface Booking {
-  readonly id: number;
-  readonly isIncome: boolean;
-  readonly date: string;
-  readonly amount: number;
-  readonly category: string;
-  readonly note: string;
-}
-
-const rows: Booking[] = [...Array(10)].map((_, i) => ({
-  id: i + 1,
-  isIncome: !!(i % 2),
-  date: moment().toLocaleString(),
-  amount: 42 + i,
-  category: 'Testkategorie' + i,
-  note: 'Testbemerkung' + i
-}));
+import { Booking, Tab, setCreatedBooking } from '../store/slices/financesSlice';
+import { RootState } from '../store/store';
+import { loadBookings } from '../store/actions';
+import CreateBooking from './CreateBooking';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
   if (b[orderBy] === a[orderBy]) {
@@ -182,11 +168,18 @@ const StyledFab = styled(Fab)(() => ({
 }));
 
 export default function BookingsTable(): React.ReactNode {
+  const dispatch = useDispatch();
+
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Booking>('amount');
+  const [orderBy, setOrderBy] = useState<keyof Booking>('date');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [popoverAnchorElement, setPopoverAnchorElement] = useState<HTMLButtonElement | undefined>(undefined);
+  const { tab, bookings } = useSelector((state: RootState) => state.finances);
+
+  useEffect(() => {
+    //dispatch(loadBookings());
+  }, [dispatch]);
 
   const onRequestSort = useCallback(
     (_: React.MouseEvent<unknown>, property: keyof Booking) => {
@@ -215,73 +208,102 @@ export default function BookingsTable(): React.ReactNode {
     []
   );
 
-  const visibleRows = useMemo(
-    () => stableSort(rows, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
+  const filterBookings = useCallback(
+    (booking: Booking) => booking.isIncome || (tab === Tab.EXPENSES && !booking.isIncome) || true,
+    [tab]
+  );
+
+  // TODO: Dates in strings übersetzen
+  // TODO: Leere Notes setzen
+  const visibleRows = useMemo(() => {
+    const filteredBookings = bookings.filter(filterBookings);
+
+    return stableSort(filteredBookings, getComparator(order, orderBy)).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+  }, [bookings, filterBookings, order, orderBy, page, rowsPerPage]);
+
+  const onCreateClick = useCallback(
+    () =>
+      dispatch(
+        setCreatedBooking({
+          isIncome: [Tab.TOTAL, Tab.INCOME].includes(tab),
+          date: '',
+          amount: 0,
+          category: '',
+          note: '',
+          errors: { date: '', amount: '', category: '' }
+        })
+      ),
+    [tab, dispatch]
   );
 
   return (
-    <StyledBox>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <IntervalSelection />
-        <StyledFab color="primary" size="small">
-          <AddIcon />
-        </StyledFab>
-      </Box>
-      <Table size="small">
-        <CustomTableHead onRequestSort={onRequestSort} order={order} orderBy={orderBy} />
-        <TableBody>
-          {visibleRows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>
-                <BookingTypeIconWrapper>
-                  {row.isIncome ? <ArrowCircleUpIcon color="primary" /> : <ArrowCircleDownIcon color="error" />}
-                </BookingTypeIconWrapper>
-              </TableCell>
-              <TableCell>{row.date}</TableCell>
-              <TableCell sx={(theme) => ({ color: theme.palette[row.isIncome ? 'primary' : 'error'].main })}>
-                {row.amount}
-              </TableCell>
-              <TableCell>{row.category}</TableCell>
-              <TableCell>{row.note}</TableCell>
-              <TableCell align="right">
-                <IconButton color="primary" onClick={onOpenPopover}>
-                  <MoreVertIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <StyledTablePagination
-        component="div"
-        rowsPerPageOptions={[5, 10, 25]}
-        labelDisplayedRows={labelDisplayedRows}
-        labelRowsPerPage="Zeilen pro Seite:"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={onChangePage}
-        onRowsPerPageChange={onChangeRowsPerPage}
-      />
-      <Popover
-        open={!!popoverAnchorElement}
-        anchorEl={popoverAnchorElement}
-        onClose={onClosePopover}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left'
-        }}
-      >
-        <PopoverButtonWrapper>
-          <StyledButton color="secondary" startIcon={<EditIcon />}>
-            Bearbeiten
-          </StyledButton>
-          <StyledButton color="secondary" startIcon={<DeleteForeverIcon />}>
-            Löschen
-          </StyledButton>
-        </PopoverButtonWrapper>
-      </Popover>
-    </StyledBox>
+    <>
+      <StyledBox>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <IntervalSelection />
+          <StyledFab color="primary" size="small" onClick={onCreateClick}>
+            <AddIcon />
+          </StyledFab>
+        </Box>
+        <Table size="small">
+          <CustomTableHead onRequestSort={onRequestSort} order={order} orderBy={orderBy} />
+          <TableBody>
+            {visibleRows.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>
+                  <BookingTypeIconWrapper>
+                    {row.isIncome ? <ArrowCircleUpIcon color="primary" /> : <ArrowCircleDownIcon color="error" />}
+                  </BookingTypeIconWrapper>
+                </TableCell>
+                <TableCell>{row.date}</TableCell>
+                <TableCell sx={(theme) => ({ color: theme.palette[row.isIncome ? 'primary' : 'error'].main })}>
+                  {row.amount}
+                </TableCell>
+                <TableCell>{row.category}</TableCell>
+                <TableCell>{row.note}</TableCell>
+                <TableCell align="right">
+                  <IconButton color="primary" onClick={onOpenPopover}>
+                    <MoreVertIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <StyledTablePagination
+          component="div"
+          rowsPerPageOptions={[5, 10, 25]}
+          labelDisplayedRows={labelDisplayedRows}
+          labelRowsPerPage="Zeilen pro Seite:"
+          count={bookings.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={onChangePage}
+          onRowsPerPageChange={onChangeRowsPerPage}
+        />
+        <Popover
+          open={!!popoverAnchorElement}
+          anchorEl={popoverAnchorElement}
+          onClose={onClosePopover}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left'
+          }}
+        >
+          <PopoverButtonWrapper>
+            <StyledButton color="secondary" startIcon={<EditIcon />}>
+              Bearbeiten
+            </StyledButton>
+            <StyledButton color="secondary" startIcon={<DeleteForeverIcon />}>
+              Löschen
+            </StyledButton>
+          </PopoverButtonWrapper>
+        </Popover>
+      </StyledBox>
+      <CreateBooking />
+    </>
   );
 }
