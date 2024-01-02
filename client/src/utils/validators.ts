@@ -1,3 +1,4 @@
+import { Moment } from 'moment';
 import { CONFIRMATION_TEXT } from './const';
 
 const EMAIL_REGEX =
@@ -9,6 +10,9 @@ const MAX_PASSWORD_LENGTH = 128;
 
 const MAX_CATEGORY_NAME_LENGTH = 50;
 const MAX_CATEGORY_DESCRIPTION_LENGTH = 200;
+
+const BOOKING_AMOUNT_REGEX = /^(\d*\.\d{1,2}|\d+)$/;
+const MAX_BOOKING_NOTE_LENGTH = 200;
 
 export function validateEmail(email: string, login?: boolean): string | undefined {
   if (email === '') {
@@ -71,5 +75,27 @@ export function validateCategoryName(categoryName: string): string | undefined {
 export function validateCategoryDescription(categoryDescription: string): string | undefined {
   return categoryDescription.length > MAX_CATEGORY_DESCRIPTION_LENGTH
     ? `Die Beschreibung darf maximal ${MAX_CATEGORY_DESCRIPTION_LENGTH} Zeichen enthalten.`
+    : undefined;
+}
+
+export function validateBookingDate(bookingDate: Moment | null): string | undefined {
+  return bookingDate === null ? 'Das Datum darf nicht leer sein.' : undefined;
+}
+
+export function validateBookingAmount(bookingAmount: string): string | undefined {
+  if (bookingAmount === '' || bookingAmount === '0') {
+    return 'Der Betrag darf nicht leer sein.';
+  }
+
+  return !BOOKING_AMOUNT_REGEX.test(bookingAmount) ? 'Der Betrag ist nicht gültig.' : undefined;
+}
+
+export function validateBookingCategory(bookingCategory: string): string | undefined {
+  return bookingCategory === '' ? 'Die Kategorie darf nicht leer sein.' : undefined;
+}
+
+export function validateBookingNote(bookingNote: string): string | undefined {
+  return bookingNote.length > MAX_BOOKING_NOTE_LENGTH
+    ? `Die Bemerkung darf maximal ${MAX_BOOKING_NOTE_LENGTH} Zeichen enthalten.`
     : undefined;
 }

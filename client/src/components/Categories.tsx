@@ -71,7 +71,6 @@ export default function Categories(): React.ReactNode {
       dispatch(
         setCreatedCategory({
           name: '',
-          description: '',
           forIncome: tab === INCOME_TAB
         })
       ),

@@ -1,8 +1,10 @@
 import { takeEvery, SagaGenerator } from 'typed-redux-saga';
 import {
+  createBooking,
   createCategory,
   deleteAccount,
   deleteCategory,
+  loadBookings,
   loadCategories,
   loadUser,
   login,
@@ -23,6 +25,8 @@ import { deleteCategorySaga } from './deleteCategorySaga';
 import { createCategorySaga } from './createCategorySaga';
 import { loadUserSaga } from './loadUserSaga';
 import { updateCategorySaga } from './updateCategorySaga';
+import { loadBookingsSaga } from './loadBookingsSaga';
+import { createBookingSaga } from './createBookingSaga';
 
 export default function* rootSaga(): SagaGenerator<void> {
   yield* takeEvery(register, registrationSaga);
@@ -32,8 +36,12 @@ export default function* rootSaga(): SagaGenerator<void> {
   yield* takeEvery(updateEmail, updateEmailSaga);
   yield* takeEvery(updatePassword, updatePasswordSaga);
   yield* takeEvery(deleteAccount, deleteAccountSaga);
+
   yield* takeEvery(loadCategories, loadCategoriesSaga);
   yield* takeEvery(createCategory, createCategorySaga);
   yield* takeEvery(updateCategory, updateCategorySaga);
   yield* takeEvery(deleteCategory, deleteCategorySaga);
+
+  yield* takeEvery(loadBookings, loadBookingsSaga);
+  yield* takeEvery(createBooking, createBookingSaga);
 }

@@ -6,10 +6,12 @@ import { assertNonNullable, assertTrue } from '../utils/assert';
 import { isCategory, setCategories, setCreatedCategory } from '../store/slices/categoriesSlice';
 import { RootState } from '../store/store';
 import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { CreateCategoryPayload } from '../store/actions';
 
 const CATEGORY_ALREADY_EXISTS_ERROR = 'Diese Kategorie existiert bereits.';
 
-export function* createCategorySaga(): SagaGenerator<void> {
+export function* createCategorySaga(action: PayloadAction<CreateCategoryPayload>): SagaGenerator<void> {
   const { categories, createdCategory } = yield* select((state: RootState) => state.categories);
   assertNonNullable(createdCategory);
 
@@ -37,7 +39,11 @@ export function* createCategorySaga(): SagaGenerator<void> {
         assertTrue(isCategory(response.data));
 
         yield* put(setCategories([...categories, response.data]));
-        yield* put(setCreatedCategory(undefined));
+        yield* put(
+          setCreatedCategory(
+            action.payload.closeDialog ? undefined : { name: '', forIncome: createdCategory.forIncome }
+          )
+        );
       },
       function* handleError(error: AxiosError) {
         if (error.response?.status === 409) {

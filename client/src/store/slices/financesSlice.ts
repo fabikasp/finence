@@ -10,7 +10,7 @@ export enum Tab {
 export const bookingScheme = z.object({
   id: z.number().optional(),
   isIncome: z.boolean(),
-  date: z.string(), // TODO: mit Moment arbeiten
+  date: z.number(),
   amount: z.number(),
   category: z.string(),
   note: z.string().optional(),
@@ -18,7 +18,8 @@ export const bookingScheme = z.object({
     .object({
       date: z.string().optional(),
       amount: z.string().optional(),
-      category: z.string().optional()
+      category: z.string().optional(),
+      note: z.string().optional()
     })
     .optional()
 });
@@ -29,8 +30,10 @@ export const isBooking = (object: unknown): object is Booking => {
   return bookingScheme.safeParse(object).success;
 };
 
+export type DisplayableBooking = Omit<Booking, 'id' | 'date' | 'errors'> & { date: string };
+
 type UpdateableBooking = Booking & {
-  comparativeDate: string; // TODO: Mit Moment arbeiten
+  comparativeDate: number;
   comparativeAmount: number;
   comparativeCategory: string;
   comparativeNote?: string;
@@ -56,7 +59,7 @@ interface Finances {
 const testData: Booking[] = [...Array(10)].map((_, i) => ({
   id: i + 1,
   isIncome: !!(i % 2),
-  date: 'Testdatum' + i,
+  date: 1704122619,
   amount: 42 + i,
   category: 'Testkategorie' + i,
   note: 'Testbemerkung' + i

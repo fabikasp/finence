@@ -59,10 +59,7 @@ export const theme = createTheme({
             borderColor: '#FCF6F5'
           },
           '& .MuiSvgIcon-root': {
-            color: '#FCF6F5'
-          },
-          '&.Mui-focused .MuiSvgIcon-root': {
-            color: '#89ABE3'
+            color: '#C0C0C0'
           }
         }
       }

@@ -1,62 +1,21 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Box, FormControl, InputLabel, Select, SelectChangeEvent, MenuItem, IconButton, Zoom } from '@mui/material';
-import { DesktopDatePicker, DesktopDatePickerProps } from '@mui/x-date-pickers/DesktopDatePicker';
 import SwapVerticalCircleOutlinedIcon from '@mui/icons-material/SwapVerticalCircleOutlined';
-import { Theme, styled } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { styled } from '@mui/material/styles';
 import moment, { Moment } from 'moment';
 import 'moment/locale/de';
+import DatePicker from './DatePicker';
 
 const YEAR_LABEL = 'Jahr';
 const MONTH_LABEL = 'Monat';
 const DAY_LABEL = 'Tag';
 
-const StyledDatePicker = styled(DesktopDatePicker<Moment>)(({ theme }) => ({
+const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
   margin: '20px 0px 10px',
-  '& .MuiSvgIcon-root': {
-    color: theme.palette.secondary.main
-  },
   [theme.breakpoints.up('md')]: {
     width: '30%'
   }
 }));
-
-type DatePickerProps = Pick<DesktopDatePickerProps<Moment>, 'value' | 'minDate' | 'maxDate'> & {
-  onChange: (value: Moment | null) => void;
-  style: object;
-};
-
-function DatePicker(props: DatePickerProps): React.ReactNode {
-  const { value, minDate, maxDate, onChange, style } = props;
-
-  return (
-    <StyledDatePicker
-      label="Von"
-      value={value}
-      minDate={minDate}
-      maxDate={maxDate}
-      slotProps={{
-        layout: {
-          sx: (theme: Theme) => ({
-            backgroundColor: '#232F3B',
-            '& .MuiTypography-root': {
-              color: theme.palette.secondary.main,
-              fontSize: 13,
-              fontWeight: 'bold'
-            },
-            '& .MuiSvgIcon-root': {
-              color: theme.palette.secondary.main
-            }
-          })
-        },
-        textField: { size: 'small' }
-      }}
-      onChange={onChange}
-      sx={style}
-    />
-  );
-}
 
 const StyledFormControl = styled(FormControl)(() => ({
   margin: '20px 0px 10px'
@@ -68,8 +27,8 @@ const StyledIconButton = styled(IconButton)(() => ({
 
 export default function IntervalSelection(): React.ReactNode {
   moment.locale('de');
-  const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
   const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
+  const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
 
   const years = useMemo(
     () => Array.from({ length: 101 }, (_, i) => (inFiftyYears.toDate().getFullYear() - i).toString()),
@@ -205,22 +164,24 @@ export default function IntervalSelection(): React.ReactNode {
       {customIntervalEnabled && (
         <Zoom in style={{ transitionDelay: '0ms' }}>
           <Box>
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-              <DatePicker
-                value={startDate}
-                minDate={fiftyYearsAgo}
-                maxDate={inFiftyYears}
-                onChange={onStartDateChange}
-                style={{ '& .MuiInputBase-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 } }}
-              />
-              <DatePicker
-                value={endDate}
-                minDate={fiftyYearsAgo}
-                maxDate={inFiftyYears}
-                onChange={onEndDateChange}
-                style={{ '& .MuiInputBase-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } }}
-              />
-            </LocalizationProvider>
+            <StyledDatePicker
+              label="Von"
+              value={startDate}
+              minDate={fiftyYearsAgo}
+              maxDate={inFiftyYears}
+              size="small"
+              onChange={onStartDateChange}
+              sx={{ '& .MuiInputBase-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 } }}
+            />
+            <StyledDatePicker
+              label="Bis"
+              value={endDate}
+              minDate={fiftyYearsAgo}
+              maxDate={inFiftyYears}
+              size="small"
+              onChange={onEndDateChange}
+              sx={{ '& .MuiInputBase-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } }}
+            />
           </Box>
         </Zoom>
       )}

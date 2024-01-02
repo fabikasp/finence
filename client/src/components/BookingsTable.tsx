@@ -23,10 +23,12 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import IntervalSelection from './IntervalSelection';
-import { Booking, Tab, setCreatedBooking } from '../store/slices/financesSlice';
+import { DisplayableBooking, Tab, setCreatedBooking } from '../store/slices/financesSlice';
 import { RootState } from '../store/store';
-import { loadBookings } from '../store/actions';
+import { loadBookings, loadCategories } from '../store/actions';
 import CreateBooking from './CreateBooking';
+import moment from 'moment';
+import { convertMomentToUnix } from '../utils/helper';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
   if (b[orderBy] === a[orderBy]) {
@@ -38,7 +40,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
 
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof Booking>(
+function getComparator<Key extends keyof DisplayableBooking>(
   order: Order,
   orderBy: Key
 ): (a: { [key in Key]: number | string | boolean }, b: { [key in Key]: number | string | boolean }) => number {
@@ -68,7 +70,7 @@ const StyledTableSortLabel = styled(TableSortLabel)(({ theme }) => ({
 }));
 
 interface HeadCell {
-  readonly id: keyof Booking;
+  readonly id: keyof DisplayableBooking;
   readonly label: string;
   readonly numeric: boolean;
 }
@@ -76,12 +78,12 @@ interface HeadCell {
 interface CustomTableHeadProps {
   readonly order: Order;
   readonly orderBy: string;
-  readonly onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Booking) => void;
+  readonly onRequestSort: (event: React.MouseEvent<unknown>, property: keyof DisplayableBooking) => void;
 }
 
 function CustomTableHead(props: CustomTableHeadProps): React.ReactNode {
   const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof Booking) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof DisplayableBooking) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 
@@ -171,18 +173,19 @@ export default function BookingsTable(): React.ReactNode {
   const dispatch = useDispatch();
 
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Booking>('date');
+  const [orderBy, setOrderBy] = useState<keyof DisplayableBooking>('date');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [popoverAnchorElement, setPopoverAnchorElement] = useState<HTMLButtonElement | undefined>(undefined);
   const { tab, bookings } = useSelector((state: RootState) => state.finances);
 
   useEffect(() => {
-    //dispatch(loadBookings());
+    dispatch(loadCategories());
+    dispatch(loadBookings());
   }, [dispatch]);
 
   const onRequestSort = useCallback(
-    (_: React.MouseEvent<unknown>, property: keyof Booking) => {
+    (_: React.MouseEvent<unknown>, property: keyof DisplayableBooking) => {
       const isAsc = orderBy === property && order === 'asc';
 
       setOrder(isAsc ? 'desc' : 'asc');
@@ -208,32 +211,29 @@ export default function BookingsTable(): React.ReactNode {
     []
   );
 
-  const filterBookings = useCallback(
-    (booking: Booking) => booking.isIncome || (tab === Tab.EXPENSES && !booking.isIncome) || true,
-    [tab]
-  );
-
-  // TODO: Dates in strings übersetzen
-  // TODO: Leere Notes setzen
   const visibleRows = useMemo(() => {
-    const filteredBookings = bookings.filter(filterBookings);
+    const filteredBookings = bookings
+      .filter((booking) => booking.isIncome || (tab === Tab.EXPENSES && !booking.isIncome) || true)
+      .map((booking) => ({
+        ...booking,
+        note: booking.note ?? '',
+        date: moment.unix(booking.date).format('DD.MM.YYYY')
+      }));
 
     return stableSort(filteredBookings, getComparator(order, orderBy)).slice(
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage
     );
-  }, [bookings, filterBookings, order, orderBy, page, rowsPerPage]);
+  }, [tab, bookings, order, orderBy, page, rowsPerPage]);
 
   const onCreateClick = useCallback(
     () =>
       dispatch(
         setCreatedBooking({
           isIncome: [Tab.TOTAL, Tab.INCOME].includes(tab),
-          date: '',
+          date: convertMomentToUnix(moment()),
           amount: 0,
-          category: '',
-          note: '',
-          errors: { date: '', amount: '', category: '' }
+          category: ''
         })
       ),
     [tab, dispatch]

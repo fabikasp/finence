@@ -17,6 +17,8 @@ const isBookingsResponseData = (object: unknown): object is BookingsResponseData
 export function* loadBookingsSaga(): SagaGenerator<void> {
   yield* call(
     fetchSagaFactory({ url: BOOKINGS_URL_PATH_PREFIX }, function* handleResponse(response: AxiosResponse) {
+      // TODO: Date umformen
+
       assertTrue(isBookingsResponseData(response.data));
 
       yield* put(setBookings(response.data));

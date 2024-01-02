@@ -16,10 +16,10 @@ type DialogProps = React.PropsWithChildren & {
 };
 
 export default function Dialog(props: DialogProps): React.ReactNode {
-  const { open, title, onClose, children } = props;
+  const { title, onClose, children } = props;
 
   return (
-    <MuiDialog fullWidth open={open} onClose={onClose}>
+    <MuiDialog {...props} fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <StyledIconButton onClick={onClose}>
         <CloseIcon color="secondary" />
