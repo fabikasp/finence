@@ -30,6 +30,7 @@ export function* updateCategorySaga(): SagaGenerator<void> {
         url: `${CATEGORIES_URL_PATH_PREFIX}${viewedCategory.id}`,
         method: 'PUT',
         data: Object.fromEntries(
+          // TODO: Ändern
           Object.entries(viewedCategory).filter((entry) => typeof entry[1] !== 'string' || entry[1] !== '')
         )
       },

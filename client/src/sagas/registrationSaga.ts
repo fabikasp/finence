@@ -37,7 +37,7 @@ export function* registrationSaga(): SagaGenerator<void> {
       },
       function* handleError(error: AxiosError) {
         if (error.response?.status === 409) {
-          yield* put(setErrors({ email: USER_ALREADY_EXISTS_ERROR, password: undefined, repeatedPassword: undefined }));
+          yield* put(setErrors({ email: USER_ALREADY_EXISTS_ERROR }));
         }
       }
     )

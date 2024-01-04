@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { Moment } from 'moment';
 import z from 'zod';
 
 export enum Tab {
@@ -31,6 +32,7 @@ export const isBooking = (object: unknown): object is Booking => {
 };
 
 export type DisplayableBooking = Omit<Booking, 'id' | 'date' | 'errors'> & { date: string };
+type CreatableBooking = Omit<Booking, 'id' | 'date' | 'amount'> & { date: Moment | null; amount: string };
 
 type UpdateableBooking = Booking & {
   comparativeDate: number;
@@ -51,23 +53,14 @@ export const convertToUpdateableBooking = (booking: Booking): UpdateableBooking 
 interface Finances {
   readonly tab: Tab;
   readonly bookings: Booking[];
-  readonly createdBooking?: Booking;
+  readonly createdBooking?: CreatableBooking;
   readonly updatedBooking?: UpdateableBooking;
   readonly deletedBooking?: Booking;
 }
 
-const testData: Booking[] = [...Array(10)].map((_, i) => ({
-  id: i + 1,
-  isIncome: !!(i % 2),
-  date: 1704122619,
-  amount: 42 + i,
-  category: 'Testkategorie' + i,
-  note: 'Testbemerkung' + i
-}));
-
 const initialState: Finances = {
   tab: Tab.TOTAL,
-  bookings: testData
+  bookings: []
 };
 
 const financesSlice = createSlice({
@@ -76,7 +69,7 @@ const financesSlice = createSlice({
   reducers: {
     setTab: (state: Finances, action: PayloadAction<Tab>) => ({ ...state, tab: action.payload }),
     setBookings: (state: Finances, action: PayloadAction<Booking[]>) => ({ ...state, bookings: action.payload }),
-    setCreatedBooking: (state: Finances, action: PayloadAction<Booking | undefined>) => ({
+    setCreatedBooking: (state: Finances, action: PayloadAction<CreatableBooking | undefined>) => ({
       ...state,
       createdBooking: action.payload
     }),

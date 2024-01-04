@@ -2,25 +2,24 @@ import React, { useCallback } from 'react';
 import { Button, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useDispatch } from 'react-redux';
-import { deleteCategory } from '../store/actions';
+import { deleteBooking } from '../store/actions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { setDeletedCategory } from '../store/slices/categoriesSlice';
 import Dialog from './Dialog';
+import { setDeletedBooking } from '../store/slices/financesSlice';
 
-export default function DeleteCategory(): React.ReactNode {
+export default function DeleteBooking(): React.ReactNode {
   const dispatch = useDispatch();
-  const { deletedCategory } = useSelector((state: RootState) => state.categories);
+  const { deletedBooking } = useSelector((state: RootState) => state.finances);
 
-  const onClose = useCallback(() => dispatch(setDeletedCategory(undefined)), [dispatch]);
-  const onDelete = useCallback(() => dispatch(deleteCategory()), [dispatch]);
+  const onClose = useCallback(() => dispatch(setDeletedBooking(undefined)), [dispatch]);
+  const onDelete = useCallback(() => dispatch(deleteBooking()), [dispatch]);
 
   return (
-    <Dialog open={!!deletedCategory} title="Kategorie löschen" onClose={onClose}>
+    <Dialog open={!!deletedBooking} title="Buchung löschen" onClose={onClose}>
       <DialogContent>
         <DialogContentText>
-          Durch die Löschung dieser Kategorie werden ebenfalls alle damit verknüpften
-          {deletedCategory?.forIncome ? ' Einnahmen' : ' Ausgaben'} gelöscht. Wollen Sie die Kategorie wirklich löschen?
+          Wollen Sie die {deletedBooking?.isIncome ? ' Einnahme' : ' Ausgabe'} wirklich löschen?
         </DialogContentText>
       </DialogContent>
       <DialogActions>

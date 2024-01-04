@@ -23,12 +23,12 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import IntervalSelection from './IntervalSelection';
-import { DisplayableBooking, Tab, setCreatedBooking } from '../store/slices/financesSlice';
+import { DisplayableBooking, Tab, setCreatedBooking, setDeletedBooking } from '../store/slices/financesSlice';
 import { RootState } from '../store/store';
 import { loadBookings, loadCategories } from '../store/actions';
 import CreateBooking from './CreateBooking';
 import moment from 'moment';
-import { convertMomentToUnix } from '../utils/helper';
+import DeleteBooking from './DeleteBooking';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
   if (b[orderBy] === a[orderBy]) {
@@ -155,19 +155,22 @@ const BookingTypeIconWrapper = styled(Box)(() => ({
 
 const PopoverButtonWrapper = styled(Box)(() => ({
   display: 'flex',
-  flexDirection: 'column',
-  paddingBottom: 5
+  flexDirection: 'column'
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: theme.palette.text.primary,
-  justifyContent: 'left',
-  padding: '5px 10px 0px'
+  justifyContent: 'left'
 }));
 
 const StyledFab = styled(Fab)(() => ({
   marginRight: 15
 }));
+
+interface PopoverReference {
+  referencedBookingId: number;
+  anchorElement: HTMLButtonElement;
+}
 
 export default function BookingsTable(): React.ReactNode {
   const dispatch = useDispatch();
@@ -176,7 +179,7 @@ export default function BookingsTable(): React.ReactNode {
   const [orderBy, setOrderBy] = useState<keyof DisplayableBooking>('date');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [popoverAnchorElement, setPopoverAnchorElement] = useState<HTMLButtonElement | undefined>(undefined);
+  const [popoverReference, setPopoverReference] = useState<PopoverReference | undefined>(undefined);
   const { tab, bookings } = useSelector((state: RootState) => state.finances);
 
   useEffect(() => {
@@ -194,8 +197,13 @@ export default function BookingsTable(): React.ReactNode {
     [order, orderBy]
   );
 
-  const onOpenPopover = (event: React.MouseEvent<HTMLButtonElement>) => setPopoverAnchorElement(event.currentTarget);
-  const onClosePopover = () => setPopoverAnchorElement(undefined);
+  const onOpenPopover = useCallback(
+    (referencedBookingId: number, anchorElement: HTMLButtonElement) =>
+      setPopoverReference({ referencedBookingId, anchorElement }),
+    []
+  );
+
+  const onClosePopover = useCallback(() => setPopoverReference(undefined), []);
 
   const onChangePage = useCallback((_: unknown, newPage: number) => {
     setPage(newPage);
@@ -231,12 +239,20 @@ export default function BookingsTable(): React.ReactNode {
       dispatch(
         setCreatedBooking({
           isIncome: [Tab.TOTAL, Tab.INCOME].includes(tab),
-          date: convertMomentToUnix(moment()),
-          amount: 0,
+          date: moment(),
+          amount: '',
           category: ''
         })
       ),
     [tab, dispatch]
+  );
+
+  const onDeleteClick = useCallback(
+    (bookingId: number) => () => {
+      dispatch(setDeletedBooking(bookings.find((booking) => booking.id === bookingId)));
+      setPopoverReference(undefined);
+    },
+    [bookings, dispatch]
   );
 
   return (
@@ -265,7 +281,7 @@ export default function BookingsTable(): React.ReactNode {
                 <TableCell>{row.category}</TableCell>
                 <TableCell>{row.note}</TableCell>
                 <TableCell align="right">
-                  <IconButton color="primary" onClick={onOpenPopover}>
+                  <IconButton color="primary" onClick={(event) => onOpenPopover(row.id!, event.currentTarget)}>
                     <MoreVertIcon />
                   </IconButton>
                 </TableCell>
@@ -285,8 +301,8 @@ export default function BookingsTable(): React.ReactNode {
           onRowsPerPageChange={onChangeRowsPerPage}
         />
         <Popover
-          open={!!popoverAnchorElement}
-          anchorEl={popoverAnchorElement}
+          open={!!popoverReference}
+          anchorEl={popoverReference?.anchorElement}
           onClose={onClosePopover}
           anchorOrigin={{
             vertical: 'bottom',
@@ -297,13 +313,18 @@ export default function BookingsTable(): React.ReactNode {
             <StyledButton color="secondary" startIcon={<EditIcon />}>
               Bearbeiten
             </StyledButton>
-            <StyledButton color="secondary" startIcon={<DeleteForeverIcon />}>
+            <StyledButton
+              color="secondary"
+              startIcon={<DeleteForeverIcon />}
+              onClick={onDeleteClick(popoverReference?.referencedBookingId ?? 0)}
+            >
               Löschen
             </StyledButton>
           </PopoverButtonWrapper>
         </Popover>
       </StyledBox>
       <CreateBooking />
+      <DeleteBooking />
     </>
   );
 }

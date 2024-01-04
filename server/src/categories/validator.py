@@ -22,5 +22,5 @@ class CategoryValidator:
 
         return len(description) <= MAX_DESCRIPTION_LENGTH
 
-    def validate_for_income(self, for_income: bool) -> bool:
+    def validate_for_income(self, for_income) -> bool:
         return isinstance(for_income, bool)

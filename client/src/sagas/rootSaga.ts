@@ -3,6 +3,7 @@ import {
   createBooking,
   createCategory,
   deleteAccount,
+  deleteBooking,
   deleteCategory,
   loadBookings,
   loadCategories,
@@ -27,6 +28,7 @@ import { loadUserSaga } from './loadUserSaga';
 import { updateCategorySaga } from './updateCategorySaga';
 import { loadBookingsSaga } from './loadBookingsSaga';
 import { createBookingSaga } from './createBookingSaga';
+import { deleteBookingSaga } from './deleteBookingSaga';
 
 export default function* rootSaga(): SagaGenerator<void> {
   yield* takeEvery(register, registrationSaga);
@@ -44,4 +46,5 @@ export default function* rootSaga(): SagaGenerator<void> {
 
   yield* takeEvery(loadBookings, loadBookingsSaga);
   yield* takeEvery(createBooking, createBookingSaga);
+  yield* takeEvery(deleteBooking, deleteBookingSaga);
 }

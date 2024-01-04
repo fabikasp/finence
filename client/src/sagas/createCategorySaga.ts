@@ -31,9 +31,7 @@ export function* createCategorySaga(action: PayloadAction<CreateCategoryPayload>
       {
         url: CATEGORIES_URL_PATH_PREFIX,
         method: 'POST',
-        data: Object.fromEntries(
-          Object.entries(createdCategory).filter((entry) => typeof entry[1] !== 'string' || entry[1] !== '')
-        )
+        data: createdCategory
       },
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isCategory(response.data));
@@ -50,7 +48,7 @@ export function* createCategorySaga(action: PayloadAction<CreateCategoryPayload>
           yield* put(
             setCreatedCategory({
               ...createdCategory,
-              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR, description: undefined }
+              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR }
             })
           );
         }

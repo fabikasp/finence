@@ -11,7 +11,6 @@ const MAX_PASSWORD_LENGTH = 128;
 const MAX_CATEGORY_NAME_LENGTH = 50;
 const MAX_CATEGORY_DESCRIPTION_LENGTH = 200;
 
-const BOOKING_AMOUNT_REGEX = /^(\d*\.\d{1,2}|\d+)$/;
 const MAX_BOOKING_NOTE_LENGTH = 200;
 
 export function validateEmail(email: string, login?: boolean): string | undefined {
@@ -83,11 +82,16 @@ export function validateBookingDate(bookingDate: Moment | null): string | undefi
 }
 
 export function validateBookingAmount(bookingAmount: string): string | undefined {
-  if (bookingAmount === '' || bookingAmount === '0') {
+  if (bookingAmount === '') {
     return 'Der Betrag darf nicht leer sein.';
   }
 
-  return !BOOKING_AMOUNT_REGEX.test(bookingAmount) ? 'Der Betrag ist nicht gültig.' : undefined;
+  const castedAmount = Number(bookingAmount);
+  if (isNaN(castedAmount)) {
+    return 'Der Betrag muss eine Zahl sein.';
+  }
+
+  return castedAmount <= 0 ? 'Der Betrag muss größer als 0 sein.' : undefined;
 }
 
 export function validateBookingCategory(bookingCategory: string): string | undefined {

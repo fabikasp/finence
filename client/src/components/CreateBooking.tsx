@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Button,
   DialogContent,
@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { createBooking } from '../store/actions';
-import { assertNonNullable, assertTrue } from '../utils/assert';
+import { assertNonNullable } from '../utils/assert';
 import Dialog from './Dialog';
 import { setCreatedBooking } from '../store/slices/financesSlice';
 import DatePicker from './DatePicker';
@@ -34,7 +34,6 @@ import {
   validateBookingDate,
   validateBookingNote
 } from '../utils/validators';
-import { convertMomentToUnix, convertUnixToMoment } from '../utils/helper';
 
 const StyledTextField = styled(TextField)(() => ({
   marginTop: 20
@@ -71,47 +70,11 @@ export default function CreateBooking(): React.ReactNode {
   const { createdBooking } = useSelector((state: RootState) => state.finances);
   const { categories } = useSelector((state: RootState) => state.categories);
 
-  const initialDate = useMemo(
-    () => (createdBooking?.date ? convertUnixToMoment(createdBooking.date) : moment()),
-    [createdBooking]
-  );
-
-  const [date, setDate] = useState<Moment | null>(initialDate);
-  const [amount, setAmount] = useState('');
-
   const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
   const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
 
   const onClose = useCallback(() => dispatch(setCreatedBooking(undefined)), [dispatch]);
-
-  const onCreate = useCallback(
-    (closeDialog: boolean) => () => {
-      assertNonNullable(createdBooking);
-
-      dispatch(setCreatedBooking({ ...createdBooking, errors: undefined }));
-
-      const dateError = validateBookingDate(date);
-      const amountError = validateBookingAmount(amount);
-      const categoryError = validateBookingCategory(createdBooking.category);
-      const noteError = validateBookingNote(createdBooking.note ?? '');
-
-      if (dateError || amountError || categoryError || noteError) {
-        dispatch(
-          setCreatedBooking({
-            ...createdBooking,
-            errors: { date: dateError, amount: amountError, category: categoryError, note: noteError }
-          })
-        );
-
-        return;
-      }
-
-      assertTrue(date !== null);
-      dispatch(setCreatedBooking({ ...createdBooking, date: convertMomentToUnix(date), amount: Number(amount) }));
-      dispatch(createBooking({ closeDialog }));
-    },
-    [createdBooking, date, amount, dispatch]
-  );
+  const onCreate = useCallback((closeDialog: boolean) => () => dispatch(createBooking({ closeDialog })), [dispatch]);
 
   const onToggleButtonClick = useCallback(
     (_: React.SyntheticEvent, isIncome: boolean) => {
@@ -128,10 +91,10 @@ export default function CreateBooking(): React.ReactNode {
       dispatch(
         setCreatedBooking({
           ...createdBooking,
+          date: value,
           errors: { ...createdBooking.errors, date: validateBookingDate(value) }
         })
       );
-      setDate(value);
     },
     [createdBooking, dispatch]
   );
@@ -143,10 +106,10 @@ export default function CreateBooking(): React.ReactNode {
       dispatch(
         setCreatedBooking({
           ...createdBooking,
+          amount: event.target.value,
           errors: { ...createdBooking.errors, amount: validateBookingAmount(event.target.value) }
         })
       );
-      setAmount(event.target.value);
     },
     [dispatch, createdBooking]
   );
@@ -198,7 +161,7 @@ export default function CreateBooking(): React.ReactNode {
         </ToggleButtonGroup>
         <StyledDatePicker
           label="Datum"
-          value={date}
+          value={createdBooking?.date ?? moment()}
           minDate={fiftyYearsAgo}
           maxDate={inFiftyYears}
           size="medium"
@@ -209,7 +172,7 @@ export default function CreateBooking(): React.ReactNode {
         <StyledTextField
           fullWidth
           label="Betrag"
-          value={amount}
+          value={createdBooking?.amount ?? ''}
           onChange={onAmountChange}
           InputProps={{
             startAdornment: (
