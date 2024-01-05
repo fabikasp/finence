@@ -29,7 +29,7 @@ class BookingModel(db.Model):
         category_id: int,
         is_income: bool,
         date: int,
-        amount: int,
+        amount: float,
         note: str,
     ):
         self.user_id = user_id

@@ -23,12 +23,22 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import IntervalSelection from './IntervalSelection';
-import { DisplayableBooking, Tab, setCreatedBooking, setDeletedBooking } from '../store/slices/financesSlice';
+import {
+  DisplayableBooking,
+  Tab,
+  convertToUpdateableBooking,
+  setCreatedBooking,
+  setDeletedBooking,
+  setUpdatedBooking
+} from '../store/slices/financesSlice';
 import { RootState } from '../store/store';
 import { loadBookings, loadCategories } from '../store/actions';
 import CreateBooking from './CreateBooking';
 import moment from 'moment';
 import DeleteBooking from './DeleteBooking';
+import { assertNonNullable } from '../utils/assert';
+import { convertMomentToUnix, convertUnixToMoment } from '../utils/helper';
+import UpdateBooking from './UpdateBooking';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
   if (b[orderBy] === a[orderBy]) {
@@ -221,11 +231,11 @@ export default function BookingsTable(): React.ReactNode {
 
   const visibleRows = useMemo(() => {
     const filteredBookings = bookings
-      .filter((booking) => booking.isIncome || (tab === Tab.EXPENSES && !booking.isIncome) || true)
+      .filter((booking) => (tab === Tab.INCOME ? booking.isIncome : tab === Tab.EXPENSES ? !booking.isIncome : true))
       .map((booking) => ({
         ...booking,
         note: booking.note ?? '',
-        date: moment.unix(booking.date).format('DD.MM.YYYY')
+        date: convertUnixToMoment(booking.date).format('DD.MM.YYYY')
       }));
 
     return stableSort(filteredBookings, getComparator(order, orderBy)).slice(
@@ -239,12 +249,23 @@ export default function BookingsTable(): React.ReactNode {
       dispatch(
         setCreatedBooking({
           isIncome: [Tab.TOTAL, Tab.INCOME].includes(tab),
-          date: moment(),
+          date: convertMomentToUnix(moment()),
           amount: '',
           category: ''
         })
       ),
     [tab, dispatch]
+  );
+
+  const onUpdateClick = useCallback(
+    (bookingId: number) => () => {
+      const booking = bookings.find((booking) => booking.id === bookingId);
+      assertNonNullable(booking);
+
+      dispatch(setUpdatedBooking(convertToUpdateableBooking(booking)));
+      setPopoverReference(undefined);
+    },
+    [bookings, dispatch]
   );
 
   const onDeleteClick = useCallback(
@@ -310,7 +331,11 @@ export default function BookingsTable(): React.ReactNode {
           }}
         >
           <PopoverButtonWrapper>
-            <StyledButton color="secondary" startIcon={<EditIcon />}>
+            <StyledButton
+              color="secondary"
+              startIcon={<EditIcon />}
+              onClick={onUpdateClick(popoverReference?.referencedBookingId ?? 0)}
+            >
               Bearbeiten
             </StyledButton>
             <StyledButton
@@ -324,6 +349,7 @@ export default function BookingsTable(): React.ReactNode {
         </Popover>
       </StyledBox>
       <CreateBooking />
+      <UpdateBooking />
       <DeleteBooking />
     </>
   );

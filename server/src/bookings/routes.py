@@ -93,9 +93,6 @@ def update(id: int):
 
     updated_booking = booking_service.update(id, category, date, amount, note)
 
-    if updated_booking is None:
-        return {"message": "Booking not found."}, 404
-
     return updated_booking.jsonify()
 
 

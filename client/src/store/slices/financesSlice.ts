@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Moment } from 'moment';
 import z from 'zod';
 
 export enum Tab {
@@ -32,28 +31,34 @@ export const isBooking = (object: unknown): object is Booking => {
 };
 
 export type DisplayableBooking = Omit<Booking, 'id' | 'date' | 'errors'> & { date: string };
-type CreatableBooking = Omit<Booking, 'id' | 'date' | 'amount'> & { date: Moment | null; amount: string };
 
-type UpdateableBooking = Booking & {
+type CreateableBooking = Omit<Booking, 'date' | 'amount'> & { date: number | null; amount: string };
+
+type UpdateableBooking = CreateableBooking & {
   comparativeDate: number;
-  comparativeAmount: number;
+  comparativeAmount: string;
   comparativeCategory: string;
   comparativeNote?: string;
 };
 
-export const convertToUpdateableBooking = (booking: Booking): UpdateableBooking => ({
-  ...booking,
-  comparativeDate: booking.date,
-  comparativeAmount: booking.amount,
-  comparativeCategory: booking.category,
-  comparativeNote: booking.note,
-  errors: undefined
-});
+export const convertToUpdateableBooking = (booking: Booking): UpdateableBooking => {
+  const castedAmount = String(booking.amount);
+
+  return {
+    ...booking,
+    amount: castedAmount,
+    comparativeDate: booking.date,
+    comparativeAmount: castedAmount,
+    comparativeCategory: booking.category,
+    comparativeNote: booking.note,
+    errors: undefined
+  };
+};
 
 interface Finances {
   readonly tab: Tab;
   readonly bookings: Booking[];
-  readonly createdBooking?: CreatableBooking;
+  readonly createdBooking?: CreateableBooking;
   readonly updatedBooking?: UpdateableBooking;
   readonly deletedBooking?: Booking;
 }
@@ -69,7 +74,7 @@ const financesSlice = createSlice({
   reducers: {
     setTab: (state: Finances, action: PayloadAction<Tab>) => ({ ...state, tab: action.payload }),
     setBookings: (state: Finances, action: PayloadAction<Booking[]>) => ({ ...state, bookings: action.payload }),
-    setCreatedBooking: (state: Finances, action: PayloadAction<CreatableBooking | undefined>) => ({
+    setCreatedBooking: (state: Finances, action: PayloadAction<CreateableBooking | undefined>) => ({
       ...state,
       createdBooking: action.payload
     }),

@@ -1,4 +1,3 @@
-import { Moment } from 'moment';
 import { CONFIRMATION_TEXT } from './const';
 
 const EMAIL_REGEX =
@@ -77,7 +76,7 @@ export function validateCategoryDescription(categoryDescription: string): string
     : undefined;
 }
 
-export function validateBookingDate(bookingDate: Moment | null): string | undefined {
+export function validateBookingDate(bookingDate: number | null): string | undefined {
   return bookingDate === null ? 'Das Datum darf nicht leer sein.' : undefined;
 }
 

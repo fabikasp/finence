@@ -13,11 +13,10 @@ import {
   validateBookingDate,
   validateBookingNote
 } from '../utils/validators';
-import { convertMomentToUnix } from '../utils/helper';
 
 export function* createBookingSaga(action: PayloadAction<CreateBookingPayload>): SagaGenerator<void> {
   const { bookings, createdBooking } = yield* select((state: RootState) => state.finances);
-  assertNonNullable(createdBooking?.date);
+  assertNonNullable(createdBooking);
 
   yield* put(setCreatedBooking({ ...createdBooking, errors: undefined }));
 
@@ -44,8 +43,7 @@ export function* createBookingSaga(action: PayloadAction<CreateBookingPayload>):
         method: 'POST',
         data: {
           ...createdBooking,
-          date: convertMomentToUnix(createdBooking.date),
-          amount: Number(createdBooking.amount)
+          amount: +Number(createdBooking.amount).toFixed(2)
         }
       },
       function* handleResponse(response: AxiosResponse) {

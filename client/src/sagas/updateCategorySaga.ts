@@ -29,10 +29,7 @@ export function* updateCategorySaga(): SagaGenerator<void> {
       {
         url: `${CATEGORIES_URL_PATH_PREFIX}${viewedCategory.id}`,
         method: 'PUT',
-        data: Object.fromEntries(
-          // TODO: Ändern
-          Object.entries(viewedCategory).filter((entry) => typeof entry[1] !== 'string' || entry[1] !== '')
-        )
+        data: yield* call(buildRequestData)
       },
       function* handleResponse(response: AxiosResponse) {
         assertTrue(isCategory(response.data));
@@ -60,4 +57,25 @@ export function* updateCategorySaga(): SagaGenerator<void> {
       }
     )
   );
+}
+
+interface RequestData {
+  name?: string;
+  description?: string;
+}
+
+function* buildRequestData(): SagaGenerator<RequestData> {
+  const { viewedCategory } = yield* select((state: RootState) => state.categories);
+  assertNonNullable(viewedCategory);
+
+  const result: RequestData = {};
+  if (viewedCategory.name !== viewedCategory.comparativeName) {
+    result.name = viewedCategory.name;
+  }
+
+  if (viewedCategory.description !== viewedCategory.comparativeDescription) {
+    result.description = viewedCategory.description;
+  }
+
+  return result;
 }
