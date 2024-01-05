@@ -18,7 +18,9 @@ class BookingService:
         category_id = self.__category_service.read_by_user_id_and_name_and_for_income(
             user_id, category, is_income
         ).get_id()
-        booking = BookingModel(user_id, category_id, is_income, date, amount, note)
+        booking = BookingModel(
+            user_id, category_id, is_income, date, round(amount, 2), note
+        )
 
         db.session.add(booking)
         db.session.commit()
@@ -56,7 +58,7 @@ class BookingService:
             booking.set_date(date)
 
         if amount is not None:
-            booking.set_amount(amount)
+            booking.set_amount(round(amount, 2))
 
         booking.set_note(note)
 

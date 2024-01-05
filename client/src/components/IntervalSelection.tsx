@@ -1,10 +1,15 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Box, FormControl, InputLabel, Select, SelectChangeEvent, MenuItem, IconButton, Zoom } from '@mui/material';
 import SwapVerticalCircleOutlinedIcon from '@mui/icons-material/SwapVerticalCircleOutlined';
 import { styled } from '@mui/material/styles';
 import moment, { Moment } from 'moment';
 import 'moment/locale/de';
 import DatePicker from './DatePicker';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { useDispatch } from 'react-redux';
+import { setCustomInterval, setNativeInterval, toggleCustomIntervalEnabled } from '../store/slices/financesSlice';
+import { convertMomentToUnix, convertUnixToMoment } from '../utils/helper';
 
 const YEAR_LABEL = 'Jahr';
 const MONTH_LABEL = 'Monat';
@@ -26,12 +31,15 @@ const StyledIconButton = styled(IconButton)(() => ({
 }));
 
 export default function IntervalSelection(): React.ReactNode {
+  const dispatch = useDispatch();
+  const { customIntervalEnabled, nativeInterval, customInterval } = useSelector((state: RootState) => state.finances);
+
   moment.locale('de');
   const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
   const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
 
   const years = useMemo(
-    () => Array.from({ length: 101 }, (_, i) => (inFiftyYears.toDate().getFullYear() - i).toString()),
+    () => Array.from({ length: 101 }, (_, i) => (inFiftyYears.toDate().getFullYear() - (101 - i)).toString()),
     [inFiftyYears]
   );
   const months = useMemo(() => moment.monthsShort(), []);
@@ -41,59 +49,48 @@ export default function IntervalSelection(): React.ReactNode {
     return Array.from({ length: countDays }, (_, i) => (++i).toString());
   }, []);
 
-  const [customIntervalEnabled, setCustomIntervalEnabled] = useState(false);
-  const [year, setYear] = useState<string>(years[Math.round((years.length - 1) / 2)]);
-  const [month, setMonth] = useState<string>('');
-  const [day, setDay] = useState<string>('');
-  const [startDate, setStartDate] = useState<Moment | null>(moment());
-  const [endDate, setEndDate] = useState<Moment | null>(null);
-
-  const onSwap = useCallback(() => setCustomIntervalEnabled((state) => !state), []);
+  const onSwap = useCallback(() => dispatch(toggleCustomIntervalEnabled()), [dispatch]);
 
   const onYearChange = useCallback(
-    (event: SelectChangeEvent) => {
-      if (day !== '') {
-        setDay('');
-      }
-
-      setYear(event.target.value);
-    },
-    [day]
+    (event: SelectChangeEvent) => dispatch(setNativeInterval({ ...nativeInterval, year: event.target.value, day: '' })),
+    [nativeInterval, dispatch]
   );
 
   const onMonthChange = useCallback(
-    (event: SelectChangeEvent) => {
-      if (day !== '') {
-        setDay('');
-      }
-
-      setMonth(event.target.value);
-    },
-    [day]
+    (event: SelectChangeEvent) =>
+      dispatch(setNativeInterval({ ...nativeInterval, month: event.target.value, day: '' })),
+    [nativeInterval, dispatch]
   );
 
-  const onDayChange = useCallback((event: SelectChangeEvent) => setDay(event.target.value), []);
+  const onDayChange = useCallback(
+    (event: SelectChangeEvent) => dispatch(setNativeInterval({ ...nativeInterval, day: event.target.value })),
+    [nativeInterval, dispatch]
+  );
 
   const onStartDateChange = useCallback(
     (value: Moment | null) => {
-      if (value !== null && endDate !== null && moment(value).isAfter(endDate)) {
-        setEndDate(null);
-      }
+      const clearEndDate =
+        value !== null && customInterval.endDate !== null && value.isAfter(convertUnixToMoment(customInterval.endDate));
 
-      setStartDate(value);
+      const convertedDate = value ? convertMomentToUnix(value) : null;
+      dispatch(setCustomInterval({ startDate: convertedDate, endDate: clearEndDate ? null : customInterval.endDate }));
     },
-    [endDate]
+    [customInterval, dispatch]
   );
 
   const onEndDateChange = useCallback(
     (value: Moment | null) => {
-      if (value !== null && startDate !== null && moment(value).isBefore(startDate)) {
-        setStartDate(null);
-      }
+      const clearStartDate =
+        value !== null &&
+        customInterval.startDate !== null &&
+        value.isBefore(convertUnixToMoment(customInterval.startDate));
 
-      setEndDate(value);
+      const convertedDate = value ? convertMomentToUnix(value) : null;
+      dispatch(
+        setCustomInterval({ startDate: clearStartDate ? null : customInterval.startDate, endDate: convertedDate })
+      );
     },
-    [startDate]
+    [customInterval, dispatch]
   );
 
   return (
@@ -108,12 +105,13 @@ export default function IntervalSelection(): React.ReactNode {
               <InputLabel id="year-label">{YEAR_LABEL}</InputLabel>
               <Select
                 labelId="year-label"
-                value={year}
+                value={nativeInterval.year}
                 onChange={onYearChange}
                 label={YEAR_LABEL}
                 autoWidth
                 sx={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
               >
+                <MenuItem value="">Leer</MenuItem>
                 {years.map((year) => (
                   <MenuItem key={year} value={year}>
                     {year}
@@ -125,7 +123,7 @@ export default function IntervalSelection(): React.ReactNode {
               <InputLabel id="month-label">{MONTH_LABEL}</InputLabel>
               <Select
                 labelId="month-label"
-                value={month}
+                value={nativeInterval.month}
                 onChange={onMonthChange}
                 label={MONTH_LABEL}
                 autoWidth
@@ -143,15 +141,15 @@ export default function IntervalSelection(): React.ReactNode {
               <InputLabel id="day-label">{DAY_LABEL}</InputLabel>
               <Select
                 labelId="day-label"
-                value={day}
+                value={nativeInterval.day}
                 onChange={onDayChange}
                 label={DAY_LABEL}
                 autoWidth
                 sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
               >
                 <MenuItem value="">Leer</MenuItem>
-                {month !== '' &&
-                  days(year, month).map((day) => (
+                {nativeInterval.month !== '' &&
+                  days(nativeInterval.year, nativeInterval.month).map((day) => (
                     <MenuItem key={day} value={day}>
                       {day}
                     </MenuItem>
@@ -166,7 +164,7 @@ export default function IntervalSelection(): React.ReactNode {
           <Box>
             <StyledDatePicker
               label="Von"
-              value={startDate}
+              value={customInterval.startDate ? convertUnixToMoment(customInterval.startDate) : null}
               minDate={fiftyYearsAgo}
               maxDate={inFiftyYears}
               size="small"
@@ -175,7 +173,7 @@ export default function IntervalSelection(): React.ReactNode {
             />
             <StyledDatePicker
               label="Bis"
-              value={endDate}
+              value={customInterval.endDate ? convertUnixToMoment(customInterval.endDate) : null}
               minDate={fiftyYearsAgo}
               maxDate={inFiftyYears}
               size="small"

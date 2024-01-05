@@ -9,7 +9,7 @@ export const updatePassword = createAction('UPDATE_PASSWORD');
 export const deleteAccount = createAction('DELETE_ACCOUNT');
 
 export interface CreateCategoryPayload {
-  closeDialog: boolean;
+  readonly closeDialog: boolean;
 }
 
 export const loadCategories = createAction('LOAD_CATEGORIES');
@@ -18,7 +18,7 @@ export const updateCategory = createAction('UPDATE_CATEGORY');
 export const deleteCategory = createAction('DELETE_CATEGORY');
 
 export interface CreateBookingPayload {
-  closeDialog: boolean;
+  readonly closeDialog: boolean;
 }
 
 export const loadBookings = createAction('LOAD_BOOKINGS');

@@ -178,8 +178,8 @@ const StyledFab = styled(Fab)(() => ({
 }));
 
 interface PopoverReference {
-  referencedBookingId: number;
-  anchorElement: HTMLButtonElement;
+  readonly referencedBookingId: number;
+  readonly anchorElement: HTMLButtonElement;
 }
 
 export default function BookingsTable(): React.ReactNode {
@@ -190,7 +190,9 @@ export default function BookingsTable(): React.ReactNode {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [popoverReference, setPopoverReference] = useState<PopoverReference | undefined>(undefined);
-  const { tab, bookings } = useSelector((state: RootState) => state.finances);
+  const { tab, customIntervalEnabled, nativeInterval, customInterval, bookings } = useSelector(
+    (state: RootState) => state.finances
+  );
 
   useEffect(() => {
     dispatch(loadCategories());
@@ -232,6 +234,30 @@ export default function BookingsTable(): React.ReactNode {
   const visibleRows = useMemo(() => {
     const filteredBookings = bookings
       .filter((booking) => (tab === Tab.INCOME ? booking.isIncome : tab === Tab.EXPENSES ? !booking.isIncome : true))
+      .filter((booking) => {
+        if (customIntervalEnabled) {
+          if (customInterval.startDate === null && customInterval.endDate === null) {
+            return true;
+          }
+
+          const bookingDate = convertUnixToMoment(booking.date);
+          const startDate = customInterval.startDate ? convertUnixToMoment(customInterval.startDate) : null;
+          const endDate = customInterval.endDate ? convertUnixToMoment(customInterval.endDate) : null;
+
+          if (startDate === null) {
+            return bookingDate.isSameOrBefore(endDate);
+          }
+
+          if (endDate === null) {
+            return bookingDate.isSameOrAfter(startDate);
+          }
+
+          return bookingDate.isSameOrAfter(startDate) && bookingDate.isSameOrBefore(endDate);
+        }
+
+        // TODO: nativeInterval Behandlung
+        return true;
+      })
       .map((booking) => ({
         ...booking,
         note: booking.note ?? '',
@@ -242,7 +268,17 @@ export default function BookingsTable(): React.ReactNode {
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage
     );
-  }, [tab, bookings, order, orderBy, page, rowsPerPage]);
+  }, [
+    tab,
+    customIntervalEnabled,
+    customInterval.startDate,
+    customInterval.endDate,
+    bookings,
+    order,
+    orderBy,
+    page,
+    rowsPerPage
+  ]);
 
   const onCreateClick = useCallback(
     () =>

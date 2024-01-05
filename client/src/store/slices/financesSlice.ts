@@ -1,10 +1,22 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import moment from 'moment';
 import z from 'zod';
 
 export enum Tab {
   TOTAL = 'total',
   INCOME = 'income',
   EXPENSES = 'expenses'
+}
+
+interface NativeInterval {
+  readonly year: string;
+  readonly month: string;
+  readonly day: string;
+}
+
+interface CustomInterval {
+  readonly startDate: number | null;
+  readonly endDate: number | null;
 }
 
 export const bookingScheme = z.object({
@@ -57,6 +69,9 @@ export const convertToUpdateableBooking = (booking: Booking): UpdateableBooking 
 
 interface Finances {
   readonly tab: Tab;
+  readonly customIntervalEnabled: boolean;
+  readonly nativeInterval: NativeInterval;
+  readonly customInterval: CustomInterval;
   readonly bookings: Booking[];
   readonly createdBooking?: CreateableBooking;
   readonly updatedBooking?: UpdateableBooking;
@@ -65,6 +80,9 @@ interface Finances {
 
 const initialState: Finances = {
   tab: Tab.TOTAL,
+  customIntervalEnabled: false,
+  nativeInterval: { year: moment().year().toString(), month: '', day: '' },
+  customInterval: { startDate: null, endDate: null },
   bookings: []
 };
 
@@ -73,6 +91,18 @@ const financesSlice = createSlice({
   initialState,
   reducers: {
     setTab: (state: Finances, action: PayloadAction<Tab>) => ({ ...state, tab: action.payload }),
+    toggleCustomIntervalEnabled: (state: Finances) => ({
+      ...state,
+      customIntervalEnabled: !state.customIntervalEnabled
+    }),
+    setNativeInterval: (state: Finances, action: PayloadAction<NativeInterval>) => ({
+      ...state,
+      nativeInterval: action.payload
+    }),
+    setCustomInterval: (state: Finances, action: PayloadAction<CustomInterval>) => ({
+      ...state,
+      customInterval: action.payload
+    }),
     setBookings: (state: Finances, action: PayloadAction<Booking[]>) => ({ ...state, bookings: action.payload }),
     setCreatedBooking: (state: Finances, action: PayloadAction<CreateableBooking | undefined>) => ({
       ...state,
@@ -89,5 +119,14 @@ const financesSlice = createSlice({
   }
 });
 
-export const { setTab, setBookings, setCreatedBooking, setUpdatedBooking, setDeletedBooking } = financesSlice.actions;
+export const {
+  setTab,
+  toggleCustomIntervalEnabled,
+  setNativeInterval,
+  setCustomInterval,
+  setBookings,
+  setCreatedBooking,
+  setUpdatedBooking,
+  setDeletedBooking
+} = financesSlice.actions;
 export default financesSlice.reducer;

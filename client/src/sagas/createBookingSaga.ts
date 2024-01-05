@@ -43,7 +43,7 @@ export function* createBookingSaga(action: PayloadAction<CreateBookingPayload>):
         method: 'POST',
         data: {
           ...createdBooking,
-          amount: +Number(createdBooking.amount).toFixed(2)
+          amount: Number(createdBooking.amount)
         }
       },
       function* handleResponse(response: AxiosResponse) {

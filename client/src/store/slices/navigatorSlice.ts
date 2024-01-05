@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface Navigator {
-  path?: string;
+  readonly path?: string;
 }
 
 const initialState: Navigator = {};

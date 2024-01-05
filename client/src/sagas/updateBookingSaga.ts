@@ -77,7 +77,7 @@ function* buildRequestData(): SagaGenerator<RequestData> {
   }
 
   if (updatedBooking.amount !== updatedBooking.comparativeAmount) {
-    result.amount = +Number(updatedBooking.amount).toFixed(2);
+    result.amount = Number(updatedBooking.amount);
   }
 
   if (updatedBooking.category !== updatedBooking.comparativeCategory) {
