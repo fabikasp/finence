@@ -43,11 +43,11 @@ export function* updateBookingSaga(): SagaGenerator<void> {
         data: yield* call(buildRequestData)
       },
       function* handleResponse(response: AxiosResponse) {
-        assertTrue(isBooking(response.data));
+        assertTrue(isBooking(response.data.booking));
 
         const updatedBookings = bookings.map((booking) => {
-          if (booking.id === response.data.id) {
-            return response.data;
+          if (booking.id === response.data.booking.id) {
+            return response.data.booking;
           }
 
           return booking;
@@ -88,6 +88,5 @@ function* buildRequestData(): SagaGenerator<RequestData> {
     result.note = updatedBooking.note;
   }
 
-  console.warn(result);
   return result;
 }

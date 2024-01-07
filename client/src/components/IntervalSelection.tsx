@@ -34,12 +34,11 @@ export default function IntervalSelection(): React.ReactNode {
   const dispatch = useDispatch();
   const { customIntervalEnabled, nativeInterval, customInterval } = useSelector((state: RootState) => state.finances);
 
-  moment.locale('de');
   const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
   const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
 
   const years = useMemo(
-    () => Array.from({ length: 101 }, (_, i) => (inFiftyYears.toDate().getFullYear() - (101 - i)).toString()),
+    () => Array.from({ length: 101 }, (_, i) => (inFiftyYears.year() - (101 - i)).toString()),
     [inFiftyYears]
   );
   const months = useMemo(() => moment.monthsShort(), []);
@@ -52,8 +51,8 @@ export default function IntervalSelection(): React.ReactNode {
   const onSwap = useCallback(() => dispatch(toggleCustomIntervalEnabled()), [dispatch]);
 
   const onYearChange = useCallback(
-    (event: SelectChangeEvent) => dispatch(setNativeInterval({ ...nativeInterval, year: event.target.value, day: '' })),
-    [nativeInterval, dispatch]
+    (event: SelectChangeEvent) => dispatch(setNativeInterval({ year: event.target.value, month: '', day: '' })),
+    [dispatch]
   );
 
   const onMonthChange = useCallback(
@@ -130,11 +129,12 @@ export default function IntervalSelection(): React.ReactNode {
                 sx={{ borderRadius: 0 }}
               >
                 <MenuItem value="">Leer</MenuItem>
-                {months.map((month) => (
-                  <MenuItem key={month} value={month}>
-                    {month}
-                  </MenuItem>
-                ))}
+                {nativeInterval.year &&
+                  months.map((month) => (
+                    <MenuItem key={month} value={month}>
+                      {month}
+                    </MenuItem>
+                  ))}
               </Select>
             </StyledFormControl>
             <StyledFormControl sx={{ minWidth: 70 }} size="small">
@@ -148,7 +148,7 @@ export default function IntervalSelection(): React.ReactNode {
                 sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
               >
                 <MenuItem value="">Leer</MenuItem>
-                {nativeInterval.month !== '' &&
+                {nativeInterval.month &&
                   days(nativeInterval.year, nativeInterval.month).map((day) => (
                     <MenuItem key={day} value={day}>
                       {day}

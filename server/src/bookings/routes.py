@@ -2,7 +2,6 @@ from flask import request
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required, get_jwt
 from bookings import bp
-from bookings.model import BookingModel  # Hier und bei Kategorien Notwendigkeit prüfen
 from bookings.validator import BookingValidator
 from bookings.service import BookingService
 
@@ -22,12 +21,14 @@ booking_service = BookingService()
 @cross_origin()
 def read():
     user_id = get_jwt()["sub"]
-    return list(
-        map(
-            lambda booking: booking.jsonify(),
-            booking_service.read_by_user_id(user_id),
+    return {
+        "bookings": list(
+            map(
+                lambda booking: booking.jsonify(),
+                booking_service.read_by_user_id(user_id),
+            )
         )
-    )
+    }
 
 
 @bp.route("/", methods=["POST"])
@@ -55,7 +56,7 @@ def create():
 
     booking = booking_service.create(user_id, category, is_income, date, amount, note)
 
-    return booking.jsonify()
+    return {"booking": booking.jsonify()}
 
 
 @bp.route(f"/<int:{ID_ENTRY}>", methods=["PUT"])
@@ -93,7 +94,7 @@ def update(id: int):
 
     updated_booking = booking_service.update(id, category, date, amount, note)
 
-    return updated_booking.jsonify()
+    return {"booking": updated_booking.jsonify()}
 
 
 @bp.route(f"/<int:{ID_ENTRY}>", methods=["DELETE"])
@@ -105,4 +106,4 @@ def delete(id: int):
     if booking is None:
         return {"message": "Booking not found."}, 404
 
-    return booking.jsonify()
+    return {"booking": booking.jsonify()}

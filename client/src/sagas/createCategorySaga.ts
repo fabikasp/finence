@@ -34,9 +34,9 @@ export function* createCategorySaga(action: PayloadAction<CreateCategoryPayload>
         data: createdCategory
       },
       function* handleResponse(response: AxiosResponse) {
-        assertTrue(isCategory(response.data));
+        assertTrue(isCategory(response.data.category));
 
-        yield* put(setCategories([...categories, response.data]));
+        yield* put(setCategories([...categories, response.data.category]));
         yield* put(
           setCreatedCategory(
             action.payload.closeDialog ? undefined : { name: '', forIncome: createdCategory.forIncome }

@@ -13,7 +13,7 @@ class BookingValidator:
         return isinstance(date, int)
 
     def validate_amount(self, amount) -> bool:
-        if not isinstance(amount, float):
+        if not isinstance(amount, float) and not isinstance(amount, int):
             return False
 
         return amount > 0

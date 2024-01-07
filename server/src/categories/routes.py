@@ -2,7 +2,6 @@ from flask import request
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required, get_jwt
 from categories import bp
-from categories.model import CategoryModel
 from categories.validator import CategoryValidator
 from categories.service import CategoryService
 
@@ -20,12 +19,14 @@ category_service = CategoryService()
 @cross_origin()
 def read():
     user_id = get_jwt()["sub"]
-    return list(
-        map(
-            lambda category: category.jsonify(),
-            category_service.read_by_user_id(user_id),
+    return {
+        "categories": list(
+            map(
+                lambda category: category.jsonify(),
+                category_service.read_by_user_id(user_id),
+            )
         )
-    )
+    }
 
 
 @bp.route("/", methods=["POST"])
@@ -57,7 +58,7 @@ def create():
 
     category = category_service.create(user_id, name, description, for_income)
 
-    return category.jsonify()
+    return {"category": category.jsonify()}
 
 
 @bp.route(f"/<int:{ID_ENTRY}>", methods=["PUT"])
@@ -96,7 +97,7 @@ def update(id: int):
 
     updated_category = category_service.update(id, name, description)
 
-    return updated_category.jsonify()
+    return {"category": updated_category.jsonify()}
 
 
 @bp.route(f"/<int:{ID_ENTRY}>", methods=["DELETE"])
@@ -108,4 +109,4 @@ def delete(id: int):
     if category is None:
         return {"message": "Category not found."}, 404
 
-    return category.jsonify()
+    return {"category": category.jsonify()}

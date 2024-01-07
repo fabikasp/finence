@@ -73,12 +73,6 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number): T[] {
     .map((element) => element[0]);
 }
 
-const StyledTableSortLabel = styled(TableSortLabel)(({ theme }) => ({
-  '& .MuiTableSortLabel-icon': {
-    color: `${theme.palette.text.primary} !important`
-  }
-}));
-
 interface HeadCell {
   readonly id: keyof DisplayableBooking;
   readonly label: string;
@@ -133,13 +127,13 @@ function CustomTableHead(props: CustomTableHeadProps): React.ReactNode {
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell key={headCell.id} sx={{ fontWeight: 'bold' }}>
-            <StyledTableSortLabel
+            <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-            </StyledTableSortLabel>
+            </TableSortLabel>
           </TableCell>
         ))}
         <TableCell />
@@ -151,12 +145,6 @@ function CustomTableHead(props: CustomTableHeadProps): React.ReactNode {
 const StyledBox = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.palette.text.primary}`,
   borderRadius: theme.shape.borderRadius
-}));
-
-const StyledTablePagination = styled(TablePagination)<TablePaginationProps>(({ theme }) => ({
-  '& .MuiSelect-icon': {
-    color: theme.palette.text.primary
-  }
 }));
 
 const BookingTypeIconWrapper = styled(Box)(() => ({
@@ -231,32 +219,44 @@ export default function BookingsTable(): React.ReactNode {
     []
   );
 
+  const months = useMemo(() => moment.monthsShort(), []);
+
   const visibleRows = useMemo(() => {
     const filteredBookings = bookings
       .filter((booking) => (tab === Tab.INCOME ? booking.isIncome : tab === Tab.EXPENSES ? !booking.isIncome : true))
       .filter((booking) => {
-        if (customIntervalEnabled) {
-          if (customInterval.startDate === null && customInterval.endDate === null) {
-            return true;
-          }
+        const bookingDate = convertUnixToMoment(booking.date);
 
-          const bookingDate = convertUnixToMoment(booking.date);
+        if (customIntervalEnabled) {
           const startDate = customInterval.startDate ? convertUnixToMoment(customInterval.startDate) : null;
           const endDate = customInterval.endDate ? convertUnixToMoment(customInterval.endDate) : null;
 
-          if (startDate === null) {
-            return bookingDate.isSameOrBefore(endDate);
+          let result = true;
+          if (startDate !== null) {
+            result = bookingDate.isSameOrAfter(startDate);
           }
 
-          if (endDate === null) {
-            return bookingDate.isSameOrAfter(startDate);
+          if (endDate !== null) {
+            result &&= bookingDate.isSameOrBefore(endDate);
           }
 
-          return bookingDate.isSameOrAfter(startDate) && bookingDate.isSameOrBefore(endDate);
+          return result;
         }
 
-        // TODO: nativeInterval Behandlung
-        return true;
+        let result = true;
+        if (nativeInterval.year) {
+          result = bookingDate.year() === Number(nativeInterval.year);
+        }
+
+        if (nativeInterval.month) {
+          result &&= months[bookingDate.month()] === nativeInterval.month;
+        }
+
+        if (nativeInterval.day) {
+          result &&= bookingDate.date() === Number(nativeInterval.day);
+        }
+
+        return result;
       })
       .map((booking) => ({
         ...booking,
@@ -271,13 +271,17 @@ export default function BookingsTable(): React.ReactNode {
   }, [
     tab,
     customIntervalEnabled,
+    nativeInterval.year,
+    nativeInterval.month,
+    nativeInterval.day,
     customInterval.startDate,
     customInterval.endDate,
     bookings,
     order,
     orderBy,
     page,
-    rowsPerPage
+    rowsPerPage,
+    months
   ]);
 
   const onCreateClick = useCallback(
@@ -346,7 +350,7 @@ export default function BookingsTable(): React.ReactNode {
             ))}
           </TableBody>
         </Table>
-        <StyledTablePagination
+        <TablePagination
           component="div"
           rowsPerPageOptions={[5, 10, 25]}
           labelDisplayedRows={labelDisplayedRows}

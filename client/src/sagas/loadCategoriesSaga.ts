@@ -17,9 +17,9 @@ const isCategoriesResponseData = (object: unknown): object is CategoriesResponse
 export function* loadCategoriesSaga(): SagaGenerator<void> {
   yield* call(
     fetchSagaFactory({ url: CATEGORIES_URL_PATH_PREFIX }, function* handleResponse(response: AxiosResponse) {
-      assertTrue(isCategoriesResponseData(response.data));
+      assertTrue(isCategoriesResponseData(response.data.categories));
 
-      yield* put(setCategories(response.data));
+      yield* put(setCategories(response.data.categories));
     })
   );
 }

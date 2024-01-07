@@ -130,6 +130,22 @@ export const theme = createTheme({
           backgroundColor: '#232F3B'
         }
       }
+    },
+    MuiTableSortLabel: {
+      styleOverrides: {
+        icon: {
+          color: '#FCF6F5 !important'
+        }
+      }
+    },
+    MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          '& .MuiSelect-icon': {
+            color: '#FCF6F5'
+          }
+        }
+      }
     }
   }
 });

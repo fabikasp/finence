@@ -32,11 +32,11 @@ export function* updateCategorySaga(): SagaGenerator<void> {
         data: yield* call(buildRequestData)
       },
       function* handleResponse(response: AxiosResponse) {
-        assertTrue(isCategory(response.data));
+        assertTrue(isCategory(response.data.category));
 
         const updatedCategories = categories.map((category) => {
-          if (category.id === response.data.id) {
-            return response.data;
+          if (category.id === response.data.category.id) {
+            return response.data.category;
           }
 
           return category;

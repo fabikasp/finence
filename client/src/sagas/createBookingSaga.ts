@@ -47,9 +47,9 @@ export function* createBookingSaga(action: PayloadAction<CreateBookingPayload>):
         }
       },
       function* handleResponse(response: AxiosResponse) {
-        assertTrue(isBooking(response.data));
+        assertTrue(isBooking(response.data.booking));
 
-        yield* put(setBookings([...bookings, response.data]));
+        yield* put(setBookings([...bookings, response.data.booking]));
         yield* put(
           setCreatedBooking(
             action.payload.closeDialog ? undefined : { ...createdBooking, amount: '', category: '', note: undefined }

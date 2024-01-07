@@ -2,7 +2,7 @@ from flask import Flask, Response
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity
 from config import Config
-from extensions import db, jwt
+from extensions import db, jwt, redis_jwt_blocklist
 from flask_migrate import Migrate
 from users import bp as users_bp
 from categories import bp as categories_bp
@@ -10,7 +10,7 @@ from bookings import bp as bookings_bp
 from datetime import datetime
 import json
 
-CRITICAL_JWT_VALIDITY_TIME_IN_SECONDS = 600
+JWT_REMAINING_VALIDITY_TIME_REFRESH_BORDER_IN_SECONDS = 1200
 
 
 class FlaskApp:
@@ -42,16 +42,21 @@ app = flaskApp.get_app()
 @app.after_request
 def refresh_expiring_jwts(response: Response):
     try:
-        exp_timestamp = get_jwt()["exp"]
-        exp_datetime = datetime.fromtimestamp(exp_timestamp)
-        now = datetime.now()
-        difference = exp_datetime - now
+        data = response.get_json()
+        jwt_identity = get_jwt_identity()
+        jwt = get_jwt()
 
-        if difference.seconds <= CRITICAL_JWT_VALIDITY_TIME_IN_SECONDS:
-            data = response.get_json()
+        jwt_exp_time = datetime.fromtimestamp(jwt["exp"])
+        jwt_remaining_validity_time = jwt_exp_time - datetime.now()
 
-            if type(data) is dict:
-                access_token = create_access_token(identity=get_jwt_identity())
+        if (
+            jwt_remaining_validity_time.seconds
+            <= JWT_REMAINING_VALIDITY_TIME_REFRESH_BORDER_IN_SECONDS
+        ):
+            token_in_blocklist = redis_jwt_blocklist.get(jwt["jti"])
+
+            if token_in_blocklist is None:
+                access_token = create_access_token(identity=jwt_identity)
                 data["accessToken"] = access_token
                 response.data = json.dumps(data)
 

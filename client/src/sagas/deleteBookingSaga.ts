@@ -15,11 +15,11 @@ export function* deleteBookingSaga(): SagaGenerator<void> {
     fetchSagaFactory(
       { url: `${BOOKINGS_URL_PATH_PREFIX}${deletedBooking.id}`, method: 'DELETE' },
       function* handleResponse(response: AxiosResponse) {
-        assertTrue(isBooking(response.data));
+        assertTrue(isBooking(response.data.booking));
 
         const bookingType = deletedBooking.isIncome ? 'Einnahme' : 'Ausgabe';
 
-        yield* put(setBookings(bookings.filter((booking) => booking.id !== response.data.id)));
+        yield* put(setBookings(bookings.filter((booking) => booking.id !== response.data.booking.id)));
         yield* put(setDeletedBooking(undefined));
         yield* put(evoke({ severity: 'success', message: `Die ${bookingType} wurde erfolgreich gelöscht.` }));
       }
