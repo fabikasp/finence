@@ -20,6 +20,7 @@ class BookingModel(db.Model):
     date = db.Column(db.Integer, nullable=False)
     amount = db.Column(db.Float, nullable=False)
     note = db.Column(db.String(200))
+    repetition = db.Column(db.Enum("once", "monthly", "yearly", name="repetition_enum"))
 
     __table_args__ = (db.CheckConstraint("amount > 0", name="amount_greater_zero"),)
 
@@ -31,6 +32,7 @@ class BookingModel(db.Model):
         date: int,
         amount: float,
         note: str,
+        repetition: str,
     ):
         self.user_id = user_id
         self.category_id = category_id
@@ -38,6 +40,7 @@ class BookingModel(db.Model):
         self.date = date
         self.amount = amount
         self.note = note
+        self.repetition = repetition
 
     def get_id(self) -> int:
         return self.id
@@ -57,6 +60,9 @@ class BookingModel(db.Model):
     def set_note(self, note: str):
         self.note = note
 
+    def set_repetition(self, repetition: str):
+        self.repetition = repetition
+
     def jsonify(self) -> dict:
         result = {
             "id": self.id,
@@ -64,6 +70,7 @@ class BookingModel(db.Model):
             "category": self.__category_service.read_by_id(self.category_id).name,
             "date": self.date,
             "amount": self.amount,
+            "repetition": self.repetition,
         }
 
         if self.note is not None:

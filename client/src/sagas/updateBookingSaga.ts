@@ -10,7 +10,7 @@ import {
   validateBookingDate,
   validateBookingNote
 } from '../utils/validators';
-import { isBooking, setBookings, setUpdatedBooking } from '../store/slices/financesSlice';
+import { Repetition, isBooking, setBookings, setUpdatedBooking } from '../store/slices/financesSlice';
 import { datesAreEqual } from '../utils/helper';
 
 export function* updateBookingSaga(): SagaGenerator<void> {
@@ -65,6 +65,7 @@ interface RequestData {
   amount?: number;
   category?: string;
   note?: string;
+  repetition?: Repetition;
 }
 
 function* buildRequestData(): SagaGenerator<RequestData> {
@@ -86,6 +87,10 @@ function* buildRequestData(): SagaGenerator<RequestData> {
 
   if (updatedBooking.note !== updatedBooking.comparativeNote) {
     result.note = updatedBooking.note;
+  }
+
+  if (updatedBooking.repetition !== updatedBooking.comparativeRepetition) {
+    result.repetition = updatedBooking.repetition;
   }
 
   return result;

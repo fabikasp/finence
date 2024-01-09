@@ -11,7 +11,6 @@ import {
   TableCell,
   TableHead,
   TablePagination,
-  TablePaginationProps,
   TableRow,
   TableSortLabel
 } from '@mui/material';
@@ -19,12 +18,14 @@ import { styled } from '@mui/material/styles';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
+import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import IntervalSelection from './IntervalSelection';
 import {
   DisplayableBooking,
+  Repetition,
   Tab,
   convertToUpdateableBooking,
   setCreatedBooking,
@@ -291,7 +292,8 @@ export default function BookingsTable(): React.ReactNode {
           isIncome: [Tab.TOTAL, Tab.INCOME].includes(tab),
           date: convertMomentToUnix(moment()),
           amount: '',
-          category: ''
+          category: '',
+          repetition: Repetition.ONCE
         })
       ),
     [tab, dispatch]
@@ -333,6 +335,7 @@ export default function BookingsTable(): React.ReactNode {
                 <TableCell>
                   <BookingTypeIconWrapper>
                     {row.isIncome ? <ArrowCircleUpIcon color="primary" /> : <ArrowCircleDownIcon color="error" />}
+                    {row.repetition !== Repetition.ONCE && <ReplayIcon color="secondary" />}
                   </BookingTypeIconWrapper>
                 </TableCell>
                 <TableCell>{row.date}</TableCell>

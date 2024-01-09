@@ -37,3 +37,9 @@ class BookingValidator:
             return False
 
         return len(note) <= MAX_NOTE_LENGTH
+
+    def validate_repetition(self, repetition) -> bool:
+        if not isinstance(repetition, str):
+            return False
+
+        return repetition in ["once", "monthly", "yearly"]

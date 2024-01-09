@@ -8,6 +8,12 @@ export enum Tab {
   EXPENSES = 'expenses'
 }
 
+export enum Repetition {
+  ONCE = 'once',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly'
+}
+
 interface NativeInterval {
   readonly year: string;
   readonly month: string;
@@ -26,6 +32,7 @@ export const bookingScheme = z.object({
   amount: z.number(),
   category: z.string(),
   note: z.string().optional(),
+  repetition: z.nativeEnum(Repetition),
   errors: z
     .object({
       date: z.string().optional(),
@@ -51,6 +58,7 @@ type UpdateableBooking = CreateableBooking & {
   comparativeAmount: string;
   comparativeCategory: string;
   comparativeNote?: string;
+  comparativeRepetition: Repetition;
 };
 
 export const convertToUpdateableBooking = (booking: Booking): UpdateableBooking => {
@@ -63,6 +71,7 @@ export const convertToUpdateableBooking = (booking: Booking): UpdateableBooking 
     comparativeAmount: castedAmount,
     comparativeCategory: booking.category,
     comparativeNote: booking.note,
+    comparativeRepetition: booking.repetition,
     errors: undefined
   };
 };

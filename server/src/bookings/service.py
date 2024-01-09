@@ -14,12 +14,13 @@ class BookingService:
         date: int,
         amount: float,
         note: str,
+        repetition: str,
     ) -> BookingModel:
         category_id = self.__category_service.read_by_user_id_and_name_and_for_income(
             user_id, category, is_income
         ).get_id()
         booking = BookingModel(
-            user_id, category_id, is_income, date, round(amount, 2), note
+            user_id, category_id, is_income, date, round(amount, 2), note, repetition
         )
 
         db.session.add(booking)
@@ -40,6 +41,7 @@ class BookingService:
         date: int = None,
         amount: float = None,
         note: str = None,
+        repetition: str = None,
     ) -> BookingModel:
         booking = self.read_by_id(id)
 
@@ -59,6 +61,9 @@ class BookingService:
 
         if amount is not None:
             booking.set_amount(round(amount, 2))
+
+        if repetition is not None:
+            booking.set_repetition(repetition)
 
         booking.set_note(note)
 

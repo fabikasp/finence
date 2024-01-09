@@ -12,7 +12,10 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   SelectChangeEvent,
-  FormHelperText
+  FormHelperText,
+  FormControlLabel,
+  Radio,
+  RadioGroup
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
@@ -25,7 +28,7 @@ import { RootState } from '../store/store';
 import { updateBooking } from '../store/actions';
 import { assertNonNullable } from '../utils/assert';
 import Dialog from './Dialog';
-import { setUpdatedBooking } from '../store/slices/financesSlice';
+import { Repetition, setUpdatedBooking } from '../store/slices/financesSlice';
 import DatePicker from './DatePicker';
 import moment, { Moment } from 'moment';
 import {
@@ -66,6 +69,10 @@ const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
 const StyledDialogContent = styled(DialogContent)(() => ({
   display: 'flex',
   flexDirection: 'column'
+}));
+
+const StyledRadioGroup = styled(RadioGroup)(() => ({
+  marginTop: 10
 }));
 
 export default function UpdateBooking(): React.ReactNode {
@@ -152,6 +159,19 @@ export default function UpdateBooking(): React.ReactNode {
     [dispatch, updatedBooking]
   );
 
+  const onRepetitionChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(updatedBooking);
+      dispatch(
+        setUpdatedBooking({
+          ...updatedBooking,
+          repetition: event.target.value as Repetition
+        })
+      );
+    },
+    [dispatch, updatedBooking]
+  );
+
   const bookingIsNotEdited = useCallback(() => {
     if (!updatedBooking?.comparativeDate) {
       return true;
@@ -164,7 +184,8 @@ export default function UpdateBooking(): React.ReactNode {
     return (
       updatedBooking.amount === updatedBooking.comparativeAmount &&
       updatedBooking.category === updatedBooking.comparativeCategory &&
-      updatedBooking.note === updatedBooking.comparativeNote
+      updatedBooking.note === updatedBooking.comparativeNote &&
+      updatedBooking.repetition === updatedBooking.comparativeRepetition
     );
   }, [
     updatedBooking?.date,
@@ -174,7 +195,9 @@ export default function UpdateBooking(): React.ReactNode {
     updatedBooking?.category,
     updatedBooking?.comparativeCategory,
     updatedBooking?.note,
-    updatedBooking?.comparativeNote
+    updatedBooking?.comparativeNote,
+    updatedBooking?.repetition,
+    updatedBooking?.comparativeRepetition
   ]);
 
   return (
@@ -257,6 +280,11 @@ export default function UpdateBooking(): React.ReactNode {
           error={!!updatedBooking?.errors?.note}
           helperText={updatedBooking?.errors?.note}
         />
+        <StyledRadioGroup row value={updatedBooking?.repetition ?? Repetition.ONCE} onChange={onRepetitionChange}>
+          <FormControlLabel value={Repetition.ONCE} control={<Radio />} label="Einmalig" />
+          <FormControlLabel value={Repetition.MONTHLY} control={<Radio />} label="Monatlich" />
+          <FormControlLabel value={Repetition.YEARLY} control={<Radio />} label="Jährlich" />
+        </StyledRadioGroup>
       </StyledDialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>

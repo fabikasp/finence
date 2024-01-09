@@ -12,7 +12,10 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   SelectChangeEvent,
-  FormHelperText
+  FormHelperText,
+  RadioGroup,
+  FormControlLabel,
+  Radio
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
@@ -25,7 +28,7 @@ import { RootState } from '../store/store';
 import { createBooking } from '../store/actions';
 import { assertNonNullable } from '../utils/assert';
 import Dialog from './Dialog';
-import { setCreatedBooking } from '../store/slices/financesSlice';
+import { Repetition, setCreatedBooking } from '../store/slices/financesSlice';
 import DatePicker from './DatePicker';
 import moment, { Moment } from 'moment';
 import {
@@ -63,6 +66,10 @@ const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
 const StyledDialogContent = styled(DialogContent)(() => ({
   display: 'flex',
   flexDirection: 'column'
+}));
+
+const StyledRadioGroup = styled(RadioGroup)(() => ({
+  marginTop: 10
 }));
 
 export default function CreateBooking(): React.ReactNode {
@@ -150,6 +157,19 @@ export default function CreateBooking(): React.ReactNode {
     [dispatch, createdBooking]
   );
 
+  const onRepetitionChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(createdBooking);
+      dispatch(
+        setCreatedBooking({
+          ...createdBooking,
+          repetition: event.target.value as Repetition
+        })
+      );
+    },
+    [dispatch, createdBooking]
+  );
+
   return (
     <Dialog open={!!createdBooking} title="Buchung hinzufügen" onClose={onClose}>
       <StyledDialogContent>
@@ -230,6 +250,11 @@ export default function CreateBooking(): React.ReactNode {
           error={!!createdBooking?.errors?.note}
           helperText={createdBooking?.errors?.note}
         />
+        <StyledRadioGroup row value={createdBooking?.repetition ?? Repetition.ONCE} onChange={onRepetitionChange}>
+          <FormControlLabel value={Repetition.ONCE} control={<Radio />} label="Einmalig" />
+          <FormControlLabel value={Repetition.MONTHLY} control={<Radio />} label="Monatlich" />
+          <FormControlLabel value={Repetition.YEARLY} control={<Radio />} label="Jährlich" />
+        </StyledRadioGroup>
       </StyledDialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>

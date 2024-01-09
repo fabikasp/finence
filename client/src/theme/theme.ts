@@ -146,6 +146,13 @@ export const theme = createTheme({
           }
         }
       }
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          color: '#C0C0C0'
+        }
+      }
     }
   }
 });

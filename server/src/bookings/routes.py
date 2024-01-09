@@ -11,6 +11,7 @@ IS_INCOME_ENTRY = "isIncome"
 DATE_ENTRY = "date"
 AMOUNT_ENTRY = "amount"
 NOTE_ENTRY = "note"
+REPETITION_ENTRY = "repetition"
 
 booking_validator = BookingValidator()
 booking_service = BookingService()
@@ -40,9 +41,18 @@ def create():
     date = request.json.get(DATE_ENTRY, None)
     amount = request.json.get(AMOUNT_ENTRY, None)
     note = request.json.get(NOTE_ENTRY, None)
+    repetition = request.json.get(REPETITION_ENTRY, None)
 
-    if category is None or is_income is None or date is None or amount is None:
-        return {"message": "Category, affiliation, date and amount must be given."}, 400
+    if (
+        category is None
+        or is_income is None
+        or date is None
+        or amount is None
+        or repetition is None
+    ):
+        return {
+            "message": "Category, affiliation, date, amount and repetition must be given."
+        }, 400
 
     user_id = get_jwt()["sub"]
     if (
@@ -51,10 +61,13 @@ def create():
         or not booking_validator.validate_date(date)
         or not booking_validator.validate_amount(amount)
         or not booking_validator.validate_note(note)
+        or not booking_validator.validate_repetition(repetition)
     ):
         return {"message": "Invalid data provided."}, 422
 
-    booking = booking_service.create(user_id, category, is_income, date, amount, note)
+    booking = booking_service.create(
+        user_id, category, is_income, date, amount, note, repetition
+    )
 
     return {"booking": booking.jsonify()}
 
@@ -67,10 +80,17 @@ def update(id: int):
     date = request.json.get(DATE_ENTRY, None)
     amount = request.json.get(AMOUNT_ENTRY, None)
     note = request.json.get(NOTE_ENTRY, None)
+    repetition = request.json.get(REPETITION_ENTRY, None)
 
-    if category is None and date is None and amount is None and note is None:
+    if (
+        category is None
+        and date is None
+        and amount is None
+        and note is None
+        and repetition is None
+    ):
         return {
-            "message": "At least one of category, date, amount and note must be given."
+            "message": "At least one of category, date, amount, note and repetition must be given."
         }, 400
 
     booking = booking_service.read_by_id(id)
@@ -92,7 +112,12 @@ def update(id: int):
     if not booking_validator.validate_note(note):
         return {"message": "Invalid note provided."}, 422
 
-    updated_booking = booking_service.update(id, category, date, amount, note)
+    if not booking_validator.validate_repetition(repetition):
+        return {"message": "Invalid repetition provided."}, 422
+
+    updated_booking = booking_service.update(
+        id, category, date, amount, note, repetition
+    )
 
     return {"booking": updated_booking.jsonify()}
 
