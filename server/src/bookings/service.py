@@ -34,6 +34,25 @@ class BookingService:
     def read_by_user_id(self, user_id: int) -> list[BookingModel]:
         return BookingModel.query.filter_by(user_id=user_id).all()
 
+    def read_all_with_repetition(self) -> list[BookingModel]:
+        return BookingModel.query.filter(
+            BookingModel.repetition.in_(["monthly", "yearly"])
+        ).all()
+
+    def clone(self, booking: BookingModel, new_date: int):
+        cloned_booking = BookingModel(
+            booking.get_user_id(),
+            booking.get_category_id(),
+            booking.get_is_income(),
+            new_date,
+            round(booking.get_amount(), 2),
+            booking.get_note(),
+            "once",
+        )
+
+        db.session.add(cloned_booking)
+        db.session.commit()
+
     def update(
         self,
         id: int,

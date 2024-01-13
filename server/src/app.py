@@ -7,8 +7,13 @@ from flask_migrate import Migrate
 from users import bp as users_bp
 from categories import bp as categories_bp
 from bookings import bp as bookings_bp
+from bookings.job import CloneRepeatingBookingsJob
 from datetime import datetime
+import schedule
+import threading
+import time
 import json
+import sys
 
 JWT_REMAINING_VALIDITY_TIME_REFRESH_BORDER_IN_SECONDS = 1200
 
@@ -22,14 +27,39 @@ class FlaskApp:
 
         self.__app.config.from_object(config_class)
 
-        jwt.init_app(self.__app)
-
         db.init_app(self.__app)
         Migrate(self.__app, db)
+
+        if self.__app_started_in_db_migration_mode():
+            return
+
+        jwt.init_app(self.__app)
 
         self.__app.register_blueprint(users_bp, url_prefix="/users")
         self.__app.register_blueprint(categories_bp, url_prefix="/categories")
         self.__app.register_blueprint(bookings_bp, url_prefix="/bookings")
+
+        self.__register_scheduled_jobs()
+
+    def __app_started_in_db_migration_mode(self):
+        return "db" in sys.argv
+
+    def __register_scheduled_jobs(self):
+        jobs = [CloneRepeatingBookingsJob()]
+
+        for job in jobs:
+            schedule.every().day.at("00:05").do(job.run)
+
+        scheduler_thread = threading.Thread(target=self.__run_pending_jobs)
+        scheduler_thread.start()
+
+    def __run_pending_jobs(self):
+        while True:
+            seconds_to_next_run = schedule.idle_seconds()
+            time.sleep(seconds_to_next_run)
+
+            with self.__app.app_context():
+                schedule.run_pending()
 
     def get_app(self) -> Flask:
         return self.__app

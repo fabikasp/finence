@@ -45,20 +45,38 @@ class BookingModel(db.Model):
     def get_id(self) -> int:
         return self.id
 
+    def get_user_id(self) -> int:
+        return self.user_id
+
     def get_is_income(self) -> bool:
         return self.is_income
+
+    def get_category_id(self) -> int:
+        return self.category_id
 
     def set_category_id(self, category_id: int):
         self.category_id = category_id
 
+    def get_date(self) -> int:
+        return self.date
+
     def set_date(self, date: int):
         self.date = date
+
+    def get_amount(self) -> float:
+        return self.amount
 
     def set_amount(self, amount: float):
         self.amount = amount
 
+    def get_note(self) -> str:
+        return self.note
+
     def set_note(self, note: str):
         self.note = note
+
+    def get_repetition(self) -> str:
+        return self.repetition
 
     def set_repetition(self, repetition: str):
         self.repetition = repetition

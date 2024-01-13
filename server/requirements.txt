@@ -7,3 +7,4 @@ flask-sqlalchemy
 Flask-Migrate
 python-dotenv
 redis
+schedule
