@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Button, Chip, ChipProps, Stack, Tabs, Tab, CardActionArea } from '@mui/material';
+import { Box, Button, Chip, ChipProps, Stack, Tabs, Tab as MuiTab, CardActionArea } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useDispatch } from 'react-redux';
@@ -17,8 +17,10 @@ import {
 import ViewCategory from './ViewCategory';
 import CreateCategory from './CreateCategory';
 
-const INCOME_TAB = 'income';
-const EXPENSES_TAB = 'expenses';
+enum Tab {
+  INCOME = 'income',
+  EXPENSES = 'expenses'
+}
 
 const StyledBox = styled(Box)(() => ({
   backgroundColor: '#232F3B',
@@ -50,14 +52,14 @@ const StyledButton = styled(Button)(({ theme }) => ({
 export default function Categories(): React.ReactNode {
   const dispatch = useDispatch();
 
-  const [tab, setTab] = useState(INCOME_TAB);
+  const [tab, setTab] = useState(Tab.INCOME);
   const { categories } = useSelector((state: RootState) => state.categories);
 
   useEffect(() => {
     dispatch(loadCategories());
   }, [dispatch]);
 
-  const onTabChange = useCallback((_: React.SyntheticEvent, newTab: string) => setTab(newTab), []);
+  const onTabChange = useCallback((_: React.SyntheticEvent, newTab: Tab) => setTab(newTab), []);
 
   const onChipClick = useCallback(
     (category: Category) => () => dispatch(setViewedCategory(convertToUpdateableCategory(category))),
@@ -71,7 +73,7 @@ export default function Categories(): React.ReactNode {
       dispatch(
         setCreatedCategory({
           name: '',
-          forIncome: tab === INCOME_TAB
+          forIncome: tab === Tab.INCOME
         })
       ),
     [tab, dispatch]
@@ -82,13 +84,13 @@ export default function Categories(): React.ReactNode {
       <StyledBox display="flex" flexDirection="column">
         <Box sx={{ borderBottom: 1, borderColor: '#000000' }}>
           <Tabs value={tab} onChange={onTabChange}>
-            <Tab value={INCOME_TAB} label="Einnahmen" />
-            <Tab value={EXPENSES_TAB} label="Ausgaben" />
+            <MuiTab value={Tab.INCOME} label="Einnahmen" />
+            <MuiTab value={Tab.EXPENSES} label="Ausgaben" />
           </Tabs>
         </Box>
         <StyledStack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           {categories
-            .filter((category) => (tab === INCOME_TAB ? category.forIncome : !category.forIncome))
+            .filter((category) => (tab === Tab.INCOME ? category.forIncome : !category.forIncome))
             .map((category, index) => (
               <StyledChip
                 key={index}

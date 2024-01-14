@@ -28,6 +28,7 @@ import GlobalProgressIndicator from './components/GlobalProgressIndicator';
 import Settings from './components/Settings';
 import Finances from './components/Finances';
 import Categories from './components/Categories';
+import Dashboard from './components/Dashboard';
 
 dotenv.config();
 
@@ -45,7 +46,7 @@ ReactDOM.createRoot(rootElement).render(
           <Route index element={<Navigate to={`/${DASHBOARD_ROUTE}`} replace />} />
           <Route
             path={DASHBOARD_ROUTE}
-            element={<Page component={<div>Dashboard</div>} componentName={DASHBOARD} protected />}
+            element={<Page component={<Dashboard />} componentName={DASHBOARD} protected />}
           />
           <Route path={FINANCES_ROUTE} element={<Page component={<Finances />} componentName={FINANCES} protected />} />
           <Route

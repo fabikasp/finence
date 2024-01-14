@@ -8,7 +8,11 @@ import DatePicker from './DatePicker';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useDispatch } from 'react-redux';
-import { setCustomInterval, setNativeInterval, toggleCustomIntervalEnabled } from '../store/slices/financesSlice';
+import {
+  setCustomInterval,
+  setNativeInterval,
+  toggleCustomIntervalEnabled
+} from '../store/slices/intervalSelectionSlice';
 import { convertMomentToUnix, convertUnixToMoment } from '../utils/helper';
 
 const YEAR_LABEL = 'Jahr';
@@ -32,7 +36,9 @@ const StyledIconButton = styled(IconButton)(() => ({
 
 export default function IntervalSelection(): React.ReactNode {
   const dispatch = useDispatch();
-  const { customIntervalEnabled, nativeInterval, customInterval } = useSelector((state: RootState) => state.finances);
+  const { customIntervalEnabled, nativeInterval, customInterval } = useSelector(
+    (state: RootState) => state.intervalSelection
+  );
 
   const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
   const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);

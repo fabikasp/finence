@@ -38,7 +38,7 @@ import CreateBooking from './CreateBooking';
 import moment from 'moment';
 import DeleteBooking from './DeleteBooking';
 import { assertNonNullable } from '../utils/assert';
-import { convertMomentToUnix, convertUnixToMoment } from '../utils/helper';
+import { convertMomentToUnix, convertUnixToMoment, dateLiesInInterval } from '../utils/helper';
 import UpdateBooking from './UpdateBooking';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
@@ -179,8 +179,9 @@ export default function BookingsTable(): React.ReactNode {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [popoverReference, setPopoverReference] = useState<PopoverReference | undefined>(undefined);
-  const { tab, customIntervalEnabled, nativeInterval, customInterval, bookings } = useSelector(
-    (state: RootState) => state.finances
+  const { tab, bookings } = useSelector((state: RootState) => state.finances);
+  const { customIntervalEnabled, nativeInterval, customInterval } = useSelector(
+    (state: RootState) => state.intervalSelection
   );
 
   useEffect(() => {
@@ -220,45 +221,10 @@ export default function BookingsTable(): React.ReactNode {
     []
   );
 
-  const months = useMemo(() => moment.monthsShort(), []);
-
   const visibleRows = useMemo(() => {
     const filteredBookings = bookings
       .filter((booking) => (tab === Tab.INCOME ? booking.isIncome : tab === Tab.EXPENSES ? !booking.isIncome : true))
-      .filter((booking) => {
-        const bookingDate = convertUnixToMoment(booking.date);
-
-        if (customIntervalEnabled) {
-          const startDate = customInterval.startDate ? convertUnixToMoment(customInterval.startDate) : null;
-          const endDate = customInterval.endDate ? convertUnixToMoment(customInterval.endDate) : null;
-
-          let result = true;
-          if (startDate !== null) {
-            result = bookingDate.isSameOrAfter(startDate);
-          }
-
-          if (endDate !== null) {
-            result &&= bookingDate.isSameOrBefore(endDate);
-          }
-
-          return result;
-        }
-
-        let result = true;
-        if (nativeInterval.year) {
-          result = bookingDate.year() === Number(nativeInterval.year);
-        }
-
-        if (nativeInterval.month) {
-          result &&= months[bookingDate.month()] === nativeInterval.month;
-        }
-
-        if (nativeInterval.day) {
-          result &&= bookingDate.date() === Number(nativeInterval.day);
-        }
-
-        return result;
-      })
+      .filter((booking) => dateLiesInInterval(booking.date, customIntervalEnabled, nativeInterval, customInterval))
       .map((booking) => ({
         ...booking,
         note: booking.note ?? '',
@@ -269,21 +235,7 @@ export default function BookingsTable(): React.ReactNode {
       page * rowsPerPage,
       page * rowsPerPage + rowsPerPage
     );
-  }, [
-    tab,
-    customIntervalEnabled,
-    nativeInterval.year,
-    nativeInterval.month,
-    nativeInterval.day,
-    customInterval.startDate,
-    customInterval.endDate,
-    bookings,
-    order,
-    orderBy,
-    page,
-    rowsPerPage,
-    months
-  ]);
+  }, [tab, customIntervalEnabled, nativeInterval, customInterval, bookings, order, orderBy, page, rowsPerPage]);
 
   const onCreateClick = useCallback(
     () =>
@@ -340,7 +292,7 @@ export default function BookingsTable(): React.ReactNode {
                 </TableCell>
                 <TableCell>{row.date}</TableCell>
                 <TableCell sx={(theme) => ({ color: theme.palette[row.isIncome ? 'primary' : 'error'].main })}>
-                  {row.amount}
+                  {`${row.amount} €`}
                 </TableCell>
                 <TableCell>{row.category}</TableCell>
                 <TableCell>{row.note}</TableCell>

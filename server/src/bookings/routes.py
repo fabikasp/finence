@@ -109,11 +109,11 @@ def update(id: int):
     if amount is not None and not booking_validator.validate_amount(amount):
         return {"message": "Invalid amount provided."}, 422
 
+    if repetition is not None and not booking_validator.validate_repetition(repetition):
+        return {"message": "Invalid repetition provided."}, 422
+
     if not booking_validator.validate_note(note):
         return {"message": "Invalid note provided."}, 422
-
-    if not booking_validator.validate_repetition(repetition):
-        return {"message": "Invalid repetition provided."}, 422
 
     updated_booking = booking_service.update(
         id, category, date, amount, note, repetition
