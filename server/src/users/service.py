@@ -1,60 +1,117 @@
 import flask_bcrypt
-from extensions import db
-from users.model import UserModel
+from flask_jwt_extended import create_access_token, get_jwt
+from extensions import redis_jwt_blocklist
+from users.model import EMAIL_KEY, PASSWORD_KEY
+from users.validator import UserValidator
+from users.repository import UserRepository
+from config import Config
 
 
 class UserService:
-    def create(self, email: str, password: str) -> UserModel:
+    __user_validator = UserValidator()
+    __user_repository = UserRepository()
+
+    def register(self, email, password) -> dict:
+        if email is None or password is None:
+            return {"message": "Email and password must be given."}, 400
+
+        if not self.__user_validator.validate_email(
+            email
+        ) or not self.__user_validator.validate_password(password):
+            return {"message": "Invalid data provided."}, 422
+
+        if self.__user_repository.read_by_email(email) is not None:
+            return {"message": "User with this email already exists."}, 409
+
         hashed_password = flask_bcrypt.generate_password_hash(password)
+        user = self.__user_repository.create(email, hashed_password.decode())
+        access_token = create_access_token(identity=user.get_id())
 
-        user = UserModel(email, hashed_password.decode())
+        return {"accessToken": access_token} | user.jsonify()
 
-        db.session.add(user)
-        db.session.commit()
+    def login(self, email, password) -> dict:
+        if email is None or password is None:
+            return {"message": "Email and password must be given."}, 400
 
-        return user
+        if not self.__user_validator.validate_email(
+            email, True
+        ) or not self.__user_validator.validate_password(password, True):
+            return {"message": "Invalid data provided."}, 422
 
-    def read_by_id(self, id: int) -> UserModel:
-        return UserModel.query.filter_by(id=id).first()
+        user = self.__user_repository.read_by_email_and_password(email, password)
+        if user is None:
+            return {"message": "User not found."}, 404
 
-    def read_by_email(self, email: str) -> UserModel:
-        return UserModel.query.filter_by(email=email).first()
+        access_token = create_access_token(identity=user.get_id())
 
-    def read_by_email_and_password(self, email: str, password: str) -> UserModel:
-        user = UserModel.query.filter_by(email=email).first()
+        return {"accessToken": access_token} | user.jsonify()
+
+    def logout(self) -> dict:
+        jti = get_jwt()["jti"]
+        redis_jwt_blocklist.set(jti, "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
+
+        return {"message": "Successfully logged out user."}
+
+    def read(self) -> dict:
+        user_id = get_jwt()["sub"]
+        user = self.__user_repository.read_by_id(user_id)
 
         if user is None:
-            return None
+            return {"message": "User not found."}, 404
 
-        if not flask_bcrypt.check_password_hash(user.password, password):
-            return None
+        return user.jsonify()
 
-        return user
+    def update(self, attributesToBeUpdated: dict) -> dict:
+        if (
+            EMAIL_KEY not in attributesToBeUpdated
+            and PASSWORD_KEY not in attributesToBeUpdated
+        ):
+            return {"message": "At least one of email and password must be given."}, 400
 
-    def update(self, id: int, email: str = None, password: str = None) -> UserModel:
-        user = self.read_by_id(id)
+        user_id = get_jwt()["sub"]
+        user = self.__user_repository.read_by_id(user_id)
 
         if user is None:
-            return None
+            return {"message": "User not found."}, 404
 
-        if email is not None:
-            user.set_email(email)
+        if EMAIL_KEY in attributesToBeUpdated:
+            if not self.__user_validator.validate_email(
+                attributesToBeUpdated[EMAIL_KEY]
+            ):
+                return {"message": "Invalid email provided."}, 422
 
-        if password is not None:
-            hashed_password = flask_bcrypt.generate_password_hash(password)
+            user_with_email = self.__user_repository.read_by_email(
+                attributesToBeUpdated[EMAIL_KEY]
+            )
+
+            if user_with_email is not None and user_with_email.get_id() != user_id:
+                return {"message": "User with this email already exists."}, 409
+
+            user.set_email(attributesToBeUpdated[EMAIL_KEY])
+
+        if PASSWORD_KEY in attributesToBeUpdated:
+            if not self.__user_validator.validate_password(
+                attributesToBeUpdated[PASSWORD_KEY]
+            ):
+                return {"message": "Invalid password provided."}, 422
+
+            hashed_password = flask_bcrypt.generate_password_hash(
+                attributesToBeUpdated[PASSWORD_KEY]
+            )
             user.set_password(hashed_password.decode())
 
-        db.session.commit()
+        self.__user_repository.commit()
 
-        return user
+        return user.jsonify()
 
-    def delete(self, id: int) -> UserModel:
-        user = self.read_by_id(id)
+    def delete(self) -> dict:
+        jwt = get_jwt()
+        user_id = jwt["sub"]
+        user = self.__user_repository.delete(user_id)
 
         if user is None:
-            return None
+            return {"message": "User not found."}, 404
 
-        db.session.delete(user)
-        db.session.commit()
+        redis_jwt_blocklist.set(jwt["jti"], "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 
-        return user
+        return user.jsonify()

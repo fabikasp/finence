@@ -1,5 +1,8 @@
 from extensions import db
 
+EMAIL_KEY = "email"
+PASSWORD_KEY = "password"
+
 
 class UserModel(db.Model):
     __tablename__ = "user"
@@ -22,6 +25,9 @@ class UserModel(db.Model):
 
     def set_email(self, email: str):
         self.email = email
+
+    def get_password(self) -> str:
+        return self.password
 
     def set_password(self, password: str):
         self.password = password

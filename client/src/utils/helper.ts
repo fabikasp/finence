@@ -1,5 +1,5 @@
 import moment, { Moment } from 'moment';
-import { Booking } from '../store/slices/financesSlice';
+import 'moment/locale/de';
 import { CustomInterval, NativeInterval } from '../store/slices/intervalSelectionSlice';
 
 export function convertMomentToUnix(date: Moment): number {

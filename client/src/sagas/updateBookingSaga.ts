@@ -64,7 +64,7 @@ interface RequestData {
   date?: number;
   amount?: number;
   category?: string;
-  note?: string;
+  note?: string | null;
   repetition?: Repetition;
 }
 
@@ -86,7 +86,7 @@ function* buildRequestData(): SagaGenerator<RequestData> {
   }
 
   if (updatedBooking.note !== updatedBooking.comparativeNote) {
-    result.note = updatedBooking.note;
+    result.note = updatedBooking.note ?? null;
   }
 
   if (updatedBooking.repetition !== updatedBooking.comparativeRepetition) {

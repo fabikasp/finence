@@ -146,7 +146,7 @@ export default function CreateBooking(): React.ReactNode {
       dispatch(
         setCreatedBooking({
           ...createdBooking,
-          note: event.target.value,
+          note: event.target.value === '' ? undefined : event.target.value,
           errors: {
             ...createdBooking.errors,
             note: validateBookingNote(event.target.value)

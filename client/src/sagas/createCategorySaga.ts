@@ -48,7 +48,7 @@ export function* createCategorySaga(action: PayloadAction<CreateCategoryPayload>
           yield* put(
             setCreatedCategory({
               ...createdCategory,
-              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR }
+              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR, description: undefined }
             })
           );
         }

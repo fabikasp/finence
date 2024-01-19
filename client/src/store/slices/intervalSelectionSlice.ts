@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import moment from 'moment';
+import 'moment/locale/de';
 
 export interface NativeInterval {
   readonly year: string;
@@ -18,9 +19,10 @@ interface IntervalSelection {
   readonly customInterval: CustomInterval;
 }
 
+const months = moment.monthsShort();
 const initialState: IntervalSelection = {
   customIntervalEnabled: false,
-  nativeInterval: { year: moment().year().toString(), month: '', day: '' },
+  nativeInterval: { year: moment().year().toString(), month: months[moment().month()], day: '' },
   customInterval: { startDate: null, endDate: null }
 };
 

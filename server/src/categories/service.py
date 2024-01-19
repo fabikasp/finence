@@ -26,21 +26,8 @@ class CategoryService:
             user_id=user_id, name=name, for_income=for_income
         ).first()
 
-    def update(
-        self, id: int, name: str = None, description: str = None
-    ) -> CategoryModel:
-        category = self.read_by_id(id)
-
-        if category is None:
-            return None
-
-        if name is not None:
-            category.set_name(name)
-
-        category.set_description(description)
-
+    def update(self, category: CategoryModel) -> CategoryModel:
         db.session.commit()
-
         return category
 
     def delete(self, id: int) -> CategoryModel:

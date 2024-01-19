@@ -67,7 +67,7 @@ export default function ViewCategory(): React.ReactNode {
       dispatch(
         setViewedCategory({
           ...viewedCategory,
-          description: event.target.value,
+          description: event.target.value === '' ? undefined : event.target.value,
           errors: {
             ...viewedCategory.errors,
             description: validateCategoryDescription(event.target.value)

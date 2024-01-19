@@ -65,10 +65,9 @@ def create():
 @jwt_required()
 @cross_origin()
 def update(id: int):
-    name = request.json.get(NAME_ENTRY, None)
-    description = request.json.get(DESCRIPTION_ENTRY, None)
+    data = request.get_json()
 
-    if name is None and description is None:
+    if NAME_ENTRY not in data and DESCRIPTION_ENTRY not in data:
         return {"message": "At least one of name and description must be given."}, 400
 
     category = category_service.read_by_id(id)
@@ -76,13 +75,13 @@ def update(id: int):
         return {"message": "Category not found."}, 404
 
     user_id = get_jwt()["sub"]
-    if name is not None:
-        if not category_validator.validate_name(name):
+    if NAME_ENTRY in data:
+        if not category_validator.validate_name(data[NAME_ENTRY]):
             return {"message": "Invalid name provided."}, 422
 
         category_with_name_and_affiliation = (
             category_service.read_by_user_id_and_name_and_for_income(
-                user_id, name, category.get_for_income()
+                user_id, data[NAME_ENTRY], category.get_for_income()
             )
         )
 
@@ -92,10 +91,15 @@ def update(id: int):
         ):
             return {"message": "Category already exists."}, 409
 
-    if not category_validator.validate_description(description):
-        return {"message": "Invalid description provided."}, 422
+        category.set_name(data[NAME_ENTRY])
 
-    updated_category = category_service.update(id, name, description)
+    if DESCRIPTION_ENTRY in data:
+        if not category_validator.validate_description(data[DESCRIPTION_ENTRY]):
+            return {"message": "Invalid description provided."}, 422
+
+        category.set_description(data[DESCRIPTION_ENTRY])
+
+    updated_category = category_service.update(category)
 
     return {"category": updated_category.jsonify()}
 

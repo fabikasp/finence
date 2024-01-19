@@ -53,41 +53,8 @@ class BookingService:
         db.session.add(cloned_booking)
         db.session.commit()
 
-    def update(
-        self,
-        id: int,
-        category: str = None,
-        date: int = None,
-        amount: float = None,
-        note: str = None,
-        repetition: str = None,
-    ) -> BookingModel:
-        booking = self.read_by_id(id)
-
-        if booking is None:
-            return None
-
-        if category is not None:
-            category_id = (
-                self.__category_service.read_by_user_id_and_name_and_for_income(
-                    booking.get_id(), category, booking.get_is_income()
-                ).get_id()
-            )
-            booking.set_category_id(category_id)
-
-        if date is not None:
-            booking.set_date(date)
-
-        if amount is not None:
-            booking.set_amount(round(amount, 2))
-
-        if repetition is not None:
-            booking.set_repetition(repetition)
-
-        booking.set_note(note)
-
+    def update(self, booking: BookingModel) -> BookingModel:
         db.session.commit()
-
         return booking
 
     def delete(self, id: int) -> BookingModel:

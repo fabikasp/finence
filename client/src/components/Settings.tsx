@@ -7,13 +7,15 @@ import UpdateEmail from './UpdateEmail';
 import UpdatePassword from './UpdatePassword';
 import DeleteAccount from './DeleteAccount';
 
-const CHANGE_EMAIL_PANEL = 'email';
-const CHANGE_PASSWORD_PANEL = 'password';
-const DELETE_ACCOUNT_PANEL = 'account';
+enum Panel {
+  CHANGE_EMAIL,
+  CHANGE_PASSWORD,
+  DELETE_ACCOUNT
+}
 
 export default function Settings(): React.ReactNode {
   const dispatch = useDispatch();
-  const [expanded, setExpanded] = useState('');
+  const [expanded, setExpanded] = useState<Panel | undefined>(Panel.CHANGE_EMAIL);
 
   useEffect(
     () => () => {
@@ -23,8 +25,8 @@ export default function Settings(): React.ReactNode {
   );
 
   const onAccordionClick = useCallback(
-    (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : '');
+    (panel: Panel) => (_: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : undefined);
     },
     []
   );
@@ -32,8 +34,8 @@ export default function Settings(): React.ReactNode {
   return (
     <>
       <Accordion
-        expanded={expanded === CHANGE_EMAIL_PANEL}
-        onChange={onAccordionClick(CHANGE_EMAIL_PANEL)}
+        expanded={expanded === Panel.CHANGE_EMAIL}
+        onChange={onAccordionClick(Panel.CHANGE_EMAIL)}
         sx={{ borderBottom: '1px solid #101820', borderTopLeftRadius: 5, borderTopRightRadius: 5 }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon color="secondary" />}>
@@ -44,8 +46,8 @@ export default function Settings(): React.ReactNode {
         </AccordionDetails>
       </Accordion>
       <Accordion
-        expanded={expanded === CHANGE_PASSWORD_PANEL}
-        onChange={onAccordionClick(CHANGE_PASSWORD_PANEL)}
+        expanded={expanded === Panel.CHANGE_PASSWORD}
+        onChange={onAccordionClick(Panel.CHANGE_PASSWORD)}
         sx={{ borderTop: '1px solid #101820', borderBottom: '1px solid #101820' }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon color="secondary" />}>
@@ -56,8 +58,8 @@ export default function Settings(): React.ReactNode {
         </AccordionDetails>
       </Accordion>
       <Accordion
-        expanded={expanded === DELETE_ACCOUNT_PANEL}
-        onChange={onAccordionClick(DELETE_ACCOUNT_PANEL)}
+        expanded={expanded === Panel.DELETE_ACCOUNT}
+        onChange={onAccordionClick(Panel.DELETE_ACCOUNT)}
         sx={{ borderTop: '1px solid #101820', borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon color="secondary" />}>

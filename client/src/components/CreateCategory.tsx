@@ -64,7 +64,7 @@ export default function CreateCategory(): React.ReactNode {
       dispatch(
         setCreatedCategory({
           ...createdCategory,
-          description: event.target.value,
+          description: event.target.value === '' ? undefined : event.target.value,
           errors: {
             ...createdCategory.errors,
             description: validateCategoryDescription(event.target.value)

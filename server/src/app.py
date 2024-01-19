@@ -41,7 +41,7 @@ class FlaskApp:
 
         self.__register_scheduled_jobs()
 
-    def __app_started_in_db_migration_mode(self):
+    def __app_started_in_db_migration_mode(self) -> bool:
         return "db" in sys.argv
 
     def __register_scheduled_jobs(self):
