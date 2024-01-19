@@ -1,9 +1,9 @@
-from bookings.service import BookingService
+from bookings.repository import BookingRepository
 from datetime import datetime
 
 
 class CloneRepeatingBookingsJob:
-    __booking_service = BookingService()
+    __booking_repository = BookingRepository()
 
     def __today_is_repetition_date(
         self, today: datetime, booking_date: datetime, booking_repetition: str
@@ -21,10 +21,10 @@ class CloneRepeatingBookingsJob:
     def run(self):
         today = datetime.now()
 
-        for booking in self.__booking_service.read_all_with_repetition():
+        for booking in self.__booking_repository.read_all_with_repetition():
             booking_date = datetime.fromtimestamp(booking.get_date())
 
             if self.__today_is_repetition_date(
                 today, booking_date, booking.get_repetition()
             ):
-                self.__booking_service.clone(booking, today.timestamp())
+                self.__booking_repository.clone(booking, today.timestamp())

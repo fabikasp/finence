@@ -1,6 +1,11 @@
 from extensions import db
 from users.model import UserModel
 
+ID_KEY = "id"
+NAME_KEY = "name"
+DESCRIPTION_KEY = "description"
+FOR_INCOME_KEY = "forIncome"
+
 
 class CategoryModel(db.Model):
     __tablename__ = "category"

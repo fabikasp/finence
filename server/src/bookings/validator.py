@@ -1,10 +1,10 @@
-from categories.service import CategoryService
+from categories.repository import CategoryRepository
 
 MAX_NOTE_LENGTH = 200
 
 
 class BookingValidator:
-    __category_service = CategoryService()
+    __category_repository = CategoryRepository()
 
     def validate_is_income(self, is_income) -> bool:
         return isinstance(is_income, bool)
@@ -23,7 +23,7 @@ class BookingValidator:
             return False
 
         return (
-            self.__category_service.read_by_user_id_and_name_and_for_income(
+            self.__category_repository.read_by_user_id_and_name_and_for_income(
                 user_id, category, is_income
             )
             is not None

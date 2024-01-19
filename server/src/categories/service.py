@@ -1,42 +1,100 @@
-from extensions import db
-from categories.model import CategoryModel
+from flask_jwt_extended import get_jwt
+from categories.model import NAME_KEY, DESCRIPTION_KEY
+from categories.validator import CategoryValidator
+from categories.repository import CategoryRepository
 
 
 class CategoryService:
-    def create(
-        self, user_id: int, name: str, description: str, for_income: bool
-    ) -> CategoryModel:
-        category = CategoryModel(user_id, name, description, for_income)
+    __category_validator = CategoryValidator()
+    __category_repository = CategoryRepository()
 
-        db.session.add(category)
-        db.session.commit()
+    def create(self, name, description, for_income) -> dict:
+        if name is None or for_income is None:
+            return {"message": "Category name and affiliation must be given."}, 400
 
-        return category
+        if (
+            not self.__category_validator.validate_name(name)
+            or not self.__category_validator.validate_description(description)
+            or not self.__category_validator.validate_for_income(for_income)
+        ):
+            return {"message": "Invalid data provided."}, 422
 
-    def read_by_id(self, id: int) -> CategoryModel:
-        return CategoryModel.query.filter_by(id=id).first()
+        user_id = get_jwt()["sub"]
+        if (
+            self.__category_repository.read_by_user_id_and_name_and_for_income(
+                user_id, name, for_income
+            )
+            is not None
+        ):
+            return {"message": "Category already exists."}, 409
 
-    def read_by_user_id(self, user_id: int) -> list[CategoryModel]:
-        return CategoryModel.query.filter_by(user_id=user_id).all()
+        category = self.__category_repository.create(
+            user_id, name, description, for_income
+        )
 
-    def read_by_user_id_and_name_and_for_income(
-        self, user_id: int, name: str, for_income: bool
-    ) -> CategoryModel:
-        return CategoryModel.query.filter_by(
-            user_id=user_id, name=name, for_income=for_income
-        ).first()
+        return {"category": category.jsonify()}
 
-    def update(self, category: CategoryModel) -> CategoryModel:
-        db.session.commit()
-        return category
+    def read(self) -> dict:
+        user_id = get_jwt()["sub"]
+        return {
+            "categories": list(
+                map(
+                    lambda category: category.jsonify(),
+                    self.__category_repository.read_by_user_id(user_id),
+                )
+            )
+        }
 
-    def delete(self, id: int) -> CategoryModel:
-        category = self.read_by_id(id)
+    def update(self, id: int, attributesToBeUpdated: dict) -> dict:
+        if (
+            NAME_KEY not in attributesToBeUpdated
+            and DESCRIPTION_KEY not in attributesToBeUpdated
+        ):
+            return {
+                "message": "At least one of name and description must be given."
+            }, 400
+
+        category = self.__category_repository.read_by_id(id)
+        if category is None:
+            return {"message": "Category not found."}, 404
+
+        user_id = get_jwt()["sub"]
+        if NAME_KEY in attributesToBeUpdated:
+            if not self.__category_validator.validate_name(
+                attributesToBeUpdated[NAME_KEY]
+            ):
+                return {"message": "Invalid name provided."}, 422
+
+            category_with_name_and_affiliation = (
+                self.__category_repository.read_by_user_id_and_name_and_for_income(
+                    user_id, attributesToBeUpdated[NAME_KEY], category.get_for_income()
+                )
+            )
+
+            if (
+                category_with_name_and_affiliation is not None
+                and category_with_name_and_affiliation.get_id() != id
+            ):
+                return {"message": "Category already exists."}, 409
+
+            category.set_name(attributesToBeUpdated[NAME_KEY])
+
+        if DESCRIPTION_KEY in attributesToBeUpdated:
+            if not self.__category_validator.validate_description(
+                attributesToBeUpdated[DESCRIPTION_KEY]
+            ):
+                return {"message": "Invalid description provided."}, 422
+
+            category.set_description(attributesToBeUpdated[DESCRIPTION_KEY])
+
+        self.__category_repository.commit()
+
+        return {"category": category.jsonify()}
+
+    def delete(self, id: int) -> dict:
+        category = self.__category_repository.delete(id)
 
         if category is None:
-            return None
+            return {"message": "Category not found."}, 404
 
-        db.session.delete(category)
-        db.session.commit()
-
-        return category
+        return {"category": category.jsonify()}

@@ -54,12 +54,7 @@ class UserService:
 
     def read(self) -> dict:
         user_id = get_jwt()["sub"]
-        user = self.__user_repository.read_by_id(user_id)
-
-        if user is None:
-            return {"message": "User not found."}, 404
-
-        return user.jsonify()
+        return self.__user_repository.read_by_id(user_id).jsonify()
 
     def update(self, attributesToBeUpdated: dict) -> dict:
         if (
@@ -70,9 +65,6 @@ class UserService:
 
         user_id = get_jwt()["sub"]
         user = self.__user_repository.read_by_id(user_id)
-
-        if user is None:
-            return {"message": "User not found."}, 404
 
         if EMAIL_KEY in attributesToBeUpdated:
             if not self.__user_validator.validate_email(
@@ -108,9 +100,6 @@ class UserService:
         jwt = get_jwt()
         user_id = jwt["sub"]
         user = self.__user_repository.delete(user_id)
-
-        if user is None:
-            return {"message": "User not found."}, 404
 
         redis_jwt_blocklist.set(jwt["jti"], "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 

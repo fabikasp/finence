@@ -1,11 +1,19 @@
 from extensions import db
 from users.model import UserModel
 from categories.model import CategoryModel
-from categories.service import CategoryService
+from categories.repository import CategoryRepository
+
+ID_KEY = "id"
+CATEGORY_KEY = "category"
+IS_INCOME_KEY = "isIncome"
+DATE_KEY = "date"
+AMOUNT_KEY = "amount"
+NOTE_KEY = "note"
+REPETITION_KEY = "repetition"
 
 
 class BookingModel(db.Model):
-    __category_service = CategoryService()
+    __category_repository = CategoryRepository()
 
     __tablename__ = "booking"
 
@@ -85,7 +93,7 @@ class BookingModel(db.Model):
         result = {
             "id": self.id,
             "isIncome": self.is_income,
-            "category": self.__category_service.read_by_id(self.category_id).name,
+            "category": self.__category_repository.read_by_id(self.category_id).name,
             "date": self.date,
             "amount": self.amount,
             "repetition": self.repetition,

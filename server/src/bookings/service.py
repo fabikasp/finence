@@ -1,69 +1,136 @@
-from extensions import db
-from categories.service import CategoryService
-from bookings.model import BookingModel
+from flask_jwt_extended import get_jwt
+from bookings.model import (
+    CATEGORY_KEY,
+    DATE_KEY,
+    AMOUNT_KEY,
+    NOTE_KEY,
+    REPETITION_KEY,
+)
+from bookings.validator import BookingValidator
+from bookings.repository import BookingRepository
+from categories.repository import CategoryRepository
 
 
 class BookingService:
-    __category_service = CategoryService()
+    __booking_validator = BookingValidator()
+    __booking_repository = BookingRepository()
+    __category_repository = CategoryRepository()
 
-    def create(
-        self,
-        user_id: int,
-        category: str,
-        is_income: bool,
-        date: int,
-        amount: float,
-        note: str,
-        repetition: str,
-    ) -> BookingModel:
-        category_id = self.__category_service.read_by_user_id_and_name_and_for_income(
-            user_id, category, is_income
-        ).get_id()
-        booking = BookingModel(
-            user_id, category_id, is_income, date, round(amount, 2), note, repetition
+    def create(self, category, is_income, date, amount, note, repetition) -> dict:
+        if (
+            category is None
+            or is_income is None
+            or date is None
+            or amount is None
+            or repetition is None
+        ):
+            return {
+                "message": "Category, affiliation, date, amount and repetition must be given."
+            }, 400
+
+        user_id = get_jwt()["sub"]
+        if (
+            not self.__booking_validator.validate_is_income(is_income)
+            or not self.__booking_validator.validate_category(
+                category, user_id, is_income
+            )
+            or not self.__booking_validator.validate_date(date)
+            or not self.__booking_validator.validate_amount(amount)
+            or not self.__booking_validator.validate_note(note)
+            or not self.__booking_validator.validate_repetition(repetition)
+        ):
+            return {"message": "Invalid data provided."}, 422
+
+        booking = self.__booking_repository.create(
+            user_id, category, is_income, date, amount, note, repetition
         )
 
-        db.session.add(booking)
-        db.session.commit()
+        return {"booking": booking.jsonify()}
 
-        return booking
+    def read(self) -> dict:
+        user_id = get_jwt()["sub"]
+        return {
+            "bookings": list(
+                map(
+                    lambda booking: booking.jsonify(),
+                    self.__booking_repository.read_by_user_id(user_id),
+                )
+            )
+        }
 
-    def read_by_id(self, id: int) -> BookingModel:
-        return BookingModel.query.filter_by(id=id).first()
+    def update(self, id: int, attributesToBeUpdated: dict) -> dict:
+        if (
+            CATEGORY_KEY not in attributesToBeUpdated
+            and DATE_KEY not in attributesToBeUpdated
+            and AMOUNT_KEY not in attributesToBeUpdated
+            and NOTE_KEY not in attributesToBeUpdated
+            and REPETITION_KEY not in attributesToBeUpdated
+        ):
+            return {
+                "message": "At least one of category, date, amount, note and repetition must be given."
+            }, 400
 
-    def read_by_user_id(self, user_id: int) -> list[BookingModel]:
-        return BookingModel.query.filter_by(user_id=user_id).all()
+        booking = self.__booking_repository.read_by_id(id)
+        if booking is None:
+            return {"message": "Booking not found."}, 404
 
-    def read_all_with_repetition(self) -> list[BookingModel]:
-        return BookingModel.query.filter(
-            BookingModel.repetition.in_(["monthly", "yearly"])
-        ).all()
+        user_id = get_jwt()["sub"]
+        if CATEGORY_KEY in attributesToBeUpdated:
+            if not self.__booking_validator.validate_category(
+                attributesToBeUpdated[CATEGORY_KEY], user_id, booking.get_is_income()
+            ):
+                return {"message": "Invalid category provided."}, 422
 
-    def clone(self, booking: BookingModel, new_date: int):
-        cloned_booking = BookingModel(
-            booking.get_user_id(),
-            booking.get_category_id(),
-            booking.get_is_income(),
-            new_date,
-            round(booking.get_amount(), 2),
-            booking.get_note(),
-            "once",
-        )
+            category_id = (
+                self.__category_repository.read_by_user_id_and_name_and_for_income(
+                    booking.get_id(),
+                    attributesToBeUpdated[CATEGORY_KEY],
+                    booking.get_is_income(),
+                ).get_id()
+            )
 
-        db.session.add(cloned_booking)
-        db.session.commit()
+            booking.set_category_id(category_id)
 
-    def update(self, booking: BookingModel) -> BookingModel:
-        db.session.commit()
-        return booking
+        if DATE_KEY in attributesToBeUpdated:
+            if not self.__booking_validator.validate_date(
+                attributesToBeUpdated[DATE_KEY]
+            ):
+                return {"message": "Invalid date provided."}, 422
 
-    def delete(self, id: int) -> BookingModel:
-        booking = self.read_by_id(id)
+            booking.set_date(attributesToBeUpdated[DATE_KEY])
+
+        if AMOUNT_KEY in attributesToBeUpdated:
+            if not self.__booking_validator.validate_amount(
+                attributesToBeUpdated[AMOUNT_KEY]
+            ):
+                return {"message": "Invalid amount provided."}, 422
+
+            booking.set_amount(round(attributesToBeUpdated[AMOUNT_KEY], 2))
+
+        if NOTE_KEY in attributesToBeUpdated:
+            if not self.__booking_validator.validate_note(
+                attributesToBeUpdated[NOTE_KEY]
+            ):
+                return {"message": "Invalid note provided."}, 422
+
+            booking.set_note(attributesToBeUpdated[NOTE_KEY])
+
+        if REPETITION_KEY in attributesToBeUpdated:
+            if not self.__booking_validator.validate_repetition(
+                attributesToBeUpdated[REPETITION_KEY]
+            ):
+                return {"message": "Invalid repetition provided."}, 422
+
+            booking.set_repetition(attributesToBeUpdated[REPETITION_KEY])
+
+        self.__booking_repository.commit()
+
+        return {"booking": booking.jsonify()}
+
+    def delete(self, id: int) -> dict:
+        booking = self.__booking_repository.delete(id)
 
         if booking is None:
-            return None
+            return {"message": "Booking not found."}, 404
 
-        db.session.delete(booking)
-        db.session.commit()
-
-        return booking
+        return {"booking": booking.jsonify()}
