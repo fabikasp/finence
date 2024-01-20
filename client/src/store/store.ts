@@ -10,6 +10,7 @@ import intervalSelectionReducer from './slices/intervalSelectionSlice';
 import financesReducer from './slices/financesSlice';
 import categoriesReducer from './slices/categoriesSlice';
 import settingsReducer from './slices/settingsSlice';
+import dashboardReducer from './slices/dashboardSlice';
 import rootSaga from '../sagas/rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -25,7 +26,8 @@ const store = configureStore({
     intervalSelection: intervalSelectionReducer,
     finances: financesReducer,
     categories: categoriesReducer,
-    settings: settingsReducer
+    settings: settingsReducer,
+    dashboard: dashboardReducer
   },
   middleware(getDefaultMiddleware) {
     return [...getDefaultMiddleware(), sagaMiddleware];

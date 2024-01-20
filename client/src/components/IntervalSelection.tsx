@@ -19,22 +19,38 @@ const YEAR_LABEL = 'Jahr';
 const MONTH_LABEL = 'Monat';
 const DAY_LABEL = 'Tag';
 
-const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
-  margin: '20px 0px 10px',
+type IntervalSelectionProps = {
+  readonly useMargin?: boolean;
+};
+
+const StyledDatePicker = styled(DatePicker, {
+  shouldForwardProp: (prop) => prop !== 'useMargin'
+})<IntervalSelectionProps>(({ theme, useMargin }) => ({
   [theme.breakpoints.up('md')]: {
     width: '30%'
-  }
+  },
+  ...(useMargin && {
+    margin: '20px 0px 10px'
+  })
 }));
 
-const StyledFormControl = styled(FormControl)(() => ({
-  margin: '20px 0px 10px'
+const StyledFormControl = styled(FormControl, {
+  shouldForwardProp: (prop) => prop !== 'useMargin'
+})<IntervalSelectionProps>(({ useMargin }) => ({
+  ...(useMargin && {
+    margin: '20px 0px 10px'
+  })
 }));
 
-const StyledIconButton = styled(IconButton)(() => ({
-  margin: '5px 10px 0px'
+const StyledIconButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'useMargin'
+})<IntervalSelectionProps>(({ useMargin }) => ({
+  margin: useMargin ? '5px 10px 0px' : '0px 10px 0px 0px'
 }));
 
-export default function IntervalSelection(): React.ReactNode {
+export default function IntervalSelection(props: IntervalSelectionProps): React.ReactNode {
+  const { useMargin } = props;
+
   const dispatch = useDispatch();
   const { customIntervalEnabled, nativeInterval, customInterval } = useSelector(
     (state: RootState) => state.intervalSelection
@@ -100,13 +116,13 @@ export default function IntervalSelection(): React.ReactNode {
 
   return (
     <Box display="flex">
-      <StyledIconButton color="primary" onClick={onSwap}>
+      <StyledIconButton color="primary" onClick={onSwap} useMargin={useMargin}>
         <SwapVerticalCircleOutlinedIcon />
       </StyledIconButton>
       {!customIntervalEnabled && (
         <Zoom in style={{ transitionDelay: '0ms' }}>
           <Box>
-            <StyledFormControl sx={{ minWidth: 80 }} size="small">
+            <StyledFormControl sx={{ minWidth: 80 }} size="small" useMargin={useMargin}>
               <InputLabel id="year-label">{YEAR_LABEL}</InputLabel>
               <Select
                 labelId="year-label"
@@ -124,7 +140,7 @@ export default function IntervalSelection(): React.ReactNode {
                 ))}
               </Select>
             </StyledFormControl>
-            <StyledFormControl sx={{ minWidth: 90 }} size="small">
+            <StyledFormControl sx={{ minWidth: 90 }} size="small" useMargin={useMargin}>
               <InputLabel id="month-label">{MONTH_LABEL}</InputLabel>
               <Select
                 labelId="month-label"
@@ -143,7 +159,7 @@ export default function IntervalSelection(): React.ReactNode {
                   ))}
               </Select>
             </StyledFormControl>
-            <StyledFormControl sx={{ minWidth: 70 }} size="small">
+            <StyledFormControl sx={{ minWidth: 70 }} size="small" useMargin={useMargin}>
               <InputLabel id="day-label">{DAY_LABEL}</InputLabel>
               <Select
                 labelId="day-label"
@@ -176,6 +192,7 @@ export default function IntervalSelection(): React.ReactNode {
               size="small"
               onChange={onStartDateChange}
               sx={{ '& .MuiInputBase-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 } }}
+              useMargin={useMargin}
             />
             <StyledDatePicker
               label="Bis"
@@ -185,6 +202,7 @@ export default function IntervalSelection(): React.ReactNode {
               size="small"
               onChange={onEndDateChange}
               sx={{ '& .MuiInputBase-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } }}
+              useMargin={useMargin}
             />
           </Box>
         </Zoom>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useDispatch } from 'react-redux';
 import { clear } from '../store/slices/settingsSlice';
@@ -12,6 +13,10 @@ enum Panel {
   CHANGE_PASSWORD,
   DELETE_ACCOUNT
 }
+
+const StyledBox = styled(Box)(() => ({
+  marginTop: 0
+}));
 
 export default function Settings(): React.ReactNode {
   const dispatch = useDispatch();
@@ -32,7 +37,7 @@ export default function Settings(): React.ReactNode {
   );
 
   return (
-    <>
+    <StyledBox>
       <Accordion
         expanded={expanded === Panel.CHANGE_EMAIL}
         onChange={onAccordionClick(Panel.CHANGE_EMAIL)}
@@ -69,6 +74,6 @@ export default function Settings(): React.ReactNode {
           <DeleteAccount />
         </AccordionDetails>
       </Accordion>
-    </>
+    </StyledBox>
   );
 }

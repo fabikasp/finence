@@ -274,7 +274,7 @@ export default function BookingsTable(): React.ReactNode {
     <>
       <StyledBox>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <IntervalSelection />
+          <IntervalSelection useMargin />
           <StyledFab color="primary" size="small" onClick={onCreateClick}>
             <AddIcon />
           </StyledFab>
