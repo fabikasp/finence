@@ -24,7 +24,6 @@ export default function DeleteCategory(): React.ReactNode {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Abbrechen</Button>
         <Button variant="contained" color="error" startIcon={<DeleteForeverIcon />} onClick={onDelete}>
           Löschen
         </Button>

@@ -1,6 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import { Box, FormControl, InputLabel, Select, SelectChangeEvent, MenuItem, IconButton, Zoom } from '@mui/material';
 import SwapVerticalCircleOutlinedIcon from '@mui/icons-material/SwapVerticalCircleOutlined';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { styled } from '@mui/material/styles';
 import moment, { Moment } from 'moment';
 import 'moment/locale/de';
@@ -42,10 +44,16 @@ const StyledFormControl = styled(FormControl, {
   })
 }));
 
-const StyledIconButton = styled(IconButton, {
+const SwapButton = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== 'useMargin'
 })<IntervalSelectionProps>(({ useMargin }) => ({
-  margin: useMargin ? '5px 10px 0px' : '0px 10px 0px 0px'
+  margin: `${useMargin ? '10px' : '0px'} 10px 0px ${useMargin ? '10px' : '0px'}`
+}));
+
+const ArrowButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'useMargin'
+})<IntervalSelectionProps>(({ useMargin }) => ({
+  margin: `${useMargin ? '10px' : '0px'} 0px 0px 10px`
 }));
 
 export default function IntervalSelection(props: IntervalSelectionProps): React.ReactNode {
@@ -88,6 +96,14 @@ export default function IntervalSelection(props: IntervalSelectionProps): React.
     [nativeInterval, dispatch]
   );
 
+  const onPrevious = useCallback(() => {
+    alert('TEST');
+  }, []);
+
+  const onNext = useCallback(() => {
+    alert('TEST');
+  }, []);
+
   const onStartDateChange = useCallback(
     (value: Moment | null) => {
       const clearEndDate =
@@ -116,9 +132,9 @@ export default function IntervalSelection(props: IntervalSelectionProps): React.
 
   return (
     <Box display="flex">
-      <StyledIconButton color="primary" onClick={onSwap} useMargin={useMargin}>
+      <SwapButton color="primary" onClick={onSwap} useMargin={useMargin}>
         <SwapVerticalCircleOutlinedIcon />
-      </StyledIconButton>
+      </SwapButton>
       {!customIntervalEnabled && (
         <Zoom in style={{ transitionDelay: '0ms' }}>
           <Box>
@@ -206,6 +222,16 @@ export default function IntervalSelection(props: IntervalSelectionProps): React.
             />
           </Box>
         </Zoom>
+      )}
+      {!customIntervalEnabled && (
+        <>
+          <ArrowButton color="primary" onClick={onPrevious} useMargin={useMargin}>
+            <ArrowBackIosIcon />
+          </ArrowButton>
+          <ArrowButton color="primary" onClick={onNext} useMargin={useMargin} sx={{ marginLeft: 0 }}>
+            <ArrowForwardIosIcon />
+          </ArrowButton>
+        </>
       )}
     </Box>
   );

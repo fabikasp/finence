@@ -10,8 +10,6 @@ import {
   Typography
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
-import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import { styled } from '@mui/material/styles';
 import PieChart from './PieChart';
 import { useDispatch } from 'react-redux';
@@ -19,7 +17,7 @@ import { loadBookings } from '../store/actions';
 import { clear, toggleShowIncomes } from '../store/slices/dashboardSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import BalanceTable from './BalanceTable';
+import Balance from './Balance';
 
 enum Panel {
   BALANCE_TABLE,
@@ -83,7 +81,7 @@ export default function Dashboard(): React.ReactNode {
             <Typography>Bilanz</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <BalanceTable />
+            <Balance />
           </AccordionDetails>
         </Accordion>
         <Accordion
@@ -93,14 +91,16 @@ export default function Dashboard(): React.ReactNode {
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon color="secondary" />}>
             <Typography>Buchungsstatistik</Typography>
-            <ToggleButtonGroup color="primary" value={showIncomes}>
-              <StyledToggleButton value={true} onClick={onToggleButtonClick}>
-                <ArrowCircleUpIcon fontSize="small" />
-              </StyledToggleButton>
-              <StyledToggleButton value={false} onClick={onToggleButtonClick}>
-                <ArrowCircleDownIcon fontSize="small" />
-              </StyledToggleButton>
-            </ToggleButtonGroup>
+            {expanded === Panel.PIE_CHART && (
+              <ToggleButtonGroup color="primary" value={showIncomes}>
+                <StyledToggleButton value={true} onClick={onToggleButtonClick}>
+                  Einnahmen
+                </StyledToggleButton>
+                <StyledToggleButton value={false} onClick={onToggleButtonClick}>
+                  Ausgaben
+                </StyledToggleButton>
+              </ToggleButtonGroup>
+            )}
           </AccordionSummary>
           <AccordionDetails>
             <PieChart />

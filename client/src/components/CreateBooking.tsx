@@ -257,12 +257,11 @@ export default function CreateBooking(): React.ReactNode {
         </StyledRadioGroup>
       </StyledDialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Abbrechen</Button>
         <Button variant="contained" startIcon={<SaveIcon />} onClick={onCreate(true)}>
           Speichern
         </Button>
         <Button variant="contained" startIcon={<SaveIcon />} onClick={onCreate(false)}>
-          Speichern & Weiter
+          Weiter
         </Button>
       </DialogActions>
     </Dialog>

@@ -292,7 +292,7 @@ export default function BookingsTable(): React.ReactNode {
                 </TableCell>
                 <TableCell>{row.date}</TableCell>
                 <TableCell sx={(theme) => ({ color: theme.palette[row.isIncome ? 'primary' : 'error'].main })}>
-                  {`${!row.isIncome ? '-' : ''}${row.amount} €`}
+                  {row.amount} €
                 </TableCell>
                 <TableCell>{row.category}</TableCell>
                 <TableCell>{row.note}</TableCell>

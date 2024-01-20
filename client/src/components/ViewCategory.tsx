@@ -135,7 +135,6 @@ export default function ViewCategory(): React.ReactNode {
         </ToggleButtonGroup>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Abbrechen</Button>
         <Button disabled={categoryIsNotEdited()} variant="contained" startIcon={<EditIcon />} onClick={onUpdate}>
           Ändern
         </Button>

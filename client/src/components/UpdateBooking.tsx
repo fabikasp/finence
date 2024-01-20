@@ -87,14 +87,6 @@ export default function UpdateBooking(): React.ReactNode {
   const onClose = useCallback(() => dispatch(setUpdatedBooking(undefined)), [dispatch]);
   const onUpdate = useCallback(() => dispatch(updateBooking()), [dispatch]);
 
-  const onToggleButtonClick = useCallback(
-    (_: React.SyntheticEvent, isIncome: boolean) => {
-      assertNonNullable(updatedBooking);
-      dispatch(setUpdatedBooking({ ...updatedBooking, isIncome, category: '' }));
-    },
-    [updatedBooking, dispatch]
-  );
-
   const onDateChange = useCallback(
     (value: Moment | null) => {
       assertNonNullable(updatedBooking);
@@ -204,10 +196,10 @@ export default function UpdateBooking(): React.ReactNode {
     <Dialog open={!!updatedBooking} title="Buchung bearbeiten" onClose={onClose}>
       <StyledDialogContent>
         <ToggleButtonGroup color="primary" value={updatedBooking?.isIncome} disabled>
-          <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>
+          <StyledToggleButton size="small" value={true}>
             Einnahme
           </StyledToggleButton>
-          <StyledToggleButton size="small" value={false} onClick={onToggleButtonClick}>
+          <StyledToggleButton size="small" value={false}>
             Ausgabe
           </StyledToggleButton>
         </ToggleButtonGroup>
@@ -287,7 +279,6 @@ export default function UpdateBooking(): React.ReactNode {
         </StyledRadioGroup>
       </StyledDialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Abbrechen</Button>
         <Button disabled={bookingIsNotEdited()} variant="contained" startIcon={<SaveIcon />} onClick={onUpdate}>
           Ändern
         </Button>
