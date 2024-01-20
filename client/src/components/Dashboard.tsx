@@ -19,6 +19,7 @@ import { loadBookings } from '../store/actions';
 import { clear, toggleShowIncomes } from '../store/slices/dashboardSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import BalanceTable from './BalanceTable';
 
 enum Panel {
   BALANCE_TABLE,
@@ -82,7 +83,7 @@ export default function Dashboard(): React.ReactNode {
             <Typography>Bilanz</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <div>Test</div>
+            <BalanceTable />
           </AccordionDetails>
         </Accordion>
         <Accordion
