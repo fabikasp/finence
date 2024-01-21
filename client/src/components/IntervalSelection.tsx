@@ -15,7 +15,7 @@ import {
   setNativeInterval,
   toggleCustomIntervalEnabled
 } from '../store/slices/intervalSelectionSlice';
-import { convertMomentToUnix, convertUnixToMoment } from '../utils/helper';
+import { convertMomentToUnix, convertUnixToMoment, createMoment } from '../utils/helper';
 
 const YEAR_LABEL = 'Jahr';
 const MONTH_LABEL = 'Monat';
@@ -64,8 +64,8 @@ export default function IntervalSelection(props: IntervalSelectionProps): React.
     (state: RootState) => state.intervalSelection
   );
 
-  const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
-  const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
+  const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'years'), []);
+  const inFiftyYears = useMemo(() => moment().add(50, 'years'), []);
 
   const years = useMemo(
     () => Array.from({ length: 101 }, (_, i) => (inFiftyYears.year() - (101 - i)).toString()),
@@ -96,13 +96,31 @@ export default function IntervalSelection(props: IntervalSelectionProps): React.
     [nativeInterval, dispatch]
   );
 
-  const onPrevious = useCallback(() => {
-    alert('TEST');
-  }, []);
+  const onSkip = useCallback(
+    (forward: boolean) => () => {
+      if (!nativeInterval.year) {
+        return;
+      }
 
-  const onNext = useCallback(() => {
-    alert('TEST');
-  }, []);
+      const unit = nativeInterval.day ? 'days' : nativeInterval.month ? 'months' : 'years';
+      const currentDate = createMoment(
+        +nativeInterval.year,
+        unit !== 'years' ? nativeInterval.month : undefined,
+        unit === 'days' ? +nativeInterval.day : undefined
+      );
+      const newDate = forward ? currentDate.add(1, unit) : currentDate.subtract(1, unit);
+
+      dispatch(
+        setNativeInterval({
+          ...nativeInterval,
+          year: newDate.year().toString(),
+          ...(unit !== 'years' && { month: months[newDate.month()] }),
+          ...(unit === 'days' && { day: newDate.date().toString() })
+        })
+      );
+    },
+    [nativeInterval, months, dispatch]
+  );
 
   const onStartDateChange = useCallback(
     (value: Moment | null) => {
@@ -225,10 +243,10 @@ export default function IntervalSelection(props: IntervalSelectionProps): React.
       )}
       {!customIntervalEnabled && (
         <>
-          <ArrowButton color="primary" onClick={onPrevious} useMargin={useMargin}>
+          <ArrowButton color="primary" onClick={onSkip(false)} useMargin={useMargin}>
             <ArrowBackIosIcon />
           </ArrowButton>
-          <ArrowButton color="primary" onClick={onNext} useMargin={useMargin} sx={{ marginLeft: 0 }}>
+          <ArrowButton color="primary" onClick={onSkip(true)} useMargin={useMargin} sx={{ marginLeft: 0 }}>
             <ArrowForwardIosIcon />
           </ArrowButton>
         </>

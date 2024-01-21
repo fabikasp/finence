@@ -10,6 +10,14 @@ export function convertUnixToMoment(timestamp: number): Moment {
   return moment.unix(timestamp).startOf('day');
 }
 
+export function createMoment(year: number, monthShortcut?: string, day?: number): Moment {
+  return moment({
+    year,
+    ...(monthShortcut && { month: moment.monthsShort().indexOf(monthShortcut) }),
+    ...(day && { day })
+  });
+}
+
 export function datesAreEqual(date1: number, date2: number): boolean {
   return convertUnixToMoment(date1).isSame(convertUnixToMoment(date2));
 }
@@ -19,8 +27,7 @@ export function dateLiesInInterval(
   customIntervalEnabled: boolean,
   nativeInterval: NativeInterval,
   customInterval: CustomInterval
-) {
-  const months = moment.monthsShort();
+): boolean {
   const bookingDate = convertUnixToMoment(date);
 
   if (customIntervalEnabled) {
@@ -45,7 +52,7 @@ export function dateLiesInInterval(
   }
 
   if (nativeInterval.month) {
-    result &&= months[bookingDate.month()] === nativeInterval.month;
+    result &&= moment.monthsShort()[bookingDate.month()] === nativeInterval.month;
   }
 
   if (nativeInterval.day) {

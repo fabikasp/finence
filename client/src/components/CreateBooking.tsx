@@ -78,8 +78,8 @@ export default function CreateBooking(): React.ReactNode {
   const { createdBooking } = useSelector((state: RootState) => state.finances);
   const { categories } = useSelector((state: RootState) => state.categories);
 
-  const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'year'), []);
-  const inFiftyYears = useMemo(() => moment().add(50, 'year'), []);
+  const fiftyYearsAgo = useMemo(() => moment().subtract(50, 'years'), []);
+  const inFiftyYears = useMemo(() => moment().add(50, 'years'), []);
 
   const onClose = useCallback(() => dispatch(setCreatedBooking(undefined)), [dispatch]);
   const onCreate = useCallback((closeDialog: boolean) => () => dispatch(createBooking({ closeDialog })), [dispatch]);
