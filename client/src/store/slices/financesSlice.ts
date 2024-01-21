@@ -94,9 +94,11 @@ const financesSlice = createSlice({
     setDeletedBooking: (state: Finances, action: PayloadAction<Booking | undefined>) => ({
       ...state,
       deletedBooking: action.payload
-    })
+    }),
+    clear: (state: Finances) => ({ ...state, tab: Tab.TOTAL })
   }
 });
 
-export const { setTab, setBookings, setCreatedBooking, setUpdatedBooking, setDeletedBooking } = financesSlice.actions;
+export const { setTab, setBookings, setCreatedBooking, setUpdatedBooking, setDeletedBooking, clear } =
+  financesSlice.actions;
 export default financesSlice.reducer;

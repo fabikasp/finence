@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Box, Tabs, Tab as MuiTab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import BookingsTable from './BookingsTable';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { Tab, setTab } from '../store/slices/financesSlice';
+import { Tab, clear, setTab } from '../store/slices/financesSlice';
 
 const StyledBox = styled(Box)(() => ({
   backgroundColor: '#232F3B',
@@ -13,6 +13,14 @@ const StyledBox = styled(Box)(() => ({
 
 export default function Finances(): React.ReactNode {
   const dispatch = useDispatch();
+
+  useEffect(
+    () => () => {
+      dispatch(clear());
+    },
+    [dispatch]
+  );
+
   const { tab } = useSelector((state: RootState) => state.finances);
 
   const onTabChange = useCallback((_: React.SyntheticEvent, newTab: Tab) => dispatch(setTab(newTab)), [dispatch]);
