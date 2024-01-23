@@ -153,6 +153,20 @@ export const theme = createTheme({
           color: '#C0C0C0'
         }
       }
+    },
+    MuiStep: {
+      styleOverrides: {
+        root: {
+          '& .Mui-disabled': {
+            '& .MuiStepIcon-root': {
+              color: '#89ABE3',
+              opacity: 0.6
+            },
+            color: '#FCF6F5',
+            opacity: 0.6
+          }
+        }
+      }
     }
   }
 });

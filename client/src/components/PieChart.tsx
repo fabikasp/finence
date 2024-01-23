@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { RootState } from '../store/store';
-import { dateLiesInInterval } from '../utils/helper';
+import { darkenColorByFactor, dateLiesInInterval } from '../utils/helper';
 
 type AbsoluteChartData = {
   category: string;
@@ -46,10 +46,17 @@ export default function PieChart(): React.ReactNode {
   }, [bookings, showIncomes, customIntervalEnabled, nativeInterval, customInterval]);
 
   const theme = useTheme();
-  const colors = useMemo(
-    () => [theme.palette.primary.main, theme.palette.secondary.main, '#5879AD', '#A1A1A1'],
-    [theme.palette.primary.main, theme.palette.secondary.main]
-  );
+  const colors = useMemo(() => {
+    const primaryColor = theme.palette.primary.main;
+    const secondaryColor = theme.palette.secondary.main;
+
+    return [
+      primaryColor,
+      secondaryColor,
+      darkenColorByFactor(primaryColor, 0.2),
+      darkenColorByFactor(secondaryColor, 0.2)
+    ];
+  }, [theme.palette.primary.main, theme.palette.secondary.main]);
 
   return (
     <ResponsiveContainer height={320}>

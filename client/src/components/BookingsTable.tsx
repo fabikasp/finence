@@ -22,6 +22,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 import IntervalSelection from './IntervalSelection';
 import {
   DisplayableBooking,
@@ -40,6 +41,8 @@ import DeleteBooking from './DeleteBooking';
 import { assertNonNullable } from '../utils/assert';
 import { convertMomentToUnix, convertUnixToMoment, dateLiesInInterval } from '../utils/helper';
 import UpdateBooking from './UpdateBooking';
+import ImportAccountStatement from './ImportAccountStatement';
+import { toggleOpenDialog } from '../store/slices/accountStatementImportSlice';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T): number {
   if (b[orderBy] === a[orderBy]) {
@@ -251,6 +254,8 @@ export default function BookingsTable(): React.ReactNode {
     [tab, dispatch]
   );
 
+  const onImportClick = useCallback(() => dispatch(toggleOpenDialog()), [dispatch]);
+
   const onUpdateClick = useCallback(
     (bookingId: number) => () => {
       const booking = bookings.find((booking) => booking.id === bookingId);
@@ -275,9 +280,14 @@ export default function BookingsTable(): React.ReactNode {
       <StyledBox>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <IntervalSelection useMargin />
-          <StyledFab color="primary" size="small" onClick={onCreateClick}>
-            <AddIcon />
-          </StyledFab>
+          <Box>
+            <StyledFab color="primary" size="small" onClick={onCreateClick}>
+              <AddIcon />
+            </StyledFab>
+            <StyledFab color="primary" size="small" onClick={onImportClick}>
+              <ImportExportIcon />
+            </StyledFab>
+          </Box>
         </Box>
         <Table size="small">
           <CustomTableHead onRequestSort={onRequestSort} order={order} orderBy={orderBy} />
@@ -344,6 +354,7 @@ export default function BookingsTable(): React.ReactNode {
         </Popover>
       </StyledBox>
       <CreateBooking />
+      <ImportAccountStatement />
       <UpdateBooking />
       <DeleteBooking />
     </>

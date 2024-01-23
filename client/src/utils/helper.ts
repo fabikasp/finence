@@ -61,3 +61,16 @@ export function dateLiesInInterval(
 
   return result;
 }
+
+export function darkenColorByFactor(hexCode: string, factor: number): string {
+  let red = parseInt(hexCode.slice(1, 3), 16);
+  let green = parseInt(hexCode.slice(3, 5), 16);
+  let blue = parseInt(hexCode.slice(5, 7), 16);
+  factor = Math.max(0, Math.min(factor, 1));
+
+  red = Math.round(red * (1 - factor));
+  green = Math.round(green * (1 - factor));
+  blue = Math.round(blue * (1 - factor));
+
+  return `#${((red << 16) | (green << 8) | blue).toString(16).padStart(6, '0')}`;
+}

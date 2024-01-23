@@ -22,7 +22,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 const StyledButton = styled(Button)(({ theme }) => ({
   '&:disabled': {
-    backgroundColor: '#89ABE3'
+    backgroundColor: theme.palette.primary.main
   },
   [theme.breakpoints.up('md')]: {
     width: '25%'

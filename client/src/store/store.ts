@@ -8,6 +8,7 @@ import registrationReducer from './slices/registrationSlice';
 import loginReducer from './slices/loginSlice';
 import intervalSelectionReducer from './slices/intervalSelectionSlice';
 import financesReducer from './slices/financesSlice';
+import accountStatementImportReducer from './slices/accountStatementImportSlice';
 import categoriesReducer from './slices/categoriesSlice';
 import settingsReducer from './slices/settingsSlice';
 import dashboardReducer from './slices/dashboardSlice';
@@ -25,6 +26,7 @@ const store = configureStore({
     login: loginReducer,
     intervalSelection: intervalSelectionReducer,
     finances: financesReducer,
+    accountStatementImport: accountStatementImportReducer,
     categories: categoriesReducer,
     settings: settingsReducer,
     dashboard: dashboardReducer
