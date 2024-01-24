@@ -20,7 +20,7 @@ export default function DeleteCategory(): React.ReactNode {
       <DialogContent>
         <DialogContentText>
           Durch die Löschung dieser Kategorie werden ebenfalls alle damit verknüpften
-          {deletedCategory?.forIncome ? ' Einnahmen' : ' Ausgaben'} gelöscht. Wollen Sie die Kategorie wirklich löschen?
+          {deletedCategory?.forIncome ? ' Einnahmen' : ' Ausgaben'} gelöscht. Willst du die Kategorie wirklich löschen?
         </DialogContentText>
       </DialogContent>
       <DialogActions>

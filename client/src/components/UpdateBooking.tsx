@@ -12,7 +12,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   SelectChangeEvent,
-  FormHelperText,
   FormControlLabel,
   Radio,
   RadioGroup
@@ -31,12 +30,7 @@ import Dialog from './Dialog';
 import { Repetition, setUpdatedBooking } from '../store/slices/financesSlice';
 import DatePicker from './DatePicker';
 import moment, { Moment } from 'moment';
-import {
-  validateBookingAmount,
-  validateBookingCategory,
-  validateBookingDate,
-  validateBookingNote
-} from '../utils/validators';
+import { validateBookingAmount, validateBookingDate, validateBookingNote } from '../utils/validators';
 import { convertMomentToUnix, convertUnixToMoment, datesAreEqual } from '../utils/helper';
 
 const StyledTextField = styled(TextField)(() => ({
@@ -123,11 +117,7 @@ export default function UpdateBooking(): React.ReactNode {
       dispatch(
         setUpdatedBooking({
           ...updatedBooking,
-          category: event.target.value,
-          errors: {
-            ...updatedBooking.errors,
-            category: validateBookingCategory(event.target.value)
-          }
+          category: event.target.value === '' ? undefined : event.target.value
         })
       );
     },
@@ -229,9 +219,7 @@ export default function UpdateBooking(): React.ReactNode {
           helperText={updatedBooking?.errors?.amount}
         />
         <StyledFormControl fullWidth>
-          <InputLabel id="category-label" error={!!updatedBooking?.errors?.category}>
-            Kategorie
-          </InputLabel>
+          <InputLabel id="category-label">Kategorie</InputLabel>
           <Select
             labelId="category-label"
             value={updatedBooking?.category ?? ''}
@@ -242,7 +230,6 @@ export default function UpdateBooking(): React.ReactNode {
                 <CategoryIcon />
               </InputAdornment>
             }
-            error={!!updatedBooking?.errors?.category}
           >
             <MenuItem value="">Leer</MenuItem>
             {categories
@@ -253,7 +240,6 @@ export default function UpdateBooking(): React.ReactNode {
                 </MenuItem>
               ))}
           </Select>
-          <FormHelperText error>{updatedBooking?.errors?.category}</FormHelperText>
         </StyledFormControl>
         <StyledTextField
           fullWidth

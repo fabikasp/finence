@@ -230,6 +230,7 @@ export default function BookingsTable(): React.ReactNode {
       .filter((booking) => dateLiesInInterval(booking.date, customIntervalEnabled, nativeInterval, customInterval))
       .map((booking) => ({
         ...booking,
+        category: booking.category ?? '',
         note: booking.note ?? '',
         date: convertUnixToMoment(booking.date).format('DD.MM.YYYY')
       }));
@@ -247,7 +248,6 @@ export default function BookingsTable(): React.ReactNode {
           isIncome: [Tab.TOTAL, Tab.INCOME].includes(tab),
           date: convertMomentToUnix(moment()),
           amount: '',
-          category: '',
           repetition: Repetition.ONCE
         })
       ),

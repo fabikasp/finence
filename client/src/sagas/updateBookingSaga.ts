@@ -4,12 +4,7 @@ import { AxiosResponse } from 'axios';
 import { BOOKINGS_URL_PATH_PREFIX } from '../utils/const';
 import { assertNonNullable, assertTrue } from '../utils/assert';
 import { RootState } from '../store/store';
-import {
-  validateBookingAmount,
-  validateBookingCategory,
-  validateBookingDate,
-  validateBookingNote
-} from '../utils/validators';
+import { validateBookingAmount, validateBookingDate, validateBookingNote } from '../utils/validators';
 import { Repetition, isBooking, setBookings, setUpdatedBooking } from '../store/slices/financesSlice';
 import { datesAreEqual } from '../utils/helper';
 
@@ -21,14 +16,13 @@ export function* updateBookingSaga(): SagaGenerator<void> {
 
   const dateError = validateBookingDate(updatedBooking.date);
   const amountError = validateBookingAmount(updatedBooking.amount);
-  const categoryError = validateBookingCategory(updatedBooking.category);
   const noteError = validateBookingNote(updatedBooking.note ?? '');
 
-  if (dateError || amountError || categoryError || noteError) {
+  if (dateError || amountError || noteError) {
     yield* put(
       setUpdatedBooking({
         ...updatedBooking,
-        errors: { date: dateError, amount: amountError, category: categoryError, note: noteError }
+        errors: { date: dateError, amount: amountError, note: noteError }
       })
     );
 
@@ -63,7 +57,7 @@ export function* updateBookingSaga(): SagaGenerator<void> {
 interface RequestData {
   date?: number;
   amount?: number;
-  category?: string;
+  category?: string | null;
   note?: string | null;
   repetition?: Repetition;
 }
@@ -82,7 +76,7 @@ function* buildRequestData(): SagaGenerator<RequestData> {
   }
 
   if (updatedBooking.category !== updatedBooking.comparativeCategory) {
-    result.category = updatedBooking.category;
+    result.category = updatedBooking.category ?? null;
   }
 
   if (updatedBooking.note !== updatedBooking.comparativeNote) {

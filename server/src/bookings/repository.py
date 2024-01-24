@@ -23,6 +23,8 @@ class BookingRepository:
             self.__category_repository.read_by_user_id_and_name_and_for_income(
                 user_id, category, is_income
             ).get_id()
+            if category is not None
+            else None
         )
         booking = BookingModel(
             user_id, category_id, is_income, date, round(amount, 2), note, repetition

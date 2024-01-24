@@ -93,10 +93,6 @@ export function validateBookingAmount(bookingAmount: string): string | undefined
   return castedAmount <= 0 ? 'Der Betrag muss größer als 0 sein.' : undefined;
 }
 
-export function validateBookingCategory(bookingCategory: string): string | undefined {
-  return bookingCategory === '' ? 'Die Kategorie darf nicht leer sein.' : undefined;
-}
-
 export function validateBookingNote(bookingNote: string): string | undefined {
   return bookingNote.length > MAX_BOOKING_NOTE_LENGTH
     ? `Die Bemerkung darf maximal ${MAX_BOOKING_NOTE_LENGTH} Zeichen enthalten.`

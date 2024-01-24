@@ -19,7 +19,7 @@ export default function DeleteBooking(): React.ReactNode {
     <Dialog open={!!deletedBooking} title="Buchung löschen" onClose={onClose}>
       <DialogContent>
         <DialogContentText>
-          Wollen Sie die {deletedBooking?.isIncome ? ' Einnahme' : ' Ausgabe'} wirklich löschen?
+          Willst du die {deletedBooking?.isIncome ? ' Einnahme' : ' Ausgabe'} wirklich löschen?
         </DialogContentText>
       </DialogContent>
       <DialogActions>

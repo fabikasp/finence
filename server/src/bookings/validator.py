@@ -19,6 +19,9 @@ class BookingValidator:
         return amount > 0
 
     def validate_category(self, category, user_id: int, is_income: bool) -> bool:
+        if category is None:
+            return True
+
         if not isinstance(category, str):
             return False
 

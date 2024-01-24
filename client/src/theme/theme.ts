@@ -1,18 +1,25 @@
 import { createTheme } from '@mui/material';
 
+const PRIMARY_BACKGROUND_COLOR = '#101820';
+const SECONDARY_BACKGROUND_COLOR = '#232F3B';
+const PRIMARY_COLOR = '#89ABE3';
+const SECONDARY_COLOR = '#C0C0C0';
+const PRIMARY_TEXT_COLOR = '#FCF6F5';
+const ALERT_COLOR = '#000000';
+
 export const theme = createTheme({
   palette: {
     background: {
-      default: '#101820'
-    },
-    text: {
-      primary: '#FCF6F5'
+      default: PRIMARY_BACKGROUND_COLOR
     },
     primary: {
-      main: '#89ABE3'
+      main: PRIMARY_COLOR
     },
     secondary: {
-      main: '#C0C0C0'
+      main: SECONDARY_COLOR
+    },
+    text: {
+      primary: PRIMARY_TEXT_COLOR
     }
   },
   typography: {
@@ -25,8 +32,8 @@ export const theme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#101820',
-          borderColor: '#89ABE3',
+          backgroundColor: PRIMARY_BACKGROUND_COLOR,
+          borderColor: PRIMARY_COLOR,
           borderWidth: '2px'
         }
       }
@@ -34,7 +41,7 @@ export const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#232F3B'
+          backgroundColor: SECONDARY_BACKGROUND_COLOR
         }
       }
     },
@@ -42,11 +49,11 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '& label': {
-            color: '#FCF6F5'
+            color: PRIMARY_TEXT_COLOR
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
-              borderColor: '#FCF6F5'
+              borderColor: PRIMARY_TEXT_COLOR
             }
           }
         }
@@ -56,10 +63,10 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#FCF6F5'
+            borderColor: PRIMARY_TEXT_COLOR
           },
           '& .MuiSvgIcon-root': {
-            color: '#C0C0C0'
+            color: SECONDARY_COLOR
           }
         }
       }
@@ -67,14 +74,14 @@ export const theme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: '#FCF6F5'
+          color: PRIMARY_TEXT_COLOR
         }
       }
     },
     MuiMenu: {
       styleOverrides: {
         list: {
-          backgroundColor: '#232F3B'
+          backgroundColor: SECONDARY_BACKGROUND_COLOR
         }
       }
     },
@@ -88,24 +95,24 @@ export const theme = createTheme({
     MuiAccordion: {
       styleOverrides: {
         root: {
-          backgroundColor: '#232F3B'
+          backgroundColor: SECONDARY_BACKGROUND_COLOR
         }
       }
     },
     MuiAlert: {
       styleOverrides: {
         root: {
-          color: '#000000',
-          backgroundColor: '#FCF6F5'
+          color: ALERT_COLOR,
+          backgroundColor: PRIMARY_TEXT_COLOR
         }
       }
     },
     MuiTab: {
       styleOverrides: {
         root: {
-          color: '#C0C0C0',
+          color: SECONDARY_COLOR,
           '&:hover': {
-            color: '#89ABE3'
+            color: PRIMARY_COLOR
           }
         }
       }
@@ -113,28 +120,28 @@ export const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#232F3B'
+          backgroundColor: SECONDARY_BACKGROUND_COLOR
         }
       }
     },
     MuiDialogContentText: {
       styleOverrides: {
         root: {
-          color: '#FCF6F5'
+          color: PRIMARY_TEXT_COLOR
         }
       }
     },
     MuiPopover: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#232F3B'
+          backgroundColor: SECONDARY_BACKGROUND_COLOR
         }
       }
     },
     MuiTableSortLabel: {
       styleOverrides: {
         icon: {
-          color: '#FCF6F5 !important'
+          color: `${PRIMARY_TEXT_COLOR} !important`
         }
       }
     },
@@ -142,7 +149,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiSelect-icon': {
-            color: '#FCF6F5'
+            color: PRIMARY_TEXT_COLOR
           }
         }
       }
@@ -150,7 +157,7 @@ export const theme = createTheme({
     MuiRadio: {
       styleOverrides: {
         root: {
-          color: '#C0C0C0'
+          color: SECONDARY_COLOR
         }
       }
     },
@@ -159,10 +166,10 @@ export const theme = createTheme({
         root: {
           '& .Mui-disabled': {
             '& .MuiStepIcon-root': {
-              color: '#89ABE3',
+              color: PRIMARY_COLOR,
               opacity: 0.6
             },
-            color: '#FCF6F5',
+            color: PRIMARY_TEXT_COLOR,
             opacity: 0.6
           }
         }

@@ -17,15 +17,9 @@ class BookingService:
     __category_repository = CategoryRepository()
 
     def create(self, category, is_income, date, amount, note, repetition) -> dict:
-        if (
-            category is None
-            or is_income is None
-            or date is None
-            or amount is None
-            or repetition is None
-        ):
+        if is_income is None or date is None or amount is None or repetition is None:
             return {
-                "message": "Category, affiliation, date, amount and repetition must be given."
+                "message": "Affiliation, date, amount and repetition must be given."
             }, 400
 
         user_id = get_jwt()["sub"]
@@ -87,6 +81,8 @@ class BookingService:
                     attributesToBeUpdated[CATEGORY_KEY],
                     booking.get_is_income(),
                 ).get_id()
+                if attributesToBeUpdated[CATEGORY_KEY] is not None
+                else None
             )
 
             booking.set_category_id(category_id)

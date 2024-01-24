@@ -77,7 +77,7 @@ export default function UploadCsvFile(): React.ReactNode {
             </Button>
           </label>
           <Typography variant="caption" sx={{ marginTop: 1 }}>
-            Oder ziehen Sie die Datei hierher
+            Oder ziehe die Datei hierher
           </Typography>
         </>
       )}

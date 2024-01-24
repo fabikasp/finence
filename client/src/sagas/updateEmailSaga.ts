@@ -42,7 +42,7 @@ export function* updateEmailSaga(): SagaGenerator<void> {
         assertTrue(isUpdateEmailResponseData(response.data));
 
         yield* put(setComparativeEmail(response.data.email));
-        yield* put(evoke({ severity: 'success', message: 'Ihre E-Mail-Adresse wurde erfolgreich geändert.' }));
+        yield* put(evoke({ severity: 'success', message: 'Deine E-Mail-Adresse wurde erfolgreich geändert.' }));
       },
       function* handleError(error: AxiosError) {
         if (error.response?.status === 409) {

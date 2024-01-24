@@ -5,6 +5,8 @@ import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer } from 're
 import { RootState } from '../store/store';
 import { darkenColorByFactor, dateLiesInInterval } from '../utils/helper';
 
+const FALLBACK_CATEGORY_NAME = 'Nicht zugeordnet';
+
 type AbsoluteChartData = {
   category: string;
   absoluteValue: number;
@@ -23,7 +25,8 @@ export default function PieChart(): React.ReactNode {
       .filter((booking) => dateLiesInInterval(booking.date, customIntervalEnabled, nativeInterval, customInterval));
 
     const absoluteChartData = filteredBookings.reduce((acc: AbsoluteChartData[], curr) => {
-      const entryIndex = acc.findIndex((entry) => entry.category === curr.category);
+      const category = curr.category ?? FALLBACK_CATEGORY_NAME;
+      const entryIndex = acc.findIndex((entry) => entry.category === category);
 
       if (entryIndex !== -1) {
         acc[entryIndex] = {
@@ -31,7 +34,7 @@ export default function PieChart(): React.ReactNode {
           absoluteValue: acc[entryIndex].absoluteValue + curr.amount
         };
       } else {
-        acc.push({ category: curr.category, absoluteValue: curr.amount });
+        acc.push({ category, absoluteValue: curr.amount });
       }
 
       return acc;

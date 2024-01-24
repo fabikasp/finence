@@ -22,7 +22,7 @@ class BookingModel(db.Model):
         db.Integer, db.ForeignKey(UserModel.id, ondelete="CASCADE"), nullable=False
     )
     category_id = db.Column(
-        db.Integer, db.ForeignKey(CategoryModel.id, ondelete="CASCADE"), nullable=False
+        db.Integer, db.ForeignKey(CategoryModel.id, ondelete="CASCADE")
     )
     is_income = db.Column(db.Boolean, nullable=False)
     date = db.Column(db.Integer, nullable=False)
@@ -93,11 +93,15 @@ class BookingModel(db.Model):
         result = {
             "id": self.id,
             "isIncome": self.is_income,
-            "category": self.__category_repository.read_by_id(self.category_id).name,
             "date": self.date,
             "amount": self.amount,
             "repetition": self.repetition,
         }
+
+        if self.category_id is not None:
+            result["category"] = self.__category_repository.read_by_id(
+                self.category_id
+            ).name
 
         if self.note is not None:
             result["note"] = self.note

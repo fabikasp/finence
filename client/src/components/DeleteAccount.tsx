@@ -53,7 +53,7 @@ export default function DeleteAccount(): React.ReactNode {
   return (
     <Box display="flex" flexDirection="column">
       <Typography sx={{ marginBottom: 3 }}>
-        Bitte bestätigen Sie die Kontolöschung mit dem Wort <strong>{`„${CONFIRMATION_TEXT}“`}</strong>.
+        Bitte bestätige die Kontolöschung mit dem Wort <strong>{`„${CONFIRMATION_TEXT}“`}</strong>.
       </Typography>
       <StyledTextField
         fullWidth

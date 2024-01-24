@@ -12,7 +12,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   SelectChangeEvent,
-  FormHelperText,
   RadioGroup,
   FormControlLabel,
   Radio
@@ -30,12 +29,7 @@ import Dialog from './Dialog';
 import { Repetition, setCreatedBooking } from '../store/slices/financesSlice';
 import DatePicker from './DatePicker';
 import moment, { Moment } from 'moment';
-import {
-  validateBookingAmount,
-  validateBookingCategory,
-  validateBookingDate,
-  validateBookingNote
-} from '../utils/validators';
+import { validateBookingAmount, validateBookingDate, validateBookingNote } from '../utils/validators';
 import { convertMomentToUnix, convertUnixToMoment } from '../utils/helper';
 
 const StyledTextField = styled(TextField)(() => ({
@@ -86,7 +80,7 @@ export default function CreateBooking(): React.ReactNode {
   const onToggleButtonClick = useCallback(
     (_: React.SyntheticEvent, isIncome: boolean) => {
       assertNonNullable(createdBooking);
-      dispatch(setCreatedBooking({ ...createdBooking, isIncome, category: '' }));
+      dispatch(setCreatedBooking({ ...createdBooking, isIncome, category: undefined }));
     },
     [createdBooking, dispatch]
   );
@@ -128,11 +122,7 @@ export default function CreateBooking(): React.ReactNode {
       dispatch(
         setCreatedBooking({
           ...createdBooking,
-          category: event.target.value,
-          errors: {
-            ...createdBooking.errors,
-            category: validateBookingCategory(event.target.value)
-          }
+          category: event.target.value === '' ? undefined : event.target.value
         })
       );
     },
@@ -206,9 +196,7 @@ export default function CreateBooking(): React.ReactNode {
           helperText={createdBooking?.errors?.amount}
         />
         <StyledFormControl fullWidth>
-          <InputLabel id="category-label" error={!!createdBooking?.errors?.category}>
-            Kategorie
-          </InputLabel>
+          <InputLabel id="category-label">Kategorie</InputLabel>
           <Select
             labelId="category-label"
             value={createdBooking?.category ?? ''}
@@ -219,7 +207,6 @@ export default function CreateBooking(): React.ReactNode {
                 <CategoryIcon />
               </InputAdornment>
             }
-            error={!!createdBooking?.errors?.category}
           >
             <MenuItem value="">Leer</MenuItem>
             {categories
@@ -230,7 +217,6 @@ export default function CreateBooking(): React.ReactNode {
                 </MenuItem>
               ))}
           </Select>
-          <FormHelperText error>{createdBooking?.errors?.category}</FormHelperText>
         </StyledFormControl>
         <StyledTextField
           fullWidth

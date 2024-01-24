@@ -7,12 +7,7 @@ import { RootState } from '../store/store';
 import { isBooking, setBookings, setCreatedBooking } from '../store/slices/financesSlice';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { CreateBookingPayload } from '../store/actions';
-import {
-  validateBookingAmount,
-  validateBookingCategory,
-  validateBookingDate,
-  validateBookingNote
-} from '../utils/validators';
+import { validateBookingAmount, validateBookingDate, validateBookingNote } from '../utils/validators';
 
 export function* createBookingSaga(action: PayloadAction<CreateBookingPayload>): SagaGenerator<void> {
   const { bookings, createdBooking } = yield* select((state: RootState) => state.finances);
@@ -22,14 +17,13 @@ export function* createBookingSaga(action: PayloadAction<CreateBookingPayload>):
 
   const dateError = validateBookingDate(createdBooking.date);
   const amountError = validateBookingAmount(createdBooking.amount);
-  const categoryError = validateBookingCategory(createdBooking.category);
   const noteError = validateBookingNote(createdBooking.note ?? '');
 
-  if (dateError || amountError || categoryError || noteError) {
+  if (dateError || amountError || noteError) {
     yield* put(
       setCreatedBooking({
         ...createdBooking,
-        errors: { date: dateError, amount: amountError, category: categoryError, note: noteError }
+        errors: { date: dateError, amount: amountError, note: noteError }
       })
     );
 
@@ -52,7 +46,9 @@ export function* createBookingSaga(action: PayloadAction<CreateBookingPayload>):
         yield* put(setBookings([...bookings, response.data.booking]));
         yield* put(
           setCreatedBooking(
-            action.payload.closeDialog ? undefined : { ...createdBooking, amount: '', category: '', note: undefined }
+            action.payload.closeDialog
+              ? undefined
+              : { ...createdBooking, amount: '', category: undefined, note: undefined }
           )
         );
       }

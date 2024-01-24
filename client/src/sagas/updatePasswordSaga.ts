@@ -24,7 +24,7 @@ export function* updatePasswordSaga(): SagaGenerator<void> {
     fetchSagaFactory({ url: USER_URL_PATH_PREFIX, method: 'PUT', data: { password } }, function* handleResponse() {
       yield* put(setPassword(''));
       yield* put(setRepeatedPassword(''));
-      yield* put(evoke({ severity: 'success', message: 'Ihr Passwort wurde erfolgreich geändert.' }));
+      yield* put(evoke({ severity: 'success', message: 'Dein Passwort wurde erfolgreich geändert.' }));
     })
   );
 }

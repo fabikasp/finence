@@ -32,7 +32,7 @@ export function* registrationSaga(): SagaGenerator<void> {
       function* handleResponse() {
         yield* put(clearRegistration());
         yield* put(clearLogin());
-        yield* put(evoke({ severity: 'success', message: 'Sie haben sich erfolgreich registriert.' }));
+        yield* put(evoke({ severity: 'success', message: 'Du hast dich erfolgreich registriert.' }));
         yield* put(navigate(`/${DASHBOARD_ROUTE}`));
       },
       function* handleError(error: AxiosError) {

@@ -18,14 +18,13 @@ export const bookingScheme = z.object({
   isIncome: z.boolean(),
   date: z.number(),
   amount: z.number(),
-  category: z.string(),
+  category: z.string().optional(),
   note: z.string().optional(),
   repetition: z.nativeEnum(Repetition),
   errors: z
     .object({
       date: z.string().optional(),
       amount: z.string().optional(),
-      category: z.string().optional(),
       note: z.string().optional()
     })
     .optional()
@@ -44,7 +43,7 @@ type CreateableBooking = Omit<Booking, 'date' | 'amount'> & { date: number | nul
 type UpdateableBooking = CreateableBooking & {
   comparativeDate: number;
   comparativeAmount: string;
-  comparativeCategory: string;
+  comparativeCategory?: string;
   comparativeNote?: string;
   comparativeRepetition: Repetition;
 };

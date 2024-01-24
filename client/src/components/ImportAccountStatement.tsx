@@ -71,7 +71,7 @@ export default function AccountStatementImportDialog(): React.ReactNode {
         <StyledStepper activeStep={activeStep}>
           {steps.map((step) => (
             <MuiStep key={step.label}>
-              <StepLabel sx={{ color: 'red !important' }}>{step.label}</StepLabel>
+              <StepLabel>{step.label}</StepLabel>
             </MuiStep>
           ))}
         </StyledStepper>
