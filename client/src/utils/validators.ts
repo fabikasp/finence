@@ -9,6 +9,7 @@ const MAX_PASSWORD_LENGTH = 128;
 
 const MAX_CATEGORY_NAME_LENGTH = 50;
 const MAX_CATEGORY_DESCRIPTION_LENGTH = 200;
+const MAX_CATEGORY_KEY_WORDS_LENGTH = 400;
 
 const MAX_BOOKING_NOTE_LENGTH = 200;
 
@@ -78,6 +79,12 @@ export function validateCategoryName(categoryName: string): string | undefined {
 export function validateCategoryDescription(categoryDescription: string): string | undefined {
   return categoryDescription.length > MAX_CATEGORY_DESCRIPTION_LENGTH
     ? `Die Beschreibung darf maximal ${MAX_CATEGORY_DESCRIPTION_LENGTH} Zeichen enthalten.`
+    : undefined;
+}
+
+export function validateCategoryKeyWords(categoryKeyWords: string): string | undefined {
+  return categoryKeyWords.length > MAX_CATEGORY_KEY_WORDS_LENGTH
+    ? `Die Stichwörter dürfen maximal ${MAX_CATEGORY_KEY_WORDS_LENGTH} Zeichen enthalten.`
     : undefined;
 }
 

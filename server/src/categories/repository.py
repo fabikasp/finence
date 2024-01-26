@@ -7,9 +7,14 @@ class CategoryRepository:
         db.session.commit()
 
     def create(
-        self, user_id: int, name: str, description: str, for_income: bool
+        self,
+        user_id: int,
+        name: str,
+        description: str,
+        for_income: bool,
+        key_words: str,
     ) -> CategoryModel:
-        category = CategoryModel(user_id, name, description, for_income)
+        category = CategoryModel(user_id, name, description, for_income, key_words)
 
         db.session.add(category)
         self.commit()

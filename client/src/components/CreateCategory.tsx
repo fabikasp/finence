@@ -1,25 +1,29 @@
 import React, { useCallback } from 'react';
 import {
+  Box,
   Button,
   DialogContent,
   DialogActions,
   InputAdornment,
   TextField,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  Typography
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
 import CategoryIcon from '@mui/icons-material/Category';
 import DescriptionIcon from '@mui/icons-material/Description';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { createCategory } from '../store/actions';
 import { setCreatedCategory } from '../store/slices/categoriesSlice';
 import { assertNonNullable } from '../utils/assert';
-import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
+import { validateCategoryDescription, validateCategoryKeyWords, validateCategoryName } from '../utils/validators';
 import Dialog from './Dialog';
+import InfoIcon from './InfoIcon';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -32,6 +36,10 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
     color: '#000000'
   }
+}));
+
+const StyledTypography = styled(Typography)(() => ({
+  padding: '5px 10px 5px'
 }));
 
 export default function CreateCategory(): React.ReactNode {
@@ -68,6 +76,23 @@ export default function CreateCategory(): React.ReactNode {
           errors: {
             ...createdCategory.errors,
             description: validateCategoryDescription(event.target.value)
+          }
+        })
+      );
+    },
+    [createdCategory, dispatch]
+  );
+
+  const onKeyWordsChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(createdCategory);
+      dispatch(
+        setCreatedCategory({
+          ...createdCategory,
+          keyWords: event.target.value === '' ? undefined : event.target.value,
+          errors: {
+            ...createdCategory.errors,
+            keyWords: validateCategoryKeyWords(event.target.value)
           }
         })
       );
@@ -117,6 +142,32 @@ export default function CreateCategory(): React.ReactNode {
           }}
           error={!!createdCategory?.errors?.description}
           helperText={createdCategory?.errors?.description}
+        />
+        <StyledTextField
+          fullWidth
+          label={
+            <Box display="flex" flexDirection="row">
+              Stichwörter
+              <InfoIcon>
+                <StyledTypography>
+                  Beim Import von Kontoauszügen werden die hier angegeben Stichwörter verwendet, um Buchungen abhängig
+                  von ihrem Inhalt dieser Kategorie zuzuordnen. Zur Aufzählung mehrerer Stichwörter kann das Semikolon
+                  (;) als Trennzeichen genutzt werden.
+                </StyledTypography>
+              </InfoIcon>
+            </Box>
+          }
+          value={createdCategory?.keyWords ?? ''}
+          onChange={onKeyWordsChange}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FindInPageIcon color="secondary" />
+              </InputAdornment>
+            )
+          }}
+          error={!!createdCategory?.errors?.keyWords}
+          helperText={createdCategory?.errors?.keyWords}
         />
         <ToggleButtonGroup color="primary" value={createdCategory?.forIncome}>
           <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>

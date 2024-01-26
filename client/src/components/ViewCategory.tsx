@@ -1,25 +1,29 @@
 import React, { useCallback } from 'react';
 import {
+  Box,
   Button,
   DialogContent,
   DialogActions,
   InputAdornment,
   TextField,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  Typography
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import CategoryIcon from '@mui/icons-material/Category';
 import DescriptionIcon from '@mui/icons-material/Description';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { setViewedCategory } from '../store/slices/categoriesSlice';
 import { assertNonNullable } from '../utils/assert';
-import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
+import { validateCategoryDescription, validateCategoryKeyWords, validateCategoryName } from '../utils/validators';
 import { updateCategory } from '../store/actions';
 import Dialog from './Dialog';
+import InfoIcon from './InfoIcon';
 
 const StyledTextField = styled(TextField)(() => ({
   marginBottom: 20
@@ -35,6 +39,10 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
     color: '#000000'
   }
+}));
+
+const StyledTypography = styled(Typography)(() => ({
+  padding: '5px 10px 5px'
 }));
 
 export default function ViewCategory(): React.ReactNode {
@@ -78,15 +86,35 @@ export default function ViewCategory(): React.ReactNode {
     [viewedCategory, dispatch]
   );
 
+  const onKeyWordsChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(viewedCategory);
+      dispatch(
+        setViewedCategory({
+          ...viewedCategory,
+          keyWords: event.target.value === '' ? undefined : event.target.value,
+          errors: {
+            ...viewedCategory.errors,
+            keyWords: validateCategoryKeyWords(event.target.value)
+          }
+        })
+      );
+    },
+    [viewedCategory, dispatch]
+  );
+
   const categoryIsNotEdited = useCallback(
     () =>
       viewedCategory?.name === viewedCategory?.comparativeName &&
-      viewedCategory?.description === viewedCategory?.comparativeDescription,
+      viewedCategory?.description === viewedCategory?.comparativeDescription &&
+      viewedCategory?.keyWords === viewedCategory?.comparativeKeyWords,
     [
       viewedCategory?.name,
       viewedCategory?.comparativeName,
       viewedCategory?.description,
-      viewedCategory?.comparativeDescription
+      viewedCategory?.comparativeDescription,
+      viewedCategory?.keyWords,
+      viewedCategory?.comparativeKeyWords
     ]
   );
 
@@ -124,6 +152,32 @@ export default function ViewCategory(): React.ReactNode {
           }}
           error={!!viewedCategory?.errors?.description}
           helperText={viewedCategory?.errors?.description}
+        />
+        <StyledTextField
+          fullWidth
+          label={
+            <Box display="flex" flexDirection="row">
+              Stichwörter
+              <InfoIcon>
+                <StyledTypography>
+                  Beim Import von Kontoauszügen werden die hier angegeben Stichwörter verwendet, um Buchungen abhängig
+                  von ihrem Inhalt dieser Kategorie zuzuordnen. Zur Aufzählung mehrerer Stichwörter kann das Semikolon
+                  (;) als Trennzeichen genutzt werden.
+                </StyledTypography>
+              </InfoIcon>
+            </Box>
+          }
+          value={viewedCategory?.keyWords ?? ''}
+          onChange={onKeyWordsChange}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FindInPageIcon color="secondary" />
+              </InputAdornment>
+            )
+          }}
+          error={!!viewedCategory?.errors?.keyWords}
+          helperText={viewedCategory?.errors?.keyWords}
         />
         <ToggleButtonGroup color="primary" value={viewedCategory?.forIncome} disabled>
           <StyledToggleButton size="small" value={true}>

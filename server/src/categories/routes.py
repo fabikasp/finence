@@ -3,7 +3,13 @@ from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from categories import bp
 from categories.service import CategoryService
-from categories.model import ID_KEY, NAME_KEY, DESCRIPTION_KEY, FOR_INCOME_KEY
+from categories.model import (
+    ID_KEY,
+    NAME_KEY,
+    DESCRIPTION_KEY,
+    FOR_INCOME_KEY,
+    KEY_WORDS_KEY,
+)
 
 category_service = CategoryService()
 
@@ -22,8 +28,9 @@ def create() -> dict:
     name = request.json.get(NAME_KEY, None)
     description = request.json.get(DESCRIPTION_KEY, None)
     for_income = request.json.get(FOR_INCOME_KEY, None)
+    key_words = request.json.get(KEY_WORDS_KEY, None)
 
-    return category_service.create(name, description, for_income)
+    return category_service.create(name, description, for_income, key_words)
 
 
 @bp.route(f"/<int:{ID_KEY}>", methods=["PUT"])

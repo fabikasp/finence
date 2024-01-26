@@ -6,10 +6,12 @@ export const categoryScheme = z.object({
   name: z.string(),
   description: z.string().optional(),
   forIncome: z.boolean(),
+  keyWords: z.string().optional(),
   errors: z
     .object({
       name: z.string().optional(),
-      description: z.string().optional()
+      description: z.string().optional(),
+      keyWords: z.string().optional()
     })
     .optional()
 });
@@ -23,12 +25,14 @@ export const isCategory = (object: unknown): object is Category => {
 type UpdateableCategory = Category & {
   readonly comparativeName: string;
   readonly comparativeDescription?: string;
+  readonly comparativeKeyWords?: string;
 };
 
 export const convertToUpdateableCategory = (category: Category): UpdateableCategory => ({
   ...category,
   comparativeName: category.name,
   comparativeDescription: category.description,
+  comparativeKeyWords: category.keyWords,
   errors: undefined
 });
 

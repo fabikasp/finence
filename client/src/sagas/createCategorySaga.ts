@@ -5,7 +5,7 @@ import { CATEGORIES_URL_PATH_PREFIX } from '../utils/const';
 import { assertNonNullable, assertTrue } from '../utils/assert';
 import { isCategory, setCategories, setCreatedCategory } from '../store/slices/categoriesSlice';
 import { RootState } from '../store/store';
-import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
+import { validateCategoryDescription, validateCategoryKeyWords, validateCategoryName } from '../utils/validators';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { CreateCategoryPayload } from '../store/actions';
 
@@ -19,9 +19,15 @@ export function* createCategorySaga(action: PayloadAction<CreateCategoryPayload>
 
   const nameError = validateCategoryName(createdCategory.name);
   const descriptionError = validateCategoryDescription(createdCategory.description ?? '');
+  const keyWordsError = validateCategoryKeyWords(createdCategory.keyWords ?? '');
 
-  if (nameError || descriptionError) {
-    yield* put(setCreatedCategory({ ...createdCategory, errors: { name: nameError, description: descriptionError } }));
+  if (nameError || descriptionError || keyWordsError) {
+    yield* put(
+      setCreatedCategory({
+        ...createdCategory,
+        errors: { name: nameError, description: descriptionError, keyWords: keyWordsError }
+      })
+    );
 
     return;
   }
@@ -48,7 +54,7 @@ export function* createCategorySaga(action: PayloadAction<CreateCategoryPayload>
           yield* put(
             setCreatedCategory({
               ...createdCategory,
-              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR, description: undefined }
+              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR }
             })
           );
         }

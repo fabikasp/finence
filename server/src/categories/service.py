@@ -1,5 +1,5 @@
 from flask_jwt_extended import get_jwt
-from categories.model import NAME_KEY, DESCRIPTION_KEY
+from categories.model import NAME_KEY, DESCRIPTION_KEY, KEY_WORDS_KEY
 from categories.validator import CategoryValidator
 from categories.repository import CategoryRepository
 
@@ -8,7 +8,7 @@ class CategoryService:
     __category_validator = CategoryValidator()
     __category_repository = CategoryRepository()
 
-    def create(self, name, description, for_income) -> dict:
+    def create(self, name, description, for_income, key_words) -> dict:
         if name is None or for_income is None:
             return {"message": "Category name and affiliation must be given."}, 400
 
@@ -16,6 +16,7 @@ class CategoryService:
             not self.__category_validator.validate_name(name)
             or not self.__category_validator.validate_description(description)
             or not self.__category_validator.validate_for_income(for_income)
+            or not self.__category_validator.validate_key_words(key_words)
         ):
             return {"message": "Invalid data provided."}, 422
 
@@ -29,7 +30,7 @@ class CategoryService:
             return {"message": "Category already exists."}, 409
 
         category = self.__category_repository.create(
-            user_id, name, description, for_income
+            user_id, name, description, for_income, key_words
         )
 
         return {"category": category.jsonify()}
@@ -49,9 +50,10 @@ class CategoryService:
         if (
             NAME_KEY not in attributesToBeUpdated
             and DESCRIPTION_KEY not in attributesToBeUpdated
+            and KEY_WORDS_KEY not in attributesToBeUpdated
         ):
             return {
-                "message": "At least one of name and description must be given."
+                "message": "At least one of name, description and keyWords must be given."
             }, 400
 
         category = self.__category_repository.read_by_id(id)
@@ -86,6 +88,14 @@ class CategoryService:
                 return {"message": "Invalid description provided."}, 422
 
             category.set_description(attributesToBeUpdated[DESCRIPTION_KEY])
+
+        if KEY_WORDS_KEY in attributesToBeUpdated:
+            if not self.__category_validator.validate_key_words(
+                attributesToBeUpdated[KEY_WORDS_KEY]
+            ):
+                return {"message": "Invalid keyWords provided."}, 422
+
+            category.set_key_words(attributesToBeUpdated[KEY_WORDS_KEY])
 
         self.__category_repository.commit()
 

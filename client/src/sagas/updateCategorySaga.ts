@@ -5,7 +5,7 @@ import { CATEGORIES_URL_PATH_PREFIX } from '../utils/const';
 import { assertNonNullable, assertTrue } from '../utils/assert';
 import { isCategory, setCategories, setViewedCategory } from '../store/slices/categoriesSlice';
 import { RootState } from '../store/store';
-import { validateCategoryDescription, validateCategoryName } from '../utils/validators';
+import { validateCategoryDescription, validateCategoryKeyWords, validateCategoryName } from '../utils/validators';
 
 const CATEGORY_ALREADY_EXISTS_ERROR = 'Diese Kategorie existiert bereits.';
 
@@ -17,9 +17,15 @@ export function* updateCategorySaga(): SagaGenerator<void> {
 
   const nameError = validateCategoryName(viewedCategory.name);
   const descriptionError = validateCategoryDescription(viewedCategory.description ?? '');
+  const keyWordsError = validateCategoryKeyWords(viewedCategory.keyWords ?? '');
 
-  if (nameError || descriptionError) {
-    yield* put(setViewedCategory({ ...viewedCategory, errors: { name: nameError, description: descriptionError } }));
+  if (nameError || descriptionError || keyWordsError) {
+    yield* put(
+      setViewedCategory({
+        ...viewedCategory,
+        errors: { name: nameError, description: descriptionError, keyWords: keyWordsError }
+      })
+    );
 
     return;
   }
@@ -50,7 +56,7 @@ export function* updateCategorySaga(): SagaGenerator<void> {
           yield* put(
             setViewedCategory({
               ...viewedCategory,
-              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR, description: undefined }
+              errors: { name: CATEGORY_ALREADY_EXISTS_ERROR }
             })
           );
         }
@@ -62,6 +68,7 @@ export function* updateCategorySaga(): SagaGenerator<void> {
 interface RequestData {
   name?: string;
   description?: string | null;
+  keyWords?: string | null;
 }
 
 function* buildRequestData(): SagaGenerator<RequestData> {
@@ -75,6 +82,10 @@ function* buildRequestData(): SagaGenerator<RequestData> {
 
   if (viewedCategory.description !== viewedCategory.comparativeDescription) {
     result.description = viewedCategory.description ?? null;
+  }
+
+  if (viewedCategory.keyWords !== viewedCategory.comparativeKeyWords) {
+    result.keyWords = viewedCategory.keyWords ?? null;
   }
 
   return result;
