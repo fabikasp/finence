@@ -12,6 +12,11 @@ const MAX_CATEGORY_DESCRIPTION_LENGTH = 200;
 
 const MAX_BOOKING_NOTE_LENGTH = 200;
 
+const MIN_CSV_FILE_ROWS = 2;
+const MAX_CSV_FILE_ROWS = 500;
+
+const MAX_COLUMN_LABEL_LENGTH = 80;
+
 export function validateEmail(email: string, login?: boolean): string | undefined {
   if (email === '') {
     return 'Die E-Mail-Adresse darf nicht leer sein.';
@@ -97,4 +102,29 @@ export function validateBookingNote(bookingNote: string): string | undefined {
   return bookingNote.length > MAX_BOOKING_NOTE_LENGTH
     ? `Die Bemerkung darf maximal ${MAX_BOOKING_NOTE_LENGTH} Zeichen enthalten.`
     : undefined;
+}
+
+export function validateCsvFileContent(csvFileContent: string): string | undefined {
+  if (csvFileContent === '') {
+    return 'Es muss eine Datei angegeben werden.';
+  }
+
+  const csvFileRows = csvFileContent.split('\n');
+  if (csvFileRows.length < MIN_CSV_FILE_ROWS) {
+    return 'Die Datei enthält zu wenige Zeilen.';
+  }
+
+  return csvFileRows.length > MAX_CSV_FILE_ROWS ? 'Die Datei enthält zu viele Zeilen.' : undefined;
+}
+
+export function validateColumnLabel(columnLabel: string, csvFileContent: string): string | undefined {
+  if (columnLabel === '') {
+    return 'Der Spaltenname darf nicht leer sein.';
+  }
+
+  if (columnLabel.length > MAX_COLUMN_LABEL_LENGTH) {
+    return `Der Spaltenname darf maximal ${MAX_COLUMN_LABEL_LENGTH} Zeichen enthalten.`;
+  }
+
+  return !csvFileContent.includes(columnLabel) ? 'Der Spaltenname muss in der Datei vorkommen.' : undefined;
 }

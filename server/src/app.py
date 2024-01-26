@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from users import bp as users_bp
 from categories import bp as categories_bp
 from bookings import bp as bookings_bp
+from columnMapping import bp as column_mapping_bp
 from bookings.job import CloneRepeatingBookingsJob
 from datetime import datetime
 import schedule
@@ -38,6 +39,7 @@ class FlaskApp:
         self.__app.register_blueprint(users_bp, url_prefix="/users")
         self.__app.register_blueprint(categories_bp, url_prefix="/categories")
         self.__app.register_blueprint(bookings_bp, url_prefix="/bookings")
+        self.__app.register_blueprint(column_mapping_bp, url_prefix="/column-mapping")
 
         self.__register_scheduled_jobs()
 

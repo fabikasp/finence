@@ -5,11 +5,14 @@ import {
   deleteAccount,
   deleteBooking,
   deleteCategory,
+  importAccountStatement,
   loadBookings,
   loadCategories,
+  loadColumnMapping,
   loadUser,
   login,
   logout,
+  persistColumnMapping,
   register,
   updateBooking,
   updateCategory,
@@ -31,6 +34,9 @@ import { loadBookingsSaga } from './loadBookingsSaga';
 import { createBookingSaga } from './createBookingSaga';
 import { deleteBookingSaga } from './deleteBookingSaga';
 import { updateBookingSaga } from './updateBookingSaga';
+import { persistColumnMappingSaga } from './persistColumnMappingSaga';
+import { loadColumnMappingSaga } from './loadColumnMappingSaga';
+import { importAccountStatementSaga } from './importAccountStatementSaga';
 
 export default function* rootSaga(): SagaGenerator<void> {
   yield* takeEvery(register, registrationSaga);
@@ -50,4 +56,8 @@ export default function* rootSaga(): SagaGenerator<void> {
   yield* takeEvery(createBooking, createBookingSaga);
   yield* takeEvery(updateBooking, updateBookingSaga);
   yield* takeEvery(deleteBooking, deleteBookingSaga);
+
+  yield* takeEvery(loadColumnMapping, loadColumnMappingSaga);
+  yield* takeEvery(persistColumnMapping, persistColumnMappingSaga);
+  yield* takeEvery(importAccountStatement, importAccountStatementSaga);
 }

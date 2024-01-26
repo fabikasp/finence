@@ -25,3 +25,7 @@ export const loadBookings = createAction('LOAD_BOOKINGS');
 export const createBooking = createAction<CreateBookingPayload>('CREATE_BOOKING');
 export const updateBooking = createAction('UPDATE_BOOKING');
 export const deleteBooking = createAction('DELETE_BOOKING');
+
+export const loadColumnMapping = createAction('LOAD_COLUMN_MAPPING');
+export const persistColumnMapping = createAction('PERSIST_COLUMN_MAPPING');
+export const importAccountStatement = createAction('IMPORT_ACCOUNT_STATEMENT');
