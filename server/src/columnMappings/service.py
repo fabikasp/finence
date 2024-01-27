@@ -1,7 +1,7 @@
 from flask_jwt_extended import get_jwt
-from columnMapping.model import DATE_COLUMN_LABEL_KEY, AMOUNT_COLUMN_LABEL_KEY
-from columnMapping.validator import ColumnMappingValidator
-from columnMapping.repository import ColumnMappingRepository
+from columnMappings.model import DATE_COLUMN_LABEL_KEY, AMOUNT_COLUMN_LABEL_KEY
+from columnMappings.validator import ColumnMappingValidator
+from columnMappings.repository import ColumnMappingRepository
 
 
 class ColumnMappingService:
@@ -29,7 +29,11 @@ class ColumnMappingService:
     def read(self) -> dict:
         user_id = get_jwt()["sub"]
         column_mapping = self.__column_mapping_repository.read_by_user_id(user_id)
-        return column_mapping.jsonify() if column_mapping is not None else {}
+
+        if column_mapping is None:
+            return {"message": "Column mapping not found."}, 404
+
+        return {"columnMapping": column_mapping.jsonify()}
 
     def update(self, id: int, attributesToBeUpdated: dict) -> dict:
         if (

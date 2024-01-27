@@ -4,7 +4,8 @@ import { styled } from '@mui/material/styles';
 import MuiInfoIcon from '@mui/icons-material/Info';
 
 const StyledInfoIcon = styled(MuiInfoIcon)(() => ({
-  marginLeft: 10
+  marginLeft: 10,
+  cursor: 'pointer'
 }));
 
 const StyledPopover = styled(Popover)(({ theme }) => ({

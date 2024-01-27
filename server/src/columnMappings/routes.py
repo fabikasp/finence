@@ -1,9 +1,9 @@
 from flask import request
 from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
-from columnMapping import bp
-from columnMapping.service import ColumnMappingService
-from columnMapping.model import ID_KEY, DATE_COLUMN_LABEL_KEY, AMOUNT_COLUMN_LABEL_KEY
+from columnMappings import bp
+from columnMappings.service import ColumnMappingService
+from columnMappings.model import ID_KEY, DATE_COLUMN_LABEL_KEY, AMOUNT_COLUMN_LABEL_KEY
 
 column_mapping_service = ColumnMappingService()
 

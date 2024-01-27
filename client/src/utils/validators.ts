@@ -111,9 +111,13 @@ export function validateBookingNote(bookingNote: string): string | undefined {
     : undefined;
 }
 
-export function validateCsvFileContent(csvFileContent: string): string | undefined {
-  if (csvFileContent === '') {
+export function validateCsvFile(csvFileName: string, csvFileContent: string): string | undefined {
+  if (csvFileName === '' || csvFileContent === '') {
     return 'Es muss eine Datei angegeben werden.';
+  }
+
+  if (!csvFileName.endsWith('.csv')) {
+    return 'Die Datei muss vom Typ CSV sein.';
   }
 
   const csvFileRows = csvFileContent.split('\n');

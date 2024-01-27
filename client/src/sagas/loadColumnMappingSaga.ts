@@ -8,12 +8,7 @@ import { isColumnMapping, setColumnMapping } from '../store/slices/accountStatem
 export function* loadColumnMappingSaga(): SagaGenerator<void> {
   yield* call(
     fetchSagaFactory({ url: COLUMN_MAPPING_URL_PATH_PREFIX }, function* handleResponse(response: AxiosResponse) {
-      const columnMapping = response.data;
-
-      if (Object.keys(columnMapping).length === 0) {
-        return;
-      }
-
+      const columnMapping = response.data.columnMapping;
       assertTrue(isColumnMapping(columnMapping));
 
       yield* put(

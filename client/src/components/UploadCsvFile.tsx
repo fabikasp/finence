@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { useDispatch } from 'react-redux';
 import { setCsvFile, setErrors } from '../store/slices/accountStatementImportSlice';
-import { validateCsvFileContent } from '../utils/validators';
+import { validateCsvFile } from '../utils/validators';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   display: 'flex',
@@ -28,14 +28,10 @@ export default function UploadCsvFile(): React.ReactNode {
     (file: File) => {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const error = validateCsvFileContent((event.target?.result ?? '') as string);
+        const error = validateCsvFile(file.name, (event.target?.result ?? '') as string);
         dispatch(setErrors({ ...errors, csvFile: error }));
 
-        if (error) {
-          return;
-        }
-
-        if (event.target?.result) {
+        if (!error && event.target?.result) {
           dispatch(setCsvFile({ name: file.name, content: event.target.result as string }));
         }
       };
@@ -82,11 +78,11 @@ export default function UploadCsvFile(): React.ReactNode {
             <input id="fileInput" type="file" accept=".csv" onChange={onFileChange} style={{ display: 'none' }} />
             <label htmlFor="fileInput">
               <Button variant="contained" component="span" startIcon={<FileUploadIcon />}>
-                Datei auswählen
+                CSV-Datei auswählen
               </Button>
             </label>
             <Typography variant="caption" sx={{ marginTop: 1 }}>
-              Oder zieh die Datei hierher
+              Oder CSV-Datei hierherziehen
             </Typography>
           </>
         )}

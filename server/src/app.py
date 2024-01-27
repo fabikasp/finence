@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from users import bp as users_bp
 from categories import bp as categories_bp
 from bookings import bp as bookings_bp
-from columnMapping import bp as column_mapping_bp
+from columnMappings import bp as column_mapping_bp
 from bookings.job import CloneRepeatingBookingsJob
 from datetime import datetime
 import schedule

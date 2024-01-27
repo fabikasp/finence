@@ -150,7 +150,7 @@ export default function CreateCategory(): React.ReactNode {
               Stichwörter
               <InfoIcon>
                 <StyledTypography>
-                  Beim Import von Kontoauszügen werden die hier angegeben Stichwörter verwendet, um Buchungen abhängig
+                  Beim Import von Kontoauszügen werden die hier angegebenen Stichwörter verwendet, um Buchungen abhängig
                   von ihrem Inhalt dieser Kategorie zuzuordnen. Zur Aufzählung mehrerer Stichwörter kann das Semikolon
                   (;) als Trennzeichen genutzt werden.
                 </StyledTypography>

@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 import ColumnMapping from './ColumnMapping';
 import UploadCsvFile from './UploadCsvFile';
 import { setCurrentStep, setErrors, toggleOpenDialog } from '../store/slices/accountStatementImportSlice';
-import { validateCsvFileContent } from '../utils/validators';
+import { validateCsvFile } from '../utils/validators';
 import { importAccountStatement, persistColumnMapping } from '../store/actions';
 
 const StyledDialogContent = styled(DialogContent)(() => ({
@@ -46,7 +46,7 @@ export default function ImportAccountStatement(): React.ReactNode {
   const onImport = useCallback(() => dispatch(importAccountStatement()), [dispatch]);
 
   const onNextAfterUpload = useCallback(() => {
-    const error = validateCsvFileContent(csvFile?.content ?? '');
+    const error = validateCsvFile(csvFile?.name ?? '', csvFile?.content ?? '');
     dispatch(setErrors({ ...errors, csvFile: error }));
 
     if (error) {
@@ -93,7 +93,7 @@ export default function ImportAccountStatement(): React.ReactNode {
             </MuiStep>
           ))}
         </StyledStepper>
-        {steps[currentStep]?.component ?? steps[steps.length - 1].component}
+        {steps[currentStep].component}
       </StyledDialogContent>
       <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <BackButton
@@ -108,7 +108,7 @@ export default function ImportAccountStatement(): React.ReactNode {
         <Button
           variant="contained"
           startIcon={isLastStep ? <ImportExportIcon /> : <ArrowForwardIcon />}
-          onClick={steps[currentStep]?.onNext ?? steps[steps.length - 1].onNext}
+          onClick={steps[currentStep].onNext}
         >
           {isLastStep ? 'Importieren' : 'Weiter'}
         </Button>

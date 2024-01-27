@@ -1,5 +1,5 @@
 from extensions import db
-from columnMapping.model import ColumnMappingModel
+from columnMappings.model import ColumnMappingModel
 
 
 class ColumnMappingRepository:

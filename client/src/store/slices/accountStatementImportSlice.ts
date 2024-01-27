@@ -47,7 +47,10 @@ const accountStatementImportSlice = createSlice({
   name: 'accountStatementImport',
   initialState,
   reducers: {
-    toggleOpenDialog: (state: AccountStatementImport) => ({ ...initialState, openDialog: !state.openDialog }),
+    toggleOpenDialog: (state: AccountStatementImport) => ({
+      ...(state.openDialog ? state : initialState),
+      openDialog: !state.openDialog
+    }),
     setCurrentStep: (state: AccountStatementImport, action: PayloadAction<number>) => ({
       ...state,
       currentStep: action.payload

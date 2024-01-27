@@ -27,7 +27,7 @@ class UserService:
         user = self.__user_repository.create(email, hashed_password.decode())
         access_token = create_access_token(identity=user.get_id())
 
-        return {"accessToken": access_token} | user.jsonify()
+        return {"accessToken": access_token} | {"user": user.jsonify()}
 
     def login(self, email, password) -> dict:
         if email is None or password is None:
@@ -44,7 +44,7 @@ class UserService:
 
         access_token = create_access_token(identity=user.get_id())
 
-        return {"accessToken": access_token} | user.jsonify()
+        return {"accessToken": access_token} | {"user": user.jsonify()}
 
     def logout(self) -> dict:
         jti = get_jwt()["jti"]
@@ -54,7 +54,7 @@ class UserService:
 
     def read(self) -> dict:
         user_id = get_jwt()["sub"]
-        return self.__user_repository.read_by_id(user_id).jsonify()
+        return {"user": self.__user_repository.read_by_id(user_id).jsonify()}
 
     def update(self, attributesToBeUpdated: dict) -> dict:
         if (
@@ -94,7 +94,7 @@ class UserService:
 
         self.__user_repository.commit()
 
-        return user.jsonify()
+        return {"user": user.jsonify()}
 
     def delete(self) -> dict:
         jwt = get_jwt()
@@ -103,4 +103,4 @@ class UserService:
 
         redis_jwt_blocklist.set(jwt["jti"], "", ex=Config.JWT_ACCESS_TOKEN_EXPIRES)
 
-        return user.jsonify()
+        return {"user": user.jsonify()}

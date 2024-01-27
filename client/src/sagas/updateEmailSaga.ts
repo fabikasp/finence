@@ -39,9 +39,9 @@ export function* updateEmailSaga(): SagaGenerator<void> {
     fetchSagaFactory(
       { url: USER_URL_PATH_PREFIX, method: 'PUT', data: { email } },
       function* handleResponse(response: AxiosResponse) {
-        assertTrue(isUpdateEmailResponseData(response.data));
+        assertTrue(isUpdateEmailResponseData(response.data.user));
 
-        yield* put(setComparativeEmail(response.data.email));
+        yield* put(setComparativeEmail(response.data.user.email));
         yield* put(evoke({ severity: 'success', message: 'Deine E-Mail-Adresse wurde erfolgreich geändert.' }));
       },
       function* handleError(error: AxiosError) {

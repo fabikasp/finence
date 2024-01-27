@@ -20,10 +20,11 @@ const isUserResponseData = (object: unknown): object is UserResponseData => {
 export function* loadUserSaga(): SagaGenerator<void> {
   yield* call(
     fetchSagaFactory({ url: USER_URL_PATH_PREFIX }, function* handleResponse(response: AxiosResponse) {
-      assertTrue(isUserResponseData(response.data));
+      const user = response.data.user;
+      assertTrue(isUserResponseData(user));
 
-      yield* put(setEmail(response.data.email));
-      yield* put(setComparativeEmail(response.data.email));
+      yield* put(setEmail(user.email));
+      yield* put(setComparativeEmail(user.email));
     })
   );
 }
