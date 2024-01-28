@@ -21,8 +21,14 @@ class ColumnMappingModel(db.Model):
         self.date_column_label = date_column_label
         self.amount_column_label = amount_column_label
 
+    def get_date_column_label(self):
+        return self.date_column_label
+
     def set_date_column_label(self, date_column_label: str):
         self.date_column_label = date_column_label
+
+    def get_amount_column_label(self):
+        return self.amount_column_label
 
     def set_amount_column_label(self, amount_column_label: str):
         self.amount_column_label = amount_column_label

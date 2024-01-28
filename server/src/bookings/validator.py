@@ -1,6 +1,11 @@
+import csv
+from io import StringIO
+import re
 from categories.repository import CategoryRepository
 
 MAX_NOTE_LENGTH = 200
+MIN_CSV_ROWS = 2
+MAX_CSV_ROWS = 500
 
 
 class BookingValidator:
@@ -46,3 +51,21 @@ class BookingValidator:
             return False
 
         return repetition in ["once", "monthly", "yearly"]
+
+    def validate_csv_content(self, csv_content) -> str:
+        if not isinstance(csv_content, str):
+            return None
+
+        new_csv_content = re.sub("^([+\-@=])", "'\\1", csv_content)
+        new_csv_content = re.sub(",([+\-@=])", ",'\\1", new_csv_content)
+
+        try:
+            csv_reader = csv.reader(StringIO(new_csv_content))
+            csv_content_length = len(list(csv_reader))
+
+            if csv_content_length < MIN_CSV_ROWS or csv_content_length > MAX_CSV_ROWS:
+                return None
+        except csv.Error:
+            return None
+
+        return new_csv_content

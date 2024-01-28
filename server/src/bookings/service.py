@@ -1,4 +1,7 @@
 from flask_jwt_extended import get_jwt
+import csv
+from io import StringIO
+from datetime import datetime
 from bookings.model import (
     CATEGORY_KEY,
     DATE_KEY,
@@ -9,12 +12,14 @@ from bookings.model import (
 from bookings.validator import BookingValidator
 from bookings.repository import BookingRepository
 from categories.repository import CategoryRepository
+from columnMappings.repository import ColumnMappingRepository
 
 
 class BookingService:
     __booking_validator = BookingValidator()
     __booking_repository = BookingRepository()
     __category_repository = CategoryRepository()
+    __column_mapping_repository = ColumnMappingRepository()
 
     def create(self, category, is_income, date, amount, note, repetition) -> dict:
         if is_income is None or date is None or amount is None or repetition is None:
@@ -40,6 +45,67 @@ class BookingService:
         )
 
         return {"booking": booking.jsonify()}
+
+    def import_account_statement(self, csv_content) -> dict:
+        if csv_content is None:
+            return {"message": "CSV content must be given."}, 400
+
+        user_id = get_jwt()["sub"]
+        column_mapping = self.__column_mapping_repository.read_by_user_id(user_id)
+        if column_mapping is None:
+            return {"message": "Column mapping not found."}, 404
+
+        csv_content = self.__booking_validator.validate_csv_content(csv_content)
+        if csv_content is None:
+            return {"message": "Invalid data provided."}, 422
+
+        date_column_label = column_mapping.get_date_column_label()
+        amount_column_label = column_mapping.get_amount_column_label()
+        categories = self.__category_repository.read_by_user_id(user_id)
+        imported_bookings = list()
+        date_column_index = None
+        amount_column_index = None
+
+        rows = csv.reader(StringIO(csv_content), delimiter=";")
+        for row in rows:
+            if date_column_label in row and amount_column_label in row:
+                date_column_index = row.index(date_column_label)
+                amount_column_index = row.index(amount_column_label)
+
+                continue
+
+            if date_column_index is None or amount_column_index is None:
+                continue
+
+            date = int(
+                datetime.strptime(row[date_column_index], "%d.%m.%y").timestamp()
+            )
+            amount = float(row[amount_column_index].replace(",", "."))
+            is_income = amount >= 0
+            category_name = None
+
+            row_string = ";".join(row)
+            for category in categories:
+                if category.get_for_income() != is_income:
+                    continue
+
+                for key_word in category.get_key_words().split(";"):
+                    if key_word in row_string:
+                        category_name = category.get_name()
+
+            booking = self.__booking_repository.create(
+                user_id, category_name, is_income, date, abs(amount), None, "once"
+            )
+            imported_bookings.append(booking)
+
+        return {
+            "bookings": list(
+                map(
+                    lambda booking: booking.jsonify(),
+                    imported_bookings,
+                )
+            )
+        }
 
     def read(self) -> dict:
         user_id = get_jwt()["sub"]

@@ -46,10 +46,12 @@ export default function ImportAccountStatement(): React.ReactNode {
   const onImport = useCallback(() => dispatch(importAccountStatement()), [dispatch]);
 
   const onNextAfterUpload = useCallback(() => {
-    const error = validateCsvFile(csvFile?.name ?? '', csvFile?.content ?? '');
-    dispatch(setErrors({ ...errors, csvFile: error }));
+    dispatch(setErrors(undefined));
 
+    const error = validateCsvFile(csvFile?.name ?? '', csvFile?.content ?? '', csvFile?.size ?? 0);
     if (error) {
+      dispatch(setErrors({ ...errors, csvFile: error }));
+
       return;
     }
 

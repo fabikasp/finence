@@ -11,6 +11,7 @@ from bookings.model import (
     AMOUNT_KEY,
     NOTE_KEY,
     REPETITION_KEY,
+    CSV_CONTENT_KEY,
 )
 
 booking_service = BookingService()
@@ -28,6 +29,14 @@ def create() -> dict:
     repetition = request.json.get(REPETITION_KEY, None)
 
     return booking_service.create(category, is_income, date, amount, note, repetition)
+
+
+@bp.route("/import-account-statement", methods=["POST"])
+@jwt_required()
+@cross_origin()
+def import_account_statement() -> dict:
+    csv_content = request.json.get(CSV_CONTENT_KEY, None)
+    return booking_service.import_account_statement(csv_content)
 
 
 @bp.route("/")

@@ -28,11 +28,11 @@ export default function UploadCsvFile(): React.ReactNode {
     (file: File) => {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const error = validateCsvFile(file.name, (event.target?.result ?? '') as string);
+        const error = validateCsvFile(file.name, (event.target?.result ?? '') as string, file.size);
         dispatch(setErrors({ ...errors, csvFile: error }));
 
         if (!error && event.target?.result) {
-          dispatch(setCsvFile({ name: file.name, content: event.target.result as string }));
+          dispatch(setCsvFile({ name: file.name, content: event.target.result as string, size: file.size }));
         }
       };
       reader.readAsText(file);

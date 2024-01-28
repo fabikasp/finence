@@ -40,11 +40,17 @@ class CategoryModel(db.Model):
     def get_for_income(self) -> bool:
         return self.for_income
 
+    def get_name(self):
+        return self.name
+
     def set_name(self, name: str):
         self.name = name
 
     def set_description(self, description: str):
         self.description = description
+
+    def get_key_words(self) -> str:
+        return self.key_words
 
     def set_key_words(self, key_words: str):
         self.key_words = key_words

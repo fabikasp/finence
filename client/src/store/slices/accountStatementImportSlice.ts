@@ -4,6 +4,7 @@ import z from 'zod';
 interface CsvFile {
   readonly name: string;
   readonly content: string;
+  readonly size: number;
 }
 
 const columnMappingScheme = z.object({

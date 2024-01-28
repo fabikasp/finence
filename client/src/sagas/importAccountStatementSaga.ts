@@ -1,12 +1,13 @@
 import { call, select, SagaGenerator, put } from 'typed-redux-saga';
 import { fetchSagaFactory } from './fetchSaga';
-import { IMPORT_ACCOUNT_STATEMENT_URL_PATH_PREFIX } from '../utils/const';
 import { assertNonNullable, assertTrue } from '../utils/assert';
 import { RootState } from '../store/store';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { bookingScheme, setBookings } from '../store/slices/financesSlice';
+import { setCurrentStep, setErrors, toggleOpenDialog } from '../store/slices/accountStatementImportSlice';
+import { BOOKINGS_URL_PATH_PREFIX } from '../utils/const';
+import { evoke } from '../store/slices/snackBarSlice';
 import z from 'zod';
-import { toggleOpenDialog } from '../store/slices/accountStatementImportSlice';
 
 const bookingsResponseDataScheme = z.array(bookingScheme);
 
@@ -24,18 +25,23 @@ export function* importAccountStatementSaga(): SagaGenerator<void> {
   yield* call(
     fetchSagaFactory(
       {
-        url: IMPORT_ACCOUNT_STATEMENT_URL_PATH_PREFIX,
+        url: `${BOOKINGS_URL_PATH_PREFIX}import-account-statement`,
         method: 'POST',
-        data: { csv: csvFile.content }
+        data: { csvContent: csvFile.content }
       },
       function* handleResponse(response: AxiosResponse) {
-        assertTrue(isBookingsResponseData(response.data.bookings));
+        const newBookings = response.data.bookings;
+        assertTrue(isBookingsResponseData(newBookings));
 
-        yield* put(setBookings({ ...bookings, ...response.data.bookings }));
+        yield* put(setBookings([...bookings, ...newBookings]));
         yield* put(toggleOpenDialog());
+        yield* put(evoke({ severity: 'success', message: `Es wurden ${newBookings.length} Buchungen importiert.` }));
       },
-      function* handleError() {
-        // TODO: Errors handlen
+      function* handleError(error: AxiosError) {
+        if (error.response?.status === 422) {
+          yield* put(setErrors({ csvFile: 'Die Datei ist nicht gültig.' }));
+          yield* put(setCurrentStep(0));
+        }
       }
     )
   );

@@ -10,6 +10,7 @@ DATE_KEY = "date"
 AMOUNT_KEY = "amount"
 NOTE_KEY = "note"
 REPETITION_KEY = "repetition"
+CSV_CONTENT_KEY = "csvContent"
 
 
 class BookingModel(db.Model):

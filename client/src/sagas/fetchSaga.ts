@@ -52,7 +52,7 @@ export function fetchSagaFactory(
       const status = error.response?.status;
       if (status === 401 || status === 403) {
         yield* put(navigate(`/${LOGIN_ROUTE}`));
-      } else if (status !== 404 && status !== 409) {
+      } else if (status !== 404 && status !== 409 && status !== 422) {
         yield* put(evokeUnknownError());
       }
 
