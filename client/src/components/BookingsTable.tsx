@@ -29,6 +29,7 @@ import {
   Repetition,
   Tab,
   convertToUpdateableBooking,
+  setBookingTablePage,
   setCreatedBooking,
   setDeletedBooking,
   setUpdatedBooking
@@ -179,10 +180,9 @@ export default function BookingsTable(): React.ReactNode {
 
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof DisplayableBooking>('date');
-  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [popoverReference, setPopoverReference] = useState<PopoverReference | undefined>(undefined);
-  const { tab, bookings } = useSelector((state: RootState) => state.finances);
+  const { tab, bookingTablePage, bookings } = useSelector((state: RootState) => state.finances);
   const { customIntervalEnabled, nativeInterval, customInterval } = useSelector(
     (state: RootState) => state.intervalSelection
   );
@@ -210,36 +210,47 @@ export default function BookingsTable(): React.ReactNode {
 
   const onClosePopover = useCallback(() => setPopoverReference(undefined), []);
 
-  const onChangePage = useCallback((_: unknown, newPage: number) => {
-    setPage(newPage);
-  }, []);
+  const onChangePage = useCallback(
+    (_: unknown, newPage: number) => {
+      dispatch(setBookingTablePage(newPage));
+    },
+    [dispatch]
+  );
 
-  const onChangeRowsPerPage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value));
-    setPage(0);
-  }, []);
+  const onChangeRowsPerPage = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(parseInt(event.target.value));
+      dispatch(setBookingTablePage(0));
+    },
+    [dispatch]
+  );
 
   const labelDisplayedRows = useCallback(
     ({ from, to, count }: { from: number; to: number; count: number }) => `${from}–${to} von ${count}`,
     []
   );
 
-  const visibleRows = useMemo(() => {
-    const filteredBookings = bookings
-      .filter((booking) => (tab === Tab.INCOME ? booking.isIncome : tab === Tab.EXPENSES ? !booking.isIncome : true))
-      .filter((booking) => dateLiesInInterval(booking.date, customIntervalEnabled, nativeInterval, customInterval))
-      .map((booking) => ({
-        ...booking,
-        category: booking.category ?? '',
-        note: booking.note ?? '',
-        date: convertUnixToMoment(booking.date).format('DD.MM.YYYY')
-      }));
+  const filteredBookings = useMemo(
+    () =>
+      bookings
+        .filter((booking) => (tab === Tab.INCOME ? booking.isIncome : tab === Tab.EXPENSES ? !booking.isIncome : true))
+        .filter((booking) => dateLiesInInterval(booking.date, customIntervalEnabled, nativeInterval, customInterval)),
+    [bookings, tab, customIntervalEnabled, nativeInterval, customInterval]
+  );
 
-    return stableSort(filteredBookings, getComparator(order, orderBy)).slice(
-      page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
+  const visibleRows = useMemo(() => {
+    const mappedBookings = filteredBookings.map((booking) => ({
+      ...booking,
+      category: booking.category ?? '',
+      note: booking.note ?? '',
+      date: convertUnixToMoment(booking.date).format('DD.MM.YYYY')
+    }));
+
+    return stableSort(mappedBookings, getComparator(order, orderBy)).slice(
+      bookingTablePage * rowsPerPage,
+      bookingTablePage * rowsPerPage + rowsPerPage
     );
-  }, [tab, customIntervalEnabled, nativeInterval, customInterval, bookings, order, orderBy, page, rowsPerPage]);
+  }, [filteredBookings, order, orderBy, bookingTablePage, rowsPerPage]);
 
   const onCreateClick = useCallback(
     () =>
@@ -320,9 +331,9 @@ export default function BookingsTable(): React.ReactNode {
           rowsPerPageOptions={[5, 10, 25]}
           labelDisplayedRows={labelDisplayedRows}
           labelRowsPerPage="Zeilen pro Seite:"
-          count={bookings.length}
+          count={filteredBookings.length}
           rowsPerPage={rowsPerPage}
-          page={page}
+          page={bookingTablePage}
           onPageChange={onChangePage}
           onRowsPerPageChange={onChangeRowsPerPage}
         />

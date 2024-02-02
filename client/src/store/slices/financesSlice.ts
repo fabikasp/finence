@@ -65,6 +65,7 @@ export const convertToUpdateableBooking = (booking: Booking): UpdateableBooking 
 
 interface Finances {
   readonly tab: Tab;
+  readonly bookingTablePage: number;
   readonly bookings: Booking[];
   readonly createdBooking?: CreateableBooking;
   readonly updatedBooking?: UpdateableBooking;
@@ -73,6 +74,7 @@ interface Finances {
 
 const initialState: Finances = {
   tab: Tab.TOTAL,
+  bookingTablePage: 0,
   bookings: []
 };
 
@@ -80,7 +82,11 @@ const financesSlice = createSlice({
   name: 'finances',
   initialState,
   reducers: {
-    setTab: (state: Finances, action: PayloadAction<Tab>) => ({ ...state, tab: action.payload }),
+    setTab: (state: Finances, action: PayloadAction<Tab>) => ({ ...state, tab: action.payload, bookingTablePage: 0 }),
+    setBookingTablePage: (state: Finances, action: PayloadAction<number>) => ({
+      ...state,
+      bookingTablePage: action.payload
+    }),
     setBookings: (state: Finances, action: PayloadAction<Booking[]>) => ({ ...state, bookings: action.payload }),
     setCreatedBooking: (state: Finances, action: PayloadAction<CreateableBooking | undefined>) => ({
       ...state,
@@ -94,10 +100,17 @@ const financesSlice = createSlice({
       ...state,
       deletedBooking: action.payload
     }),
-    clear: (state: Finances) => ({ ...state, tab: Tab.TOTAL })
+    clear: (state: Finances) => ({ ...state, tab: Tab.TOTAL, bookingTablePage: 0 })
   }
 });
 
-export const { setTab, setBookings, setCreatedBooking, setUpdatedBooking, setDeletedBooking, clear } =
-  financesSlice.actions;
+export const {
+  setTab,
+  setBookingTablePage,
+  setBookings,
+  setCreatedBooking,
+  setUpdatedBooking,
+  setDeletedBooking,
+  clear
+} = financesSlice.actions;
 export default financesSlice.reducer;

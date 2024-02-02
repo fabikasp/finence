@@ -50,14 +50,14 @@ class BookingService:
         if csv_content is None:
             return {"message": "CSV content must be given."}, 400
 
+        csv_content = self.__booking_validator.validate_csv_content(csv_content)
+        if csv_content is None:
+            return {"message": "Invalid data provided."}, 422
+
         user_id = get_jwt()["sub"]
         column_mapping = self.__column_mapping_repository.read_by_user_id(user_id)
         if column_mapping is None:
             return {"message": "Column mapping not found."}, 404
-
-        csv_content = self.__booking_validator.validate_csv_content(csv_content)
-        if csv_content is None:
-            return {"message": "Invalid data provided."}, 422
 
         date_column_label = column_mapping.get_date_column_label()
         amount_column_label = column_mapping.get_amount_column_label()
@@ -66,7 +66,9 @@ class BookingService:
         date_column_index = None
         amount_column_index = None
 
-        rows = csv.reader(StringIO(csv_content), delimiter=";")
+        delimiter = csv.Sniffer().sniff(csv_content).delimiter
+        rows = csv.reader(StringIO(csv_content), delimiter=delimiter)
+
         for row in rows:
             if date_column_label in row and amount_column_label in row:
                 date_column_index = row.index(date_column_label)
@@ -77,16 +79,22 @@ class BookingService:
             if date_column_index is None or amount_column_index is None:
                 continue
 
+            amount = float(row[amount_column_index].replace(",", "."))
+            if not self.__booking_validator.validate_amount(abs(amount)):
+                continue
+
             date = int(
                 datetime.strptime(row[date_column_index], "%d.%m.%y").timestamp()
             )
-            amount = float(row[amount_column_index].replace(",", "."))
-            is_income = amount >= 0
+            is_income = amount > 0
             category_name = None
 
             row_string = ";".join(row)
             for category in categories:
-                if category.get_for_income() != is_income:
+                if (
+                    category.get_for_income() != is_income
+                    or category.get_key_words() is None
+                ):
                     continue
 
                 for key_word in category.get_key_words().split(";"):

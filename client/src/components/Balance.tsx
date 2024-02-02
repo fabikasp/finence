@@ -47,7 +47,7 @@ export default function Balance(): React.ReactNode {
     );
 
     result.push(result[0] - result[1]);
-    return result;
+    return result.map((value) => +value.toFixed(2));
   }, [bookings, customIntervalEnabled, nativeInterval, customInterval]);
 
   return (
