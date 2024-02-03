@@ -44,6 +44,7 @@ export default function PieChart(): React.ReactNode {
 
     return absoluteChartData.map((entry) => ({
       ...entry,
+      absoluteValue: +entry.absoluteValue.toFixed(2),
       relativeValue: +((entry.absoluteValue / absoluteValueSum) * 100).toFixed(1)
     }));
   }, [bookings, showIncomes, customIntervalEnabled, nativeInterval, customInterval]);
