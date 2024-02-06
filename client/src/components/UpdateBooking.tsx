@@ -14,17 +14,20 @@ import {
   SelectChangeEvent,
   FormControlLabel,
   Radio,
-  RadioGroup
+  RadioGroup,
+  Box,
+  Fab
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CategoryIcon from '@mui/icons-material/Category';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import NoteIcon from '@mui/icons-material/Note';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { updateBooking } from '../store/actions';
+import { importBookingImage, updateBooking } from '../store/actions';
 import { assertNonNullable } from '../utils/assert';
 import Dialog from './Dialog';
 import { Repetition, setUpdatedBooking } from '../store/slices/financesSlice';
@@ -80,6 +83,16 @@ export default function UpdateBooking(): React.ReactNode {
 
   const onClose = useCallback(() => dispatch(setUpdatedBooking(undefined)), [dispatch]);
   const onUpdate = useCallback(() => dispatch(updateBooking()), [dispatch]);
+
+  const onImageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(event.target.files);
+      dispatch(importBookingImage({ imageUrl: URL.createObjectURL(event.target.files[0]) }));
+
+      event.target.value = '';
+    },
+    [dispatch]
+  );
 
   const onDateChange = useCallback(
     (value: Moment | null) => {
@@ -185,14 +198,22 @@ export default function UpdateBooking(): React.ReactNode {
   return (
     <Dialog open={!!updatedBooking} title="Buchung bearbeiten" onClose={onClose}>
       <StyledDialogContent>
-        <ToggleButtonGroup color="primary" value={updatedBooking?.isIncome} disabled>
-          <StyledToggleButton size="small" value={true}>
-            Einnahme
-          </StyledToggleButton>
-          <StyledToggleButton size="small" value={false}>
-            Ausgabe
-          </StyledToggleButton>
-        </ToggleButtonGroup>
+        <Box display="flex" justifyContent="space-between">
+          <ToggleButtonGroup color="primary" value={updatedBooking?.isIncome} disabled>
+            <StyledToggleButton size="small" value={true}>
+              Einnahme
+            </StyledToggleButton>
+            <StyledToggleButton size="small" value={false}>
+              Ausgabe
+            </StyledToggleButton>
+          </ToggleButtonGroup>
+          <input id="imageInput" type="file" accept="image/*" onChange={onImageChange} style={{ display: 'none' }} />
+          <label htmlFor="imageInput">
+            <Fab color="primary" size="small" component="span">
+              <PhotoCameraIcon />
+            </Fab>
+          </label>
+        </Box>
         <StyledDatePicker
           label="Datum"
           value={updatedBooking?.date ? convertUnixToMoment(updatedBooking.date) : null}

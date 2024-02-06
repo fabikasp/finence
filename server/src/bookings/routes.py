@@ -11,10 +11,24 @@ from bookings.model import (
     AMOUNT_KEY,
     NOTE_KEY,
     REPETITION_KEY,
-    CSV_CONTENT_KEY,
 )
 
+BOOKING_IMAGE_KEY = "image"
+CSV_CONTENT_KEY = "csvContent"
+
 booking_service = BookingService()
+
+
+@bp.route("/import-booking-image", methods=["POST"])
+@jwt_required()
+@cross_origin()
+def import_booking_image() -> dict:
+    if (
+        request.files["image"] is None
+    ):  # Testen, ob Weglassen und null abgefangen werden
+        return {"error": "No image provided"}, 400
+
+    return booking_service.import_booking_image(request.files[BOOKING_IMAGE_KEY])
 
 
 @bp.route("/", methods=["POST"])

@@ -21,8 +21,13 @@ export interface CreateBookingPayload {
   readonly closeDialog: boolean;
 }
 
+export interface ImportBookingImagePayload {
+  readonly imageUrl: string;
+}
+
 export const loadBookings = createAction('LOAD_BOOKINGS');
 export const createBooking = createAction<CreateBookingPayload>('CREATE_BOOKING');
+export const importBookingImage = createAction<ImportBookingImagePayload>('IMPORT_BOOKING_IMAGE');
 export const updateBooking = createAction('UPDATE_BOOKING');
 export const deleteBooking = createAction('DELETE_BOOKING');
 

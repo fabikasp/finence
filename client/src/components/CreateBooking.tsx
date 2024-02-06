@@ -14,16 +14,19 @@ import {
   SelectChangeEvent,
   RadioGroup,
   FormControlLabel,
-  Radio
+  Radio,
+  Box,
+  Fab
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CategoryIcon from '@mui/icons-material/Category';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import NoteIcon from '@mui/icons-material/Note';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { createBooking } from '../store/actions';
+import { createBooking, importBookingImage } from '../store/actions';
 import { assertNonNullable } from '../utils/assert';
 import Dialog from './Dialog';
 import { Repetition, setCreatedBooking } from '../store/slices/financesSlice';
@@ -76,6 +79,16 @@ export default function CreateBooking(): React.ReactNode {
 
   const onClose = useCallback(() => dispatch(setCreatedBooking(undefined)), [dispatch]);
   const onCreate = useCallback((closeDialog: boolean) => () => dispatch(createBooking({ closeDialog })), [dispatch]);
+
+  const onImageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      assertNonNullable(event.target.files);
+      dispatch(importBookingImage({ imageUrl: URL.createObjectURL(event.target.files[0]) }));
+
+      event.target.value = '';
+    },
+    [dispatch]
+  );
 
   const onToggleButtonClick = useCallback(
     (_: React.SyntheticEvent, isIncome: boolean) => {
@@ -162,14 +175,22 @@ export default function CreateBooking(): React.ReactNode {
   return (
     <Dialog open={!!createdBooking} title="Buchung hinzufügen" onClose={onClose}>
       <StyledDialogContent>
-        <ToggleButtonGroup color="primary" value={createdBooking?.isIncome}>
-          <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>
-            Einnahme
-          </StyledToggleButton>
-          <StyledToggleButton size="small" value={false} onClick={onToggleButtonClick}>
-            Ausgabe
-          </StyledToggleButton>
-        </ToggleButtonGroup>
+        <Box display="flex" justifyContent="space-between">
+          <ToggleButtonGroup color="primary" value={createdBooking?.isIncome}>
+            <StyledToggleButton size="small" value={true} onClick={onToggleButtonClick}>
+              Einnahme
+            </StyledToggleButton>
+            <StyledToggleButton size="small" value={false} onClick={onToggleButtonClick}>
+              Ausgabe
+            </StyledToggleButton>
+          </ToggleButtonGroup>
+          <input id="imageInput" type="file" accept="image/*" onChange={onImageChange} style={{ display: 'none' }} />
+          <label htmlFor="imageInput">
+            <Fab color="primary" size="small" component="span">
+              <PhotoCameraIcon />
+            </Fab>
+          </label>
+        </Box>
         <StyledDatePicker
           label="Datum"
           value={createdBooking?.date ? convertUnixToMoment(createdBooking.date) : null}

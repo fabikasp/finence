@@ -1,7 +1,10 @@
 from flask_jwt_extended import get_jwt
-import csv
 from io import StringIO
 from datetime import datetime
+from PIL import Image
+import pytesseract
+import csv
+import re
 from bookings.model import (
     CATEGORY_KEY,
     DATE_KEY,
@@ -14,12 +17,56 @@ from bookings.repository import BookingRepository
 from categories.repository import CategoryRepository
 from columnMappings.repository import ColumnMappingRepository
 
+DATE_REGEX = r"\b\d{1,2}\.\d{1,2}\.\d{2,4}\b"
+AMOUNT_REGEX = r"\b\d+(?:[,.]\d+)?\s*(?:€|EUR)\b"
+
 
 class BookingService:
     __booking_validator = BookingValidator()
     __booking_repository = BookingRepository()
     __category_repository = CategoryRepository()
     __column_mapping_repository = ColumnMappingRepository()
+
+    def __parse_date(self, date_string: str) -> int:
+        for date_format in ["%d.%m.%y", "%d.%m.%Y"]:
+            try:
+                return int(datetime.strptime(date_string, date_format).timestamp())
+            except ValueError:
+                pass
+
+        return None
+
+    def import_booking_image(self, file):
+        # Validieren / IT Security
+
+        image = Image.open(file)
+
+        text = pytesseract.image_to_string(image)
+
+        date = None
+        date_match = re.search(DATE_REGEX, text)
+        if date_match:
+            date = self.__parse_date(date_match.group())
+
+        amount = None
+        amount_match = re.findall(AMOUNT_REGEX, text)
+        if amount_match:
+            max_amount = max(
+                float(
+                    found_amound.replace(",", ".").replace("EUR", "").replace("€", "")
+                )
+                for found_amound in amount_match
+            )
+
+            if self.__booking_validator.validate_amount(abs(max_amount)):
+                amount = max_amount
+
+        is_income = amount > 0 if amount is not None else None
+        category = None
+
+        # category durch Stichwörter belegen (in Methode auslagern)
+
+        return {"booking": {date, amount, is_income, category}}
 
     def create(self, category, is_income, date, amount, note, repetition) -> dict:
         if is_income is None or date is None or amount is None or repetition is None:
@@ -83,9 +130,10 @@ class BookingService:
             if not self.__booking_validator.validate_amount(abs(amount)):
                 continue
 
-            date = int(
-                datetime.strptime(row[date_column_index], "%d.%m.%y").timestamp()
-            )
+            date = self.__parse_date(row[date_column_index])
+            if date is None:
+                continue
+
             is_income = amount > 0
             category_name = None
 

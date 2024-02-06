@@ -10,6 +10,7 @@ from bookings import bp as bookings_bp
 from columnMappings import bp as column_mapping_bp
 from bookings.job import CloneRepeatingBookingsJob
 from datetime import datetime
+import pytesseract
 import schedule
 import threading
 import time
@@ -20,13 +21,13 @@ JWT_REMAINING_VALIDITY_TIME_REFRESH_BORDER_IN_SECONDS = 1200
 
 
 class FlaskApp:
-    __app = None
-
     def __init__(self, config_class=Config):
         self.__app = Flask(__name__)
         CORS(self.__app)
 
         self.__app.config.from_object(config_class)
+
+        pytesseract.pytesseract.tesseract_cmd = Config.TESSERACT_CMD_PATH
 
         db.init_app(self.__app)
         Migrate(self.__app, db)

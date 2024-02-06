@@ -11,3 +11,4 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=30)
     CORS_HEADERS = "Content-Type"
     MAX_CONTENT_LENGTH = 1024 * 1024
+    TESSERACT_CMD_PATH = os.getenv("TESSERACT_CMD_PATH")
