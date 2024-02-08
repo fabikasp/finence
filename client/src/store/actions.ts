@@ -22,6 +22,7 @@ export interface CreateBookingPayload {
 }
 
 export interface ImportBookingImagePayload {
+  readonly mode: 'create' | 'update';
   readonly imageUrl: string;
 }
 

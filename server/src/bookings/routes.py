@@ -23,10 +23,8 @@ booking_service = BookingService()
 @jwt_required()
 @cross_origin()
 def import_booking_image() -> dict:
-    if (
-        request.files["image"] is None
-    ):  # Testen, ob Weglassen und null abgefangen werden
-        return {"error": "No image provided"}, 400
+    if BOOKING_IMAGE_KEY not in request.files:
+        return {"message": "Image must be given."}, 400
 
     return booking_service.import_booking_image(request.files[BOOKING_IMAGE_KEY])
 

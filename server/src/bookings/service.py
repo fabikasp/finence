@@ -36,11 +36,27 @@ class BookingService:
 
         return None
 
-    def import_booking_image(self, file):
+    def __find_category_by_key_words(self, text: str, for_income: bool) -> str:
+        user_id = get_jwt()["sub"]
+        categories = self.__category_repository.read_by_user_id(user_id)
+
+        for category in categories:
+            if (
+                category.get_for_income() != for_income
+                or category.get_key_words() is None
+            ):
+                continue
+
+            for key_word in category.get_key_words().split(";"):
+                if key_word in text:
+                    return category.get_name()
+
+        return None
+
+    def import_booking_image(self, file) -> dict:
         # Validieren / IT Security
 
         image = Image.open(file)
-
         text = pytesseract.image_to_string(image)
 
         date = None
@@ -62,11 +78,26 @@ class BookingService:
                 amount = max_amount
 
         is_income = amount > 0 if amount is not None else None
-        category = None
+        category_name = (
+            self.__find_category_by_key_words(text, is_income)
+            if is_income is not None
+            else None
+        )
 
-        # category durch Stichwörter belegen (in Methode auslagern)
+        bookingData = {}
+        if date is not None:
+            bookingData["date"] = date
 
-        return {"booking": {date, amount, is_income, category}}
+        if amount is not None:
+            bookingData["amount"] = amount
+
+        if is_income is not None:
+            bookingData["isIncome"] = is_income
+
+        if category_name is not None:
+            bookingData["category"] = category_name
+
+        return {"bookingData": bookingData}
 
     def create(self, category, is_income, date, amount, note, repetition) -> dict:
         if is_income is None or date is None or amount is None or repetition is None:
@@ -108,7 +139,6 @@ class BookingService:
 
         date_column_label = column_mapping.get_date_column_label()
         amount_column_label = column_mapping.get_amount_column_label()
-        categories = self.__category_repository.read_by_user_id(user_id)
         imported_bookings = list()
         date_column_index = None
         amount_column_index = None
@@ -135,19 +165,7 @@ class BookingService:
                 continue
 
             is_income = amount > 0
-            category_name = None
-
-            row_string = ";".join(row)
-            for category in categories:
-                if (
-                    category.get_for_income() != is_income
-                    or category.get_key_words() is None
-                ):
-                    continue
-
-                for key_word in category.get_key_words().split(";"):
-                    if key_word in row_string:
-                        category_name = category.get_name()
+            category_name = self.__find_category_by_key_words(";".join(row), is_income)
 
             booking = self.__booking_repository.create(
                 user_id, category_name, is_income, date, abs(amount), None, "once"

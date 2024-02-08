@@ -83,7 +83,7 @@ export default function CreateBooking(): React.ReactNode {
   const onImageChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       assertNonNullable(event.target.files);
-      dispatch(importBookingImage({ imageUrl: URL.createObjectURL(event.target.files[0]) }));
+      dispatch(importBookingImage({ mode: 'create', imageUrl: URL.createObjectURL(event.target.files[0]) }));
 
       event.target.value = '';
     },
