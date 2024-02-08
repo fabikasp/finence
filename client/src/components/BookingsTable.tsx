@@ -192,6 +192,10 @@ export default function BookingsTable(): React.ReactNode {
     dispatch(loadBookings());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(setBookingTablePage(0));
+  }, [dispatch, customIntervalEnabled, nativeInterval, customInterval]);
+
   const onRequestSort = useCallback(
     (_: React.MouseEvent<unknown>, property: keyof DisplayableBooking) => {
       const isAsc = orderBy === property && order === 'asc';
@@ -333,7 +337,7 @@ export default function BookingsTable(): React.ReactNode {
           labelRowsPerPage="Zeilen pro Seite:"
           count={filteredBookings.length}
           rowsPerPage={rowsPerPage}
-          page={bookingTablePage}
+          page={bookingTablePage <= filteredBookings.length / rowsPerPage ? bookingTablePage : 0}
           onPageChange={onChangePage}
           onRowsPerPageChange={onChangeRowsPerPage}
         />

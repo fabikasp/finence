@@ -33,9 +33,18 @@ export function* importAccountStatementSaga(): SagaGenerator<void> {
         const newBookings = response.data.bookings;
         assertTrue(isBookingsResponseData(newBookings));
 
+        const responseIsEmpty = Object.keys(newBookings).length === 0;
+
+        yield* put(
+          evoke({
+            severity: responseIsEmpty ? 'warning' : 'success',
+            message: responseIsEmpty
+              ? 'Es wurden keine Buchungen gefunden.'
+              : `Es wurden ${newBookings.length} Buchungen importiert.`
+          })
+        );
         yield* put(setBookings([...bookings, ...newBookings]));
         yield* put(toggleOpenDialog());
-        yield* put(evoke({ severity: 'success', message: `Es wurden ${newBookings.length} Buchungen importiert.` }));
       },
       function* handleError(error: AxiosError) {
         if (error.response?.status === 422) {

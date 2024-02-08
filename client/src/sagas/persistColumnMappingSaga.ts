@@ -27,15 +27,15 @@ export function* persistColumnMappingSaga(): SagaGenerator<void> {
     return;
   }
 
-  const requestData = yield* call(buildRequestData);
+  const data = yield* call(buildRequestData);
 
-  if (Object.keys(requestData).length > 0) {
+  if (Object.keys(data).length > 0) {
     yield* call(
       fetchSagaFactory(
         {
           url: `${COLUMN_MAPPING_URL_PATH_PREFIX}${columnMapping.id ?? ''}`,
           method: columnMapping.id ? 'PUT' : 'POST',
-          data: yield* call(buildRequestData)
+          data
         },
         function* handleResponse(response: AxiosResponse) {
           const newColumnMapping = response.data.columnMapping;

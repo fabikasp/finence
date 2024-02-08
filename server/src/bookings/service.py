@@ -17,8 +17,8 @@ from bookings.repository import BookingRepository
 from categories.repository import CategoryRepository
 from columnMappings.repository import ColumnMappingRepository
 
-DATE_REGEX = r"\b\d{1,2}\.\d{1,2}\.\d{2,4}\b"
-AMOUNT_REGEX = r"\b\d+(?:[,.]\d+)?\s*(?:€|EUR)\b"
+DATE_REGEX = r"\d{1,2}\.\d{1,2}\.\d{2,4}"
+AMOUNT_REGEX = r"\d+(?:[,.]\d+)?\s*(?:€|EUR)|(?:EUR|€)\s*\d+(?:[,.]\d+)?"
 
 
 class BookingService:
