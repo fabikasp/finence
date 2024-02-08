@@ -1,6 +1,7 @@
 import csv
-from io import StringIO
 import re
+from io import StringIO
+from werkzeug.datastructures import FileStorage
 from categories.repository import CategoryRepository
 
 MAX_NOTE_LENGTH = 200
@@ -51,6 +52,14 @@ class BookingValidator:
             return False
 
         return repetition in ["once", "monthly", "yearly"]
+
+    def validate_booking_image(self, image_file: FileStorage) -> bool:
+        if not image_file.mimetype.startswith("image/"):
+            return False
+
+        # Virenscan
+
+        return True
 
     def validate_csv_content(self, csv_content) -> str:
         if not isinstance(csv_content, str):

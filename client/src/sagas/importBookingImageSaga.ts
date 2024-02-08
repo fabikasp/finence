@@ -8,6 +8,7 @@ import { assertNonNullable, assertTrue } from '../utils/assert';
 import { setCreatedBooking, setUpdatedBooking } from '../store/slices/financesSlice';
 import { RootState } from '../store/store';
 import { evoke } from '../store/slices/snackBarSlice';
+import { validateBookingImage } from '../utils/validators';
 import z from 'zod';
 
 const importBookingImageResponseDataScheme = z.object({
@@ -27,10 +28,19 @@ export function* importBookingImageSaga(action: PayloadAction<ImportBookingImage
   const { mode, imageUrl } = action.payload;
 
   const response = yield* call(fetch, imageUrl);
-  const data = new FormData();
-  data.append('image', yield* call([response, 'blob']));
+  const imageFile = yield* call([response, 'blob']);
 
   URL.revokeObjectURL(imageUrl);
+
+  const error = validateBookingImage(imageFile);
+  if (error) {
+    yield* put(evoke({ severity: 'error', message: error }));
+
+    return;
+  }
+
+  const data = new FormData();
+  data.append('image', imageFile);
 
   yield* call(
     fetchSagaFactory(

@@ -13,7 +13,7 @@ const MAX_CATEGORY_KEY_WORDS_LENGTH = 400;
 
 const MAX_BOOKING_NOTE_LENGTH = 200;
 
-const MAX_CSV_FILE_SIZE = 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MIN_CSV_FILE_ROWS = 2;
 const MAX_CSV_FILE_ROWS = 500;
 
@@ -112,13 +112,21 @@ export function validateBookingNote(bookingNote: string): string | undefined {
     : undefined;
 }
 
+export function validateBookingImage(imageFile: Blob): string | undefined {
+  if (!imageFile.type.startsWith('image/')) {
+    return 'Es muss eine Bilddatei angegeben werden.';
+  }
+
+  return imageFile.size > MAX_FILE_SIZE ? `Die Datei darf maximal ${MAX_FILE_SIZE} Bytes groß sein.` : undefined;
+}
+
 export function validateCsvFile(csvFileName: string, csvFileContent: string, csvFileSize: number): string | undefined {
   if (csvFileName === '' || csvFileContent === '') {
     return 'Es muss eine Datei angegeben werden.';
   }
 
-  if (csvFileSize > MAX_CSV_FILE_SIZE) {
-    return `Die Datei darf maximal ${MAX_CSV_FILE_SIZE} Bytes groß sein.`;
+  if (csvFileSize > MAX_FILE_SIZE) {
+    return `Die Datei darf maximal ${MAX_FILE_SIZE} Bytes groß sein.`;
   }
 
   if (!csvFileName.endsWith('.csv')) {

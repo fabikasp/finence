@@ -5,6 +5,7 @@ from PIL import Image
 import pytesseract
 import csv
 import re
+from werkzeug.datastructures import FileStorage
 from bookings.model import (
     CATEGORY_KEY,
     DATE_KEY,
@@ -53,10 +54,11 @@ class BookingService:
 
         return None
 
-    def import_booking_image(self, file) -> dict:
-        # Validieren / IT Security
+    def import_booking_image(self, image_file: FileStorage) -> dict:
+        if not self.__booking_validator.validate_booking_image(image_file):
+            return {"message": "Invalid data provided."}, 422
 
-        image = Image.open(file)
+        image = Image.open(image_file)
         text = pytesseract.image_to_string(image)
 
         date = None
