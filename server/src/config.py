@@ -12,3 +12,4 @@ class Config:
     CORS_HEADERS = "Content-Type"
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     TESSERACT_CMD_PATH = os.getenv("TESSERACT_CMD_PATH")
+    VIRUS_TOTAL_API_KEY = os.getenv("VIRUS_TOTAL_API_KEY")

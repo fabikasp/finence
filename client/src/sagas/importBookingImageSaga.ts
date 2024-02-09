@@ -3,7 +3,7 @@ import { fetchSagaFactory } from './fetchSaga';
 import { BOOKINGS_URL_PATH_PREFIX } from '../utils/const';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { ImportBookingImagePayload } from '../store/actions';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { assertNonNullable, assertTrue } from '../utils/assert';
 import { setCreatedBooking, setUpdatedBooking } from '../store/slices/financesSlice';
 import { RootState } from '../store/store';
@@ -84,6 +84,11 @@ export function* importBookingImageSaga(action: PayloadAction<ImportBookingImage
               category: bookingData.category ?? updatedBooking.category
             })
           );
+        }
+      },
+      function* handleError(error: AxiosError) {
+        if (error.response?.status === 422) {
+          yield* put(evoke({ severity: 'error', message: 'Die Datei konnte nicht verarbeitet werden.' }));
         }
       }
     )

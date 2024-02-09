@@ -1,9 +1,14 @@
 import csv
 import re
-from io import StringIO
+import asyncio
+import vt
+from io import StringIO, BytesIO
 from werkzeug.datastructures import FileStorage
+from config import Config
 from categories.repository import CategoryRepository
 
+VT_MALICIOUS_KEY = "malicious"
+VT_SUSPICIOUS_KEY = "suspicious"
 MAX_NOTE_LENGTH = 200
 MIN_CSV_ROWS = 2
 MAX_CSV_ROWS = 500
@@ -11,6 +16,18 @@ MAX_CSV_ROWS = 500
 
 class BookingValidator:
     __category_repository = CategoryRepository()
+
+    async def __file_is_malware_free(self, image_file: FileStorage) -> bool:
+        virus_total_client = vt.Client(Config.VIRUS_TOTAL_API_KEY)
+        scan_result = virus_total_client.scan_file(
+            BytesIO(image_file.read()), wait_for_completion=True
+        )
+        malware_evaluation_data = scan_result.stats.data
+
+        return (
+            malware_evaluation_data[VT_MALICIOUS_KEY] == 0
+            and malware_evaluation_data[VT_SUSPICIOUS_KEY] == 0
+        )
 
     def validate_is_income(self, is_income) -> bool:
         return isinstance(is_income, bool)
@@ -57,9 +74,7 @@ class BookingValidator:
         if not image_file.mimetype.startswith("image/"):
             return False
 
-        # Virenscan
-
-        return True
+        return asyncio.run(self.__file_is_malware_free(image_file))
 
     def validate_csv_content(self, csv_content) -> str:
         if not isinstance(csv_content, str):

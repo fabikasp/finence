@@ -11,6 +11,7 @@ from columnMappings import bp as column_mapping_bp
 from bookings.job import CloneRepeatingBookingsJob
 from datetime import datetime
 import pytesseract
+import nest_asyncio
 import schedule
 import threading
 import time
@@ -28,6 +29,8 @@ class FlaskApp:
         self.__app.config.from_object(config_class)
 
         pytesseract.pytesseract.tesseract_cmd = Config.TESSERACT_CMD_PATH
+
+        nest_asyncio.apply()
 
         db.init_app(self.__app)
         Migrate(self.__app, db)
