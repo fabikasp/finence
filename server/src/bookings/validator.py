@@ -19,10 +19,10 @@ class BookingValidator:
 
     async def __file_is_malware_free(self, image_file: FileStorage) -> bool:
         virus_total_client = vt.Client(Config.VIRUS_TOTAL_API_KEY)
-        scan_result = virus_total_client.scan_file(
+        scan_result = await virus_total_client.scan_file_async(
             BytesIO(image_file.read()), wait_for_completion=True
         )
-        virus_total_client.close()
+        await virus_total_client.close_async()
         malware_evaluation_data = scan_result.stats.data
 
         return (

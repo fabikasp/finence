@@ -10,5 +10,4 @@ redis
 schedule
 pytesseract
 Werkzeug
-nest_asyncio
 vt-py
