@@ -22,6 +22,7 @@ class BookingValidator:
         scan_result = virus_total_client.scan_file(
             BytesIO(image_file.read()), wait_for_completion=True
         )
+        virus_total_client.close()
         malware_evaluation_data = scan_result.stats.data
 
         return (
