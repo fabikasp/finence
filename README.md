@@ -27,12 +27,12 @@ _Buchungsstatistik_
 
 ## Ausführung
 
-### Backend
+### Server
 
 1. [.env.draft-Datei](./server/.env.draft) kopieren und Werte setzen
 2. [start_server.sh](./dev/start_server.sh) ausführen oder Flask App und Datenbank selbstständig starten
 
-### Frontend
+### Client
 
 1. [.env.draft-Datei](./client/.env.draft) kopieren und Werte setzen
 2. [start_client.sh](./dev/start_server.sh) ausführen oder React App selbstständig starten
