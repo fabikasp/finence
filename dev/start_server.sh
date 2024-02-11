@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # start docker container
-cd server && docker-compose down && docker-compose up -d
+cd ../server && docker-compose down && docker-compose up -d
 
 # setup database
 rm -rf src/migrations

@@ -4,6 +4,27 @@ Webapp zum Tracken und Auswerten von Finanzen.
 
 ## Screenshots
 
+![Kategorien](./screenshots/categories.png)
+_Kategorien_
+
+![Kategorie hinzufügen](./screenshots/add_category.png)
+_Kategorie hinzufügen_
+
+![Buchungen](./screenshots/bookings.png)
+_Buchungen_
+
+![Buchung hinzufügen](./screenshots/add_booking.png)
+_Buchung hinzufügen_
+
+![Kontoauszug importieren](./screenshots/import_account_statement.png)
+_Kontoauszug importieren_
+
+![Bilanz](./screenshots/balance.png)
+_Bilanz_
+
+![Buchungsstatistik](./screenshots/booking_statistics.png)
+_Buchungsstatistik_
+
 ## Ausführung
 
 ### Backend
