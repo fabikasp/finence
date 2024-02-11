@@ -7,7 +7,6 @@ cd server && docker-compose down && docker-compose up -d
 rm -rf src/migrations
 cd src && flask db init && flask db migrate && flask db upgrade
 
-# start client
-cd ../../client && npm start
-
-# start server in IDE for debugging
+# start server
+cd .. && pip install -r requirements.txt
+cd src && flask run
